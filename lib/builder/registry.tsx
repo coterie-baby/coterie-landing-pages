@@ -15,6 +15,20 @@ Builder.registerComponent(
         name: 'subheader',
         type: 'longText',
       },
+      {
+        name: 'fullHeight',
+        type: 'boolean',
+        defaultValue: false,
+      },
+      {
+        name: 'backgroundImage',
+        type: 'file',
+        allowedFileTypes: ['jpeg', 'jpg', 'png', 'svg', 'webp'],
+      },
+      {
+        name: 'backgroundColor',
+        type: 'color',
+      },
     ],
   }
 );

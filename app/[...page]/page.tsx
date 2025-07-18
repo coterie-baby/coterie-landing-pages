@@ -1,7 +1,5 @@
-import { builder } from "@builder.io/sdk";
-import { RenderBuilderContent } from "../../components/builder";
-
-builder.init('719c5a089fda410a85d691c86e368833');
+import { builder } from '@/lib/builder/init';
+import { RenderBuilderContent } from '../../components/builder';
 
 interface PageProps {
   params: Promise<{
@@ -11,11 +9,11 @@ interface PageProps {
 
 export default async function Page(props: PageProps) {
   const params = await props.params;
-  const model = "page";
+  const model = 'page';
   const content = await builder
-    .get("page", {
+    .get('page', {
       userAttributes: {
-        urlPath: "/" + (params?.page?.join("/") || ""),
+        urlPath: '/' + (params?.page?.join('/') || ''),
       },
       prerender: false,
     })
