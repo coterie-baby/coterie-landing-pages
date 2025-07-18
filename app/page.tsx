@@ -1,4 +1,5 @@
 import TitleBanner from '@/components/title-banner';
+import USP2 from '@/components/usp2';
 
 export default function Home() {
   return (
@@ -9,6 +10,7 @@ export default function Home() {
         fullHeight={false}
         backgroundImage="/bg-placeholder.png"
       />
+      <USP2 />
     </div>
   );
 }

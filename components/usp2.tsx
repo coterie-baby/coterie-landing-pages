@@ -1,12 +1,20 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import Image from 'next/image';
+
+interface ProductCardProps {
+  image: string;
+  headline: string;
+  bodyCopy: string;
+}
 
 interface USP2Props {
   cards?: number; // 2 or 3 cards
+  productCards?: ProductCardProps[];
 }
 
-export default function USP2({ cards = 3 }: USP2Props) {
+export default function USP2({ cards = 3, productCards }: USP2Props) {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [activeCard, setActiveCard] = useState<number>(0);
 
@@ -60,39 +68,48 @@ export default function USP2({ cards = 3 }: USP2Props) {
           className="flex overflow-x-auto md:overflow-x-visible gap-5 md:gap-10 scroll-smooth snap-x snap-mandatory md:snap-none [&::-webkit-scrollbar]:hidden"
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
         >
-          {Array.from({ length: cards }, (_, index) => (
-            <div
-              key={index}
-              data-card={index}
-              className={`flex-shrink-0 w-[280px] md:flex-1 md:w-full snap-start md:snap-align-none transition-opacity duration-300 ${getCardOpacity(
-                index
-              )}`}
-            >
-              <ProductCard />
-            </div>
-          ))}
+          {Array.from({ length: cards }, (_, index) => {
+            const cardData = productCards?.[index] || {
+              image: "https://cdn.sanity.io/images/e4q6bkl9/production/5da7c8766e7d65c99fd249291e84f0faaef4adb8-1000x1000.png?w=960&h=960&q=100&fit=crop&auto=format",
+              headline: "The Diaper",
+              bodyCopy: "Designed to be highly absorbent and fast-wicking to minimize leaks"
+            };
+            
+            return (
+              <div
+                key={index}
+                data-card={index}
+                className={`flex-shrink-0 w-[280px] md:flex-1 md:w-full snap-start md:snap-align-none transition-opacity duration-300 ${getCardOpacity(
+                  index
+                )}`}
+              >
+                <ProductCard {...cardData} />
+              </div>
+            );
+          })}
         </div>
       </div>
     </section>
   );
 }
 
-function ProductCard() {
+function ProductCard({ image, headline, bodyCopy }: ProductCardProps) {
   return (
     <div className="flex flex-col gap-5">
-      <div className="md:h-[310px]">
-        <img
-          src="https://cdn.sanity.io/images/e4q6bkl9/production/5da7c8766e7d65c99fd249291e84f0faaef4adb8-1000x1000.png?w=960&h=960&q=100&fit=crop&auto=format"
-          alt=""
-          className="h-full w-full"
+      <div className="md:h-[310px] relative">
+        <Image
+          src={image}
+          alt={headline}
+          className="h-full w-full object-cover"
+          fill
         />
       </div>
       <div className="flex flex-col gap-2 border-t border-[#E7E7E7] pt-5">
         <p className="leading-[140%] md:text-[24px] md:leading-[110%] md:tracking-[-0.24px]">
-          The Diaper
+          {headline}
         </p>
         <p className="text-xs leading-[140%] text-[#272727B2] md:text-sm md:tracking-[0.28px]">
-          Designed to be highly absorbent and fast-wicking to minimize leaks 
+          {bodyCopy} 
         </p>
       </div>
     </div>

@@ -176,6 +176,35 @@ Builder.registerComponent(
         type: 'number',
         defaultValue: 3,
       },
+      {
+        name: 'productCards',
+        type: 'list',
+        subFields: [
+          {
+            name: 'image',
+            type: 'file',
+            allowedFileTypes: ['jpeg', 'jpg', 'png', 'svg', 'webp'],
+            required: true,
+          },
+          {
+            name: 'headline',
+            type: 'string',
+            required: true,
+          },
+          {
+            name: 'bodyCopy',
+            type: 'longText',
+            required: true,
+          },
+        ],
+        defaultValue: [
+          {
+            image: "https://cdn.sanity.io/images/e4q6bkl9/production/5da7c8766e7d65c99fd249291e84f0faaef4adb8-1000x1000.png?w=960&h=960&q=100&fit=crop&auto=format",
+            headline: "The Diaper",
+            bodyCopy: "Designed to be highly absorbent and fast-wicking to minimize leaks"
+          }
+        ],
+      },
     ],
   }
 );
