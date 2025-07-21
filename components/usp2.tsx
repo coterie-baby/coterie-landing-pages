@@ -60,9 +60,9 @@ export default function USP2({ cards = 3, productCards }: USP2Props) {
   return (
     <section className="py-15 px-2.5 md:py-20 md:px-10">
       <div className="flex flex-col gap-10">
-        <h2 className="text-[44px] leading-[110%] tracking-[-0.44px] md:text-center md:text-[56px] md:leading-[111%] md:tracking-[-1.12px]">
+        <h3 className="text-[44px] leading-[110%] tracking-[-0.44px] md:text-center md:text-[56px] md:leading-[111%] md:tracking-[-1.12px]">
           Shop more diapering essentials
-        </h2>
+        </h3>
         <div
           ref={scrollContainerRef}
           className="flex overflow-x-auto md:overflow-x-visible gap-5 md:gap-10 scroll-smooth snap-x snap-mandatory md:snap-none [&::-webkit-scrollbar]:hidden"
@@ -70,11 +70,13 @@ export default function USP2({ cards = 3, productCards }: USP2Props) {
         >
           {Array.from({ length: cards }, (_, index) => {
             const cardData = productCards?.[index] || {
-              image: "https://cdn.sanity.io/images/e4q6bkl9/production/5da7c8766e7d65c99fd249291e84f0faaef4adb8-1000x1000.png?w=960&h=960&q=100&fit=crop&auto=format",
-              headline: "The Diaper",
-              bodyCopy: "Designed to be highly absorbent and fast-wicking to minimize leaks"
+              image:
+                'https://cdn.sanity.io/images/e4q6bkl9/production/5da7c8766e7d65c99fd249291e84f0faaef4adb8-1000x1000.png?w=960&h=960&q=100&fit=crop&auto=format',
+              headline: 'The Diaper',
+              bodyCopy:
+                'Designed to be highly absorbent and fast-wicking to minimize leaks',
             };
-            
+
             return (
               <div
                 key={index}
@@ -96,7 +98,7 @@ export default function USP2({ cards = 3, productCards }: USP2Props) {
 function ProductCard({ image, headline, bodyCopy }: ProductCardProps) {
   return (
     <div className="flex flex-col gap-5">
-      <div className="md:h-[310px] relative">
+      <div className="aspect-[5/4] md:h-[310px] relative rounded-lg md:rounded-none overflow-hidden">
         <Image
           src={image}
           alt={headline}
@@ -105,10 +107,10 @@ function ProductCard({ image, headline, bodyCopy }: ProductCardProps) {
         />
       </div>
       <div className="flex flex-col gap-2 border-t border-[#E7E7E7] pt-5">
-        <p className="leading-[140%] md:text-[24px] md:leading-[110%] md:tracking-[-0.24px]">
+        <p className="text-[18px] leading-[140%] md:text-[24px] md:leading-[110%] md:tracking-[-0.24px]">
           {headline}
         </p>
-        <p className="text-xs leading-[140%] text-[#272727B2] md:text-sm md:tracking-[0.28px]">
+        <p className="leading-[140%] text-[#525252] md:tracking-[0.28px]">
           {bodyCopy} 
         </p>
       </div>

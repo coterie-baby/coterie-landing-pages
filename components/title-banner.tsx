@@ -26,7 +26,7 @@ export default function TitleBanner({
   return (
     <section
       className={`flex flex-col justify-center px-4 md:px-20 ${
-        fullHeight ? 'h-screen' : 'h-[60vh] md:h-[80vh]'
+        fullHeight ? 'h-screen' : 'h-[64vh] md:h-[80vh]'
       }`}
       style={backgroundStyle}
     >

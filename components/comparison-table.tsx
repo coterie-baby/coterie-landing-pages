@@ -62,7 +62,7 @@ export default function ComparisonTable({
     }
     return (
       <div className="text-center">
-        <span className="text-sm font-medium">{value}</span>
+        <span className="text-sm">{value}</span>
         {unit && <span className="text-xs text-gray-600 ml-1">{unit}</span>}
       </div>
     );
@@ -131,16 +131,16 @@ export default function ComparisonTable({
                     <td
                       className={`p-4 text-left ${columnWidth} border-r border-[#E0E0E0] md:h-[100px]`}
                     >
-                      <div className="text-sm text-gray-800">
+                      <div className="text-sm">
                         {row.label}
                         {row.footnote && (
-                          <span className="text-xs text-gray-500 align-super">
+                          <span className="text-xs text-[#525252] align-super">
                             {row.footnote}
                           </span>
                         )}
                       </div>
                       {row.description && (
-                        <div className="text-xs text-gray-600 mt-1">
+                        <div className="text-xs text-[#525252] mt-1">
                           {row.description}
                         </div>
                       )}
