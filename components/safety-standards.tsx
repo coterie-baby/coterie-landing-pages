@@ -1,25 +1,36 @@
 import Image from 'next/image';
 import { Button } from './ui/button';
+import Link from 'next/link';
 
-export default function SafetyStandards() {
-  const icons = [
-    {
-      src: '/chlorine.svg',
-      alt: 'Zero Chlorine Bleaching',
-    },
-    {
-      src: '/dermatologist-tested.svg',
-      alt: 'Dermatologist Tested',
-    },
-    {
-      src: '/hypoallergenic.svg',
-      alt: 'Clinically Proven Hypoallergenic',
-    },
-    {
-      src: '/paraben-free.svg',
-      alt: 'No Parabens, Dyes, Phthalates, Fragrance',
-    },
-  ];
+const icons = [
+  {
+    src: '/chlorine.svg',
+    alt: 'Zero Chlorine Bleaching',
+  },
+  {
+    src: '/dermatologist-tested.svg',
+    alt: 'Dermatologist Tested',
+  },
+  {
+    src: '/hypoallergenic.svg',
+    alt: 'Clinically Proven Hypoallergenic',
+  },
+  {
+    src: '/paraben-free.svg',
+    alt: 'No Parabens, Dyes, Phthalates, Fragrance',
+  },
+];
+
+interface SafetyStandardsProps {
+  button?: {
+    label: string;
+    href: string;
+  };
+}
+
+export default function SafetyStandards({ button }: SafetyStandardsProps) {
+  const label = button?.label || 'Read the safety standards';
+  const href = button?.href || 'https://www.coterie.com/safety-reports';
   return (
     <div className="px-4 py-15 md:px-10">
       <div className="md:flex gap-[140px]">
@@ -49,7 +60,9 @@ export default function SafetyStandards() {
             ))}
           </div>
           <div>
-            <Button className="md:w-[347px]">Read the safety reports</Button>
+            <Link href={href} target="_blank">
+              <Button className="md:w-[347px]">{label}</Button>
+            </Link>
           </div>
         </div>
       </div>
