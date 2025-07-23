@@ -1,9 +1,18 @@
+'use client';
+import Link from 'next/link';
+import { Button } from './ui/button';
+import { sendGTMEvent } from '@next/third-parties/google';
+
 interface TitleBannerProps {
   headline: string;
   subheader: string;
   fullHeight?: boolean;
   backgroundImage?: string;
   backgroundColor?: string;
+  button?: {
+    label: string;
+    href: string;
+  };
 }
 
 export default function TitleBanner({
@@ -12,7 +21,10 @@ export default function TitleBanner({
   fullHeight = false,
   backgroundImage,
   backgroundColor,
+  button,
 }: TitleBannerProps) {
+  const label = button?.label || 'Read the safety standards';
+  const href = button?.href || 'https://www.coterie.com/safety-reports';
   const backgroundStyle = backgroundImage
     ? {
         backgroundImage: `url(${backgroundImage})`,
@@ -38,6 +50,19 @@ export default function TitleBanner({
           {subheader}
         </p>
       </div>
+      {button && (
+        <div className="w-full flex justify-center mt-10">
+          <Link href={href}>
+            <Button
+              onClick={() =>
+                sendGTMEvent({ event: 'buttonClicked', value: 'xyz' })
+              }
+            >
+              {label}
+            </Button>
+          </Link>
+        </div>
+      )}
     </section>
   );
 }

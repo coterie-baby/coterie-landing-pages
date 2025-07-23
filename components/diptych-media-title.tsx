@@ -41,43 +41,50 @@ export default function DiptychMediaTitle({
 
   return (
     <section style={{ backgroundColor }}>
-      <div className="max-w-7xl mx-auto">
+      <div className="">
         <div
-          className={`grid grid-cols-1 lg:grid-cols-2 items-center ${
-            imagePosition === 'right' ? 'lg:grid-flow-col-dense' : ''
+          className={`flex flex-col md:flex-row md:h-[900px] ${
+            imagePosition === 'right' ? 'lg:flex-row-reverse' : ''
           }`}
         >
           {/* Image */}
-          <div
-            className={`${imagePosition === 'right' ? 'lg:col-start-2' : ''}`}
-          >
-            <div className="relative aspect-square w-full overflow-hidden">
+          <div className="w-full lg:w-1/2">
+            {/* Mobile: Square with fill */}
+            <div className="relative aspect-square w-full lg:hidden">
               <Image
                 src={getImageUrl(imageUrl)}
                 alt={imageAlt}
                 fill
                 className="object-cover"
-                sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 600px"
+                sizes="100vw"
+              />
+            </div>
+            {/* Desktop: Full height */}
+            <div className="relative hidden lg:block w-full h-full">
+              <Image
+                src={getImageUrl(imageUrl)}
+                alt={imageAlt}
+                fill
+                className="object-cover"
+                sizes="50vw"
               />
             </div>
           </div>
 
           {/* Content */}
-          <div
-            className={`pt-8 px-4 ${
-              imagePosition === 'right' ? 'lg:col-start-1' : ''
-            }`}
-          >
-            <div className="space-y-10">
+          <div className="w-full lg:w-1/2 pt-8 px-4 md:p-15 md:h-full">
+            <div className="space-y-10 md:flex md:flex-col md:justify-between md:h-full">
               {/* Main Heading */}
               <h3>{mainHeading}</h3>
 
               {/* Two Column Content */}
-              <div className="grid grid-cols-1 md:grid-cols-2">
+              <div className="grid grid-cols-1 md:grid-cols-2 md:gap-6">
                 {/* Left Column */}
                 <div className="space-y-4 py-4 border-t border-[#E7E7E7]">
-                  <h5>{leftColumnTitle}</h5>
-                  <div className="text-sm text-[#525252] leading-relaxed">
+                  <p className="text-[22px] md:text-[17px] md:leading-[140%]">
+                    {leftColumnTitle}
+                  </p>
+                  <div className="text-xs text-[#525252] leading-relaxed md:text-sm">
                     {typeof leftColumnContent === 'string' ? (
                       <div
                         dangerouslySetInnerHTML={{ __html: leftColumnContent }}

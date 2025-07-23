@@ -29,6 +29,24 @@ Builder.registerComponent(
         name: 'backgroundColor',
         type: 'color',
       },
+      {
+        name: 'button',
+        type: 'object',
+        subFields: [
+          {
+            name: 'label',
+            type: 'string',
+            required: true,
+            defaultValue: 'Read the safety standards',
+          },
+          {
+            name: 'href',
+            type: 'string',
+            required: true,
+            defaultValue: 'https://www.coterie.com/safety-reports',
+          },
+        ],
+      },
     ],
   }
 );
@@ -232,6 +250,128 @@ Builder.registerComponent(
         type: 'string',
         enum: ['3-card', '2-card'],
         defaultValue: '3-card',
+      },
+      {
+        name: 'cards',
+        type: 'list',
+        subFields: [
+          {
+            name: 'product',
+            type: 'object',
+            subFields: [
+              {
+                name: 'id',
+                type: 'string',
+                required: true,
+              },
+              {
+                name: 'title',
+                type: 'string',
+                required: true,
+              },
+              {
+                name: 'price',
+                type: 'string',
+                required: true,
+              },
+              {
+                name: 'href',
+                type: 'string',
+                defaultValue: '#',
+              },
+              {
+                name: 'description',
+                type: 'string',
+              },
+            ],
+          },
+          {
+            name: 'title',
+            type: 'string',
+          },
+          {
+            name: 'description',
+            type: 'string',
+          },
+          {
+            name: 'category',
+            type: 'string',
+          },
+          {
+            name: 'badge',
+            type: 'string',
+          },
+          {
+            name: 'thumbnail',
+            type: 'object',
+            subFields: [
+              {
+                name: 'src',
+                type: 'file',
+                allowedFileTypes: ['jpeg', 'jpg', 'png', 'svg', 'webp'],
+                required: true,
+              },
+              {
+                name: 'altText',
+                type: 'string',
+                required: true,
+              },
+            ],
+          },
+        ],
+        defaultValue: [
+          {
+            product: {
+              id: '1',
+              title: 'The Diaper',
+              price: '$65',
+              href: '/products/diaper',
+            },
+            title: 'Ultra Protection',
+            description: 'Maximum absorption for all-day comfort',
+            category: 'Essentials',
+            badge: 'Best Seller',
+            thumbnail: {
+              src: 'https://cdn.builder.io/api/v1/image/assets%2Fpublic%2Fplaceholder',
+              altText: 'Product image',
+            },
+          },
+        ],
+      },
+      {
+        name: 'background',
+        type: 'object',
+        subFields: [
+          {
+            name: 'type',
+            type: 'string',
+            enum: ['color', 'image', 'video'],
+            defaultValue: 'color',
+          },
+          {
+            name: 'color',
+            type: 'color',
+            showIf: 'options.get("background.type") === "color"',
+            defaultValue: '#ffffff',
+          },
+          {
+            name: 'src',
+            type: 'file',
+            allowedFileTypes: ['jpeg', 'jpg', 'png', 'svg', 'webp', 'mp4', 'webm'],
+            showIf: 'options.get("background.type") === "image" || options.get("background.type") === "video"',
+          },
+          {
+            name: 'altText',
+            type: 'string',
+            showIf: 'options.get("background.type") === "image"',
+          },
+          {
+            name: 'poster',
+            type: 'file',
+            allowedFileTypes: ['jpeg', 'jpg', 'png', 'svg', 'webp'],
+            showIf: 'options.get("background.type") === "video"',
+          },
+        ],
       },
     ],
   }

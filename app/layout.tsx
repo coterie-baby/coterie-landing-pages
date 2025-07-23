@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 import Header from '@/components/global/header';
 import Footer from '@/components/global/footer';
+import { GoogleTagManager } from '@next/third-parties/google';
 
 export const metadata: Metadata = {
   title:
@@ -17,6 +18,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <GoogleTagManager gtmId="" />
       <body className={`antialiased`}>
         <Header />
         <main>{children}</main>
