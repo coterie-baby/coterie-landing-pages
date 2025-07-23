@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
-import { builder } from '@/lib/builder/init';
-import { RenderBuilderContent } from '../../components/builder';
+import { notFound } from 'next/navigation';
+import { client } from '@/lib/sanity/client';
+import { landingPageByPathQuery, allPagePathsQuery } from '@/lib/sanity/queries';
+import { ComponentRenderer } from '@/components/ComponentRenderer';
 
 interface PageProps {
   params: Promise<{
@@ -8,59 +10,75 @@ interface PageProps {
   }>;
 }
 
+// Generate static params for all pages at build time
+export async function generateStaticParams() {
+  try {
+    const pages = await client.fetch(allPagePathsQuery);
+    
+    return pages
+      .filter((page: { path: string }) => page.path && page.path !== '/') // Exclude homepage
+      .map((page: { path: string }) => ({
+        page: page.path.split('/').filter(Boolean), // Convert "/about/team" to ["about", "team"]
+      }));
+  } catch (error) {
+    console.error('Error generating static params:', error);
+    return [];
+  }
+}
+
 export async function generateMetadata({
   params,
 }: PageProps): Promise<Metadata> {
   const resolvedParams = await params;
-  const urlPath = '/' + (resolvedParams?.page?.join('/') || '');
+  const path = '/' + (resolvedParams?.page?.join('/') || '');
 
-  // Fetch Builder.io page content for metadata
-  const content = await builder
-    .get('page', {
-      userAttributes: {
-        urlPath: urlPath,
-      },
-      prerender: false,
-    })
-    .toPromise();
+  try {
+    const page = await client.fetch(landingPageByPathQuery, { path });
 
-  if (!content) {
+    if (!page) {
+      return {
+        title: 'Page Not Found',
+        description: 'The requested page could not be found.',
+      };
+    }
+
     return {
-      title: 'Page Not Found',
-      description: 'The requested page could not be found.',
+      title: page.seo?.title || page.title || 'Coterie',
+      description: page.seo?.description || 'Premium baby products designed for safety and comfort.',
+      openGraph: {
+        title: page.seo?.title || page.title || 'Coterie',
+        description: page.seo?.description || 'Premium baby products designed for safety and comfort.',
+      },
+    };
+  } catch (error) {
+    console.error('Error fetching page metadata:', error);
+    return {
+      title: 'Coterie',
+      description: 'Premium baby products designed for safety and comfort.',
     };
   }
-
-  return {
-    title: content.data?.title || content.data?.name || 'Coterie',
-    description:
-      content.data?.description ||
-      'Premium baby products designed for safety and comfort.',
-    openGraph: {
-      title: content.data?.title || content.data?.name || 'Coterie',
-      description:
-        content.data?.description ||
-        'Premium baby products designed for safety and comfort.',
-      images: content.data?.image ? [content.data.image] : [],
-    },
-  };
 }
 
 export default async function Page(props: PageProps) {
   const params = await props.params;
-  const model = 'page';
-  const content = await builder
-    .get('page', {
-      userAttributes: {
-        urlPath: '/' + (params?.page?.join('/') || ''),
-      },
-      prerender: false,
-    })
-    .toPromise();
+  const path = '/' + (params?.page?.join('/') || '');
 
-  return (
-    <>
-      <RenderBuilderContent content={content} model={model} />
-    </>
-  );
+  try {
+    const page = await client.fetch(landingPageByPathQuery, { path });
+
+    if (!page) {
+      notFound();
+    }
+
+    return (
+      <main>
+        {page.components?.map((component: unknown, index: number) => (
+          <ComponentRenderer key={component._key || index} component={component} />
+        ))}
+      </main>
+    );
+  } catch (error) {
+    console.error('Error fetching page:', error);
+    notFound();
+  }
 }

@@ -32,7 +32,7 @@ export default function DiptychMediaTitle({
   imagePosition = 'left',
   backgroundColor = '#ffffff',
 }: DiptychMediaTitleProps) {
-  // Handle Builder.io file object or string URL
+  // Handle Sanity file object or string URL
   const getImageUrl = (url: string | { url: string } | undefined): string => {
     if (!url) return '/placeholder.svg';
     if (typeof url === 'string') return url;
