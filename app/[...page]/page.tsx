@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import { client } from '@/lib/sanity/client';
 import { landingPageByPathQuery, allPagePathsQuery } from '@/lib/sanity/queries';
 import { ComponentRenderer } from '@/components/ComponentRenderer';
+import type { SanityComponent } from '@/types/sanity';
 
 interface PageProps {
   params: Promise<{
@@ -72,7 +73,7 @@ export default async function Page(props: PageProps) {
 
     return (
       <main>
-        {page.components?.map((component: unknown, index: number) => (
+        {page.components?.map((component: SanityComponent, index: number) => (
           <ComponentRenderer key={component._key || index} component={component} />
         ))}
       </main>

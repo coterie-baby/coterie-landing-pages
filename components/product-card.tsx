@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 
-interface ProductCard {
+export interface ProductCard {
   product: Product;
   title?: string;
   description?: string;

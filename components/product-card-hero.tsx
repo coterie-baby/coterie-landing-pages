@@ -1,4 +1,4 @@
-import { ProductCard } from './product-card';
+import { ProductCard as ProductCardComponent } from './product-card';
 
 type BackgroundType =
   | { type: 'color'; color: string }
@@ -89,7 +89,7 @@ export default function ProductCardHero({
 
         <div className={`flex flex-col gap-4 md:flex-row`}>
           {cards.map((card) => (
-            <ProductCard key={card.product.id} card={card} />
+            <ProductCardComponent key={card.product.id} card={card} />
           ))}
         </div>
       </div>

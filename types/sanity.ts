@@ -2,7 +2,7 @@
 export interface SanityComponent {
   _type: string;
   _key?: string;
-  [key: string]: unknown;
+  [key: string]: any;
 }
 
 export interface SanityProductCard {
