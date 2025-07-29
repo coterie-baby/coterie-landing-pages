@@ -1,38 +1,69 @@
 import TitleBanner from './title-banner';
+import ContentBanner from './content-banner';
 import ProductCardHero from './product-card-hero';
 import ComparisonTable from './comparison-table';
 import DiptychMediaTitle from './diptych-media-title';
 import SafetyStandards from './safety-standards';
 import { urlFor } from '@/lib/sanity/image';
-import type { SanityComponent, SanityProductCard } from '@/types/sanity';
+import type { 
+  SanityComponent, 
+  SanityProductCard, 
+  TitleBannerComponent,
+  ContentBannerComponent,
+  ProductCardHeroComponent,
+  ComparisonTableComponent,
+  DiptychMediaTitleComponent,
+  SafetyStandardsComponent
+} from '@/types/sanity';
 
 interface ComponentRendererProps {
   component: SanityComponent;
 }
 
 export function ComponentRenderer({ component }: ComponentRendererProps) {
-  const { _type, ...props } = component;
+  const { _type } = component;
 
   switch (_type) {
-    case 'titleBanner':
+    case 'titleBanner': {
+      const titleBannerProps = component as TitleBannerComponent;
       return (
         <TitleBanner
-          headline={props.headline}
-          subheader={props.subheader}
-          fullHeight={props.fullHeight}
+          headline={titleBannerProps.headline}
+          subheader={titleBannerProps.subheader}
+          fullHeight={titleBannerProps.fullHeight}
           backgroundImage={
-            props.backgroundImage
-              ? urlFor(props.backgroundImage).url()
+            titleBannerProps.backgroundImage
+              ? urlFor(titleBannerProps.backgroundImage).url()
               : undefined
           }
-          backgroundColor={props.backgroundColor?.hex}
-          button={props.button}
+          backgroundColor={titleBannerProps.backgroundColor?.hex}
+          button={titleBannerProps.button}
         />
       );
+    }
 
-    case 'productCardHero':
+    case 'contentBanner': {
+      const contentBannerProps = component as ContentBannerComponent;
+      return (
+        <ContentBanner
+          headline={contentBannerProps.headline}
+          subheader={contentBannerProps.subheader}
+          backgroundImage={
+            contentBannerProps.backgroundImage
+              ? urlFor(contentBannerProps.backgroundImage).url()
+              : undefined
+          }
+          overlay={contentBannerProps.overlay}
+          position={contentBannerProps.position}
+          button={contentBannerProps.button}
+        />
+      );
+    }
+
+    case 'productCardHero': {
+      const productCardProps = component as ProductCardHeroComponent;
       const cards =
-        props.cards?.map((card: SanityProductCard) => ({
+        productCardProps.cards?.map((card: SanityProductCard) => ({
           product: {
             id: card.product?._id || card.product?.id || '',
             title: card.product?.title || card.title || '',
@@ -58,64 +89,71 @@ export function ComponentRenderer({ component }: ComponentRendererProps) {
         | { type: 'image'; src: string; altText?: string }
         | { type: 'video'; src: string; poster?: string }
         | undefined;
-      if (props.background?.type === 'color') {
+      if (productCardProps.background?.type === 'color') {
         background = {
           type: 'color' as const,
-          color: props.background.color?.hex || '#ffffff',
+          color: productCardProps.background.color?.hex || '#ffffff',
         };
-      } else if (props.background?.type === 'image') {
+      } else if (productCardProps.background?.type === 'image') {
         background = {
           type: 'image' as const,
-          src: urlFor(props.background.image).url(),
-          altText: props.background.image?.alt || '',
+          src: urlFor(productCardProps.background.image!).url(),
+          altText: productCardProps.background.image?.alt || '',
         };
-      } else if (props.background?.type === 'video') {
+      } else if (productCardProps.background?.type === 'video') {
         background = {
           type: 'video' as const,
-          src: props.background.video?.asset?.url || '',
-          poster: props.background.poster
-            ? urlFor(props.background.poster).url()
+          src: productCardProps.background.video?.asset?.url || '',
+          poster: productCardProps.background.poster
+            ? urlFor(productCardProps.background.poster).url()
             : undefined,
         };
       }
 
       return (
         <ProductCardHero
-          headline={props.headline}
-          subheading={props.subheading}
-          variant={props.variant}
+          headline={productCardProps.headline}
+          subheading={productCardProps.subheading}
+          variant={productCardProps.variant}
           cards={cards}
           background={background}
         />
       );
+    }
 
-    case 'comparisonTable':
+    case 'comparisonTable': {
+      const comparisonProps = component as ComparisonTableComponent;
       return (
         <ComparisonTable
-          title={props.title}
-          columns={props.columns}
-          rows={props.rows}
-          footnotes={props.footnotes}
+          title={comparisonProps.title}
+          columns={comparisonProps.columns}
+          rows={comparisonProps.rows}
+          footnotes={comparisonProps.footnotes}
         />
       );
+    }
 
-    case 'diptychMediaTitle':
+    case 'diptychMediaTitle': {
+      const diptychProps = component as DiptychMediaTitleComponent;
       return (
         <DiptychMediaTitle
-          imageUrl={props.imageUrl}
-          imageAlt={props.imageUrl?.alt}
-          mainHeading={props.mainHeading}
-          leftColumnTitle={props.leftColumnTitle}
-          leftColumnContent={props.leftColumnContent}
-          rightColumnTitle={props.rightColumnTitle}
-          rightColumnContent={props.rightColumnContent}
-          imagePosition={props.imagePosition}
-          backgroundColor={props.backgroundColor?.hex}
+          imageUrl={diptychProps.imageUrl ? urlFor(diptychProps.imageUrl).url() : undefined}
+          imageAlt={diptychProps.imageUrl?.alt}
+          mainHeading={diptychProps.mainHeading}
+          leftColumnTitle={diptychProps.leftColumnTitle}
+          leftColumnContent={diptychProps.leftColumnContent}
+          rightColumnTitle={diptychProps.rightColumnTitle}
+          rightColumnContent={diptychProps.rightColumnContent}
+          imagePosition={diptychProps.imagePosition}
+          backgroundColor={diptychProps.backgroundColor?.hex}
         />
       );
+    }
 
-    case 'safetyStandards':
-      return <SafetyStandards button={props.ctaButton} />;
+    case 'safetyStandards': {
+      const safetyProps = component as SafetyStandardsComponent;
+      return <SafetyStandards button={safetyProps.ctaButton} />;
+    }
 
     default:
       console.warn(`Unknown component type: ${_type}`);

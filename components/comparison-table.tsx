@@ -15,9 +15,9 @@ export interface ComparisonRow {
 }
 
 export interface ComparisonTableProps {
-  title: string;
-  columns: ComparisonColumn[];
-  rows: ComparisonRow[];
+  title?: string;
+  columns?: ComparisonColumn[];
+  rows?: ComparisonRow[];
   footnotes?: (string | { footnote: string })[];
 }
 

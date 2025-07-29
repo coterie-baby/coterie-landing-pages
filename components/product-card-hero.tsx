@@ -6,9 +6,9 @@ type BackgroundType =
   | { type: 'video'; src: string; poster?: string };
 
 interface ProductCardHero {
-  headline: string;
+  headline?: string;
   subheading?: string;
-  variant: '3-card' | '2-card';
+  variant?: '3-card' | '2-card' | string;
   cards: ProductCard[];
   background?: BackgroundType;
 }

@@ -1,9 +1,12 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { client } from '@/lib/sanity/client';
-import { landingPageByPathQuery, allPagePathsQuery } from '@/lib/sanity/queries';
+import {
+  landingPageByPathQuery,
+  allPagePathsQuery,
+} from '@/lib/sanity/queries';
 import { ComponentRenderer } from '@/components/ComponentRenderer';
-import type { SanityComponent } from '@/types/sanity';
+import type { LandingPage, SanityComponent } from '@/types/sanity';
 
 interface PageProps {
   params: Promise<{
@@ -11,15 +14,14 @@ interface PageProps {
   }>;
 }
 
-// Generate static params for all pages at build time
 export async function generateStaticParams() {
   try {
     const pages = await client.fetch(allPagePathsQuery);
-    
+    console.log('Pages from Sanity:', pages);
     return pages
-      .filter((page: { path: string }) => page.path && page.path !== '/') // Exclude homepage
-      .map((page: { path: string }) => ({
-        page: page.path.split('/').filter(Boolean), // Convert "/about/team" to ["about", "team"]
+      .filter((page: { slug: { current: string } }) => page.slug?.current && page.slug.current !== 'home') // Exclude homepage
+      .map((page: { slug: { current: string } }) => ({
+        page: [page.slug.current], // Convert slug to array format for dynamic routes
       }));
   } catch (error) {
     console.error('Error generating static params:', error);
@@ -31,10 +33,12 @@ export async function generateMetadata({
   params,
 }: PageProps): Promise<Metadata> {
   const resolvedParams = await params;
-  const path = '/' + (resolvedParams?.page?.join('/') || '');
+  const slug = resolvedParams?.page?.[0] || '';
 
   try {
-    const page = await client.fetch(landingPageByPathQuery, { path });
+    const page: LandingPage = await client.fetch(landingPageByPathQuery, {
+      slug,
+    });
 
     if (!page) {
       return {
@@ -44,11 +48,15 @@ export async function generateMetadata({
     }
 
     return {
-      title: page.seo?.title || page.title || 'Coterie',
-      description: page.seo?.description || 'Premium baby products designed for safety and comfort.',
+      title: page.seo?.metaTitle || page.title || 'Coterie',
+      description:
+        page.seo?.metaDescription ||
+        'Premium baby products designed for safety and comfort.',
       openGraph: {
-        title: page.seo?.title || page.title || 'Coterie',
-        description: page.seo?.description || 'Premium baby products designed for safety and comfort.',
+        title: page.seo?.metaTitle || page.title || 'Coterie',
+        description:
+          page.seo?.metaDescription ||
+          'Premium baby products designed for safety and comfort.',
       },
     };
   } catch (error) {
@@ -62,10 +70,17 @@ export async function generateMetadata({
 
 export default async function Page(props: PageProps) {
   const params = await props.params;
-  const path = '/' + (params?.page?.join('/') || '');
+  const slug = params?.page?.[0] || '';
 
   try {
-    const page = await client.fetch(landingPageByPathQuery, { path });
+    const page: LandingPage = await client.fetch(
+      landingPageByPathQuery,
+      { slug },
+      {
+        cache: 'force-cache',
+        next: { tags: ['landing-pages'] },
+      }
+    );
 
     if (!page) {
       notFound();
@@ -74,7 +89,10 @@ export default async function Page(props: PageProps) {
     return (
       <main>
         {page.components?.map((component: SanityComponent, index: number) => (
-          <ComponentRenderer key={component._key || index} component={component} />
+          <ComponentRenderer
+            key={component._key || index}
+            component={component}
+          />
         ))}
       </main>
     );
