@@ -18,7 +18,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <GoogleTagManager gtmId="" />
+      <GoogleTagManager gtmId="GTM-N9NL6XQ" />
       <body className={`antialiased`}>
         <Header />
         <main>{children}</main>

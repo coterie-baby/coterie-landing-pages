@@ -1,7 +1,6 @@
 'use client';
 import Link from 'next/link';
 import { Button } from './ui/button';
-import { sendGTMEvent } from '@next/third-parties/google';
 
 interface TitleBannerProps {
   headline?: string;
@@ -32,8 +31,8 @@ export default function TitleBanner({
         backgroundPosition: 'center',
       }
     : backgroundColor
-    ? { backgroundColor }
-    : {};
+      ? { backgroundColor }
+      : {};
 
   return (
     <section
@@ -52,12 +51,8 @@ export default function TitleBanner({
       </div>
       {button && (
         <div className="w-full flex justify-center mt-10">
-          <Link href={href}>
-            <Button
-              onClick={() =>
-                sendGTMEvent({ event: 'buttonClicked', value: 'xyz' })
-              }
-            >
+          <Link href={href} target="_blank">
+            <Button data-cta-location="Title Banner" data-cta-text={label}>
               {label}
             </Button>
           </Link>
