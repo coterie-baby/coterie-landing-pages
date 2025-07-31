@@ -67,6 +67,27 @@ export const landingPageByPathQuery = `*[_type == "page" && slug.current == $slu
           url
         }
       }
+    },
+    // Listicle component fields
+    banner{
+      ...,
+      backgroundImage{
+        ...,
+        asset->{
+          _id,
+          url
+        }
+      }
+    },
+    listItems[]{
+      ...,
+      featuredImage{
+        ...,
+        asset->{
+          _id,
+          url
+        }
+      }
     }
   }
 }`;
@@ -140,6 +161,27 @@ export const homePageQuery = `*[_type == "page" && slug.current == "home"][0]{
     standards[]{
       ...,
       icon{
+        ...,
+        asset->{
+          _id,
+          url
+        }
+      }
+    },
+    // Listicle component fields
+    banner{
+      ...,
+      backgroundImage{
+        ...,
+        asset->{
+          _id,
+          url
+        }
+      }
+    },
+    listItems[]{
+      ...,
+      featuredImage{
         ...,
         asset->{
           _id,

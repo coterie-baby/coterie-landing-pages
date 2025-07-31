@@ -109,9 +109,27 @@ export interface ContentBannerComponent {
   headline?: string
   subheader?: string
   backgroundImage?: SanityImage
+  backgroundColor?: SanityColor
   overlay?: 10 | 20 | 30 | 40 | 50 | 60 | 70 | 80 | 90
   position?: 'top' | 'middle' | 'bottom'
   button?: SanityButton
+}
+
+export interface ListicleContentComponent {
+  _type: 'listicleContent'
+  _key: string
+  headline: string
+  description: string
+  featuredImage: SanityImage
+  button?: SanityButton
+  reverse?: boolean
+}
+
+export interface ListicleComponent {
+  _type: 'listicle'
+  _key: string
+  banner: ContentBannerComponent
+  listItems: ListicleContentComponent[]
 }
 
 export type SanityComponent =
@@ -121,6 +139,7 @@ export type SanityComponent =
   | ComparisonTableComponent
   | DiptychMediaTitleComponent
   | SafetyStandardsComponent
+  | ListicleComponent
 
 export interface LandingPage {
   _id: string

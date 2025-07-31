@@ -77,7 +77,7 @@ export default async function Page(props: PageProps) {
       landingPageByPathQuery,
       { slug },
       {
-        cache: 'force-cache',
+        cache: process.env.NODE_ENV === 'development' ? 'no-store' : 'force-cache',
         next: { tags: ['landing-pages'] },
       }
     );

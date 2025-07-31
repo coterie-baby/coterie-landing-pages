@@ -4,16 +4,19 @@ import ProductCardHero from './product-card-hero';
 import ComparisonTable from './comparison-table';
 import DiptychMediaTitle from './diptych-media-title';
 import SafetyStandards from './safety-standards';
+import Listicle from './listicle';
 import { urlFor } from '@/lib/sanity/image';
-import type { 
-  SanityComponent, 
-  SanityProductCard, 
+import type {
+  SanityComponent,
+  SanityProductCard,
   TitleBannerComponent,
   ContentBannerComponent,
   ProductCardHeroComponent,
   ComparisonTableComponent,
   DiptychMediaTitleComponent,
-  SafetyStandardsComponent
+  SafetyStandardsComponent,
+  ListicleComponent,
+  ListicleContentComponent,
 } from '@/types/sanity';
 
 interface ComponentRendererProps {
@@ -137,7 +140,11 @@ export function ComponentRenderer({ component }: ComponentRendererProps) {
       const diptychProps = component as DiptychMediaTitleComponent;
       return (
         <DiptychMediaTitle
-          imageUrl={diptychProps.imageUrl ? urlFor(diptychProps.imageUrl).url() : undefined}
+          imageUrl={
+            diptychProps.imageUrl
+              ? urlFor(diptychProps.imageUrl).url()
+              : undefined
+          }
           imageAlt={diptychProps.imageUrl?.alt}
           mainHeading={diptychProps.mainHeading}
           leftColumnTitle={diptychProps.leftColumnTitle}
@@ -153,6 +160,35 @@ export function ComponentRenderer({ component }: ComponentRendererProps) {
     case 'safetyStandards': {
       const safetyProps = component as SafetyStandardsComponent;
       return <SafetyStandards button={safetyProps.ctaButton} />;
+    }
+
+    case 'listicle': {
+      const listicleProps = component as ListicleComponent;
+      
+      // Transform the banner props
+      const bannerProps = {
+        headline: listicleProps.banner.headline,
+        subheader: listicleProps.banner.subheader,
+        backgroundImage: listicleProps.banner.backgroundImage
+          ? urlFor(listicleProps.banner.backgroundImage).url()
+          : undefined,
+        backgroundColor: listicleProps.banner.backgroundColor?.hex,
+        overlay: listicleProps.banner.overlay,
+        position: listicleProps.banner.position,
+        button: listicleProps.banner.button,
+      };
+      
+      // Transform the list items
+      const listItems = listicleProps.listItems.map((item: ListicleContentComponent, index: number) => ({
+        headline: item.headline,
+        description: item.description,
+        featuredImage: urlFor(item.featuredImage).url(),
+        button: item.button,
+        reverse: item.reverse,
+        index: index,
+      }));
+      
+      return <Listicle banner={bannerProps} listItems={listItems} />;
     }
 
     default:
