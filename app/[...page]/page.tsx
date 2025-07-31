@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { client } from '@/lib/sanity/client';
+import { draftMode } from 'next/headers';
 import {
   landingPageByPathQuery,
   allPagePathsQuery,
@@ -19,7 +20,10 @@ export async function generateStaticParams() {
     const pages = await client.fetch(allPagePathsQuery);
     console.log('Pages from Sanity:', pages);
     return pages
-      .filter((page: { slug: { current: string } }) => page.slug?.current && page.slug.current !== 'home') // Exclude homepage
+      .filter(
+        (page: { slug: { current: string } }) =>
+          page.slug?.current && page.slug.current !== 'home'
+      ) // Exclude homepage
       .map((page: { slug: { current: string } }) => ({
         page: [page.slug.current], // Convert slug to array format for dynamic routes
       }));
@@ -71,15 +75,19 @@ export async function generateMetadata({
 export default async function Page(props: PageProps) {
   const params = await props.params;
   const slug = params?.page?.[0] || '';
+  const { isEnabled } = await draftMode();
 
   try {
     const page: LandingPage = await client.fetch(
       landingPageByPathQuery,
       { slug },
-      {
-        cache: process.env.NODE_ENV === 'development' ? 'no-store' : 'force-cache',
-        next: { tags: ['landing-pages'] },
-      }
+      isEnabled
+        ? {
+            perspective: 'previewDrafts',
+            useCdn: false,
+            stega: true,
+          }
+        : undefined
     );
 
     if (!page) {

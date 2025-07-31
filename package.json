@@ -16,6 +16,8 @@
     "@radix-ui/react-tabs": "^1.1.12",
     "@sanity/client": "^7.8.0",
     "@sanity/image-url": "^1.1.0",
+    "@sanity/visual-editing": "^3.0.0",
+    "@vercel/stega": "^0.1.2",
     "autoprefixer": "^10.4.21",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
