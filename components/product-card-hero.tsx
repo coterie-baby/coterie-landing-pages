@@ -1,4 +1,4 @@
-import { ProductCard } from './product-card';
+import { ProductCard as ProductCardComponent } from './product-card';
 
 type BackgroundType =
   | { type: 'color'; color: string }
@@ -6,9 +6,9 @@ type BackgroundType =
   | { type: 'video'; src: string; poster?: string };
 
 interface ProductCardHero {
-  headline: string;
+  headline?: string;
   subheading?: string;
-  variant: '3-card' | '2-card';
+  variant?: '3-card' | '2-card' | string;
   cards: ProductCard[];
   background?: BackgroundType;
 }
@@ -60,7 +60,7 @@ export default function ProductCardHero({
 
   return (
     <section
-      className="relative py-10 px-4 md:px-10 md:py-25"
+      className="bg-white relative py-10 px-4 md:px-10 md:py-25"
       style={getBackgroundStyles()}
     >
       {background?.type === 'video' && (
@@ -75,13 +75,13 @@ export default function ProductCardHero({
         </video>
       )}
 
-      <div className="relative z-10 max-w-6xl mx-auto md:flex md:justify-between">
-        <div className="flex flex-col gap-2 text-center mb-12">
-          <h3 className="text-center text-[#141414] text-[38px] leading-[110%] font-normal tracking-[-0.76px]">
+      <div className="relative z-10 md:flex md:justify-between md:items-center">
+        <div className="flex flex-col gap-2 text-center mb-12 md:gap-4 md:text-left md:max-w-[497px]">
+          <h3 className="text-[#141414] text-[38px] leading-[110%] font-normal tracking-[-0.76px]">
             {headline}
           </h3>
           {subheading && (
-            <p className="text-sm text-[#525252] leading-[140%] max-w-2xl mx-auto">
+            <p className="text-sm text-[#525252] leading-[140%] max-w-2xl mx-auto md:text-[17px]">
               {subheading}
             </p>
           )}
@@ -89,7 +89,7 @@ export default function ProductCardHero({
 
         <div className={`flex flex-col gap-4 md:flex-row`}>
           {cards.map((card) => (
-            <ProductCard key={card.product.id} card={card} />
+            <ProductCardComponent key={card.product.id} card={card} />
           ))}
         </div>
       </div>

@@ -15,9 +15,9 @@ export interface ComparisonRow {
 }
 
 export interface ComparisonTableProps {
-  title: string;
-  columns: ComparisonColumn[];
-  rows: ComparisonRow[];
+  title?: string;
+  columns?: ComparisonColumn[];
+  rows?: ComparisonRow[];
   footnotes?: (string | { footnote: string })[];
 }
 
@@ -27,14 +27,14 @@ export default function ComparisonTable({
   rows,
   footnotes,
 }: ComparisonTableProps) {
-  // Transform Builder.io data format
+  // Transform data format
   const processedRows =
     rows?.map((row) => ({
       ...row,
       values:
         row.values?.map((v) => {
           if (typeof v === 'object' && v !== null && 'value' in v) {
-            // Handle Builder.io format: { value: "string" }
+            // Handle object format: { value: "string" }
             const val = v.value;
             if (val === 'true') return true;
             if (val === 'false') return false;

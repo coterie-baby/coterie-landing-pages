@@ -1,30 +1,193 @@
-import { groq } from 'next-sanity'
-
-export const PRODUCTS_QUERY = groq`*[_type == "product"]{
+export const landingPageByPathQuery = `*[_type == "page" && slug.current == $slug][0]{
   _id,
   title,
   slug,
-  price,
-  description,
-  category,
-  badge,
-  image
-}`
+  seo{
+    metaTitle,
+    metaDescription,
+    noIndex
+  },
+  components[]{
+    _type,
+    _key,
+    ...,
+    backgroundImage{
+      ...,
+      asset->{
+        _id,
+        url
+      }
+    },
+    background{
+      ...,
+      image{
+        ...,
+        asset->{
+          _id,
+          url
+        }
+      },
+      poster{
+        ...,
+        asset->{
+          _id,
+          url
+        }
+      }
+    },
+    cards[]{
+      ...,
+      thumbnail{
+        ...,
+        asset->{
+          _id,
+          url
+        }
+      },
+      product->{
+        _id,
+        title,
+        price,
+        slug
+      }
+    },
+    imageUrl{
+      ...,
+      asset->{
+        _id,
+        url
+      }
+    },
+    standards[]{
+      ...,
+      icon{
+        ...,
+        asset->{
+          _id,
+          url
+        }
+      }
+    },
+    // Listicle component fields
+    banner{
+      ...,
+      backgroundImage{
+        ...,
+        asset->{
+          _id,
+          url
+        }
+      }
+    },
+    listItems[]{
+      ...,
+      featuredImage{
+        ...,
+        asset->{
+          _id,
+          url
+        }
+      }
+    }
+  }
+}`;
 
-export const PRODUCT_QUERY = groq`*[_type == "product" && slug.current == $slug][0]{
+export const allPagePathsQuery = `*[_type == "page"]{
+  slug{
+    current
+  }
+}`;
+
+export const homePageQuery = `*[_type == "page" && slug.current == "home"][0]{
   _id,
   title,
   slug,
-  price,
-  description,
-  category,
-  badge,
-  image
-}`
-
-export const PAGE_QUERY = groq`*[_type == "page" && slug.current == $slug][0]{
-  _id,
-  title,
-  slug,
-  content
-}`
+  seo{
+    metaTitle,
+    metaDescription,
+    noIndex
+  },
+  components[]{
+    _type,
+    _key,
+    ...,
+    backgroundImage{
+      ...,
+      asset->{
+        _id,
+        url
+      }
+    },
+    background{
+      ...,
+      image{
+        ...,
+        asset->{
+          _id,
+          url
+        }
+      },
+      poster{
+        ...,
+        asset->{
+          _id,
+          url
+        }
+      }
+    },
+    cards[]{
+      ...,
+      thumbnail{
+        ...,
+        asset->{
+          _id,
+          url
+        }
+      },
+      product->{
+        _id,
+        title,
+        price,
+        slug
+      }
+    },
+    imageUrl{
+      ...,
+      asset->{
+        _id,
+        url
+      }
+    },
+    standards[]{
+      ...,
+      icon{
+        ...,
+        asset->{
+          _id,
+          url
+        }
+      }
+    },
+    // Listicle component fields
+    banner{
+      ...,
+      backgroundImage{
+        ...,
+        asset->{
+          _id,
+          url
+        }
+      }
+    },
+    listItems[]{
+      ...,
+      featuredImage{
+        ...,
+        asset->{
+          _id,
+          url
+        }
+      }
+    }
+  }
+}`;

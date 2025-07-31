@@ -1,6 +1,13 @@
 import type { Metadata } from 'next';
-import { builder } from '@/lib/builder/init';
-import { RenderBuilderContent } from '../../components/builder';
+import { notFound } from 'next/navigation';
+import { client } from '@/lib/sanity/client';
+import { draftMode } from 'next/headers';
+import {
+  landingPageByPathQuery,
+  allPagePathsQuery,
+} from '@/lib/sanity/queries';
+import { ComponentRenderer } from '@/components/ComponentRenderer';
+import type { LandingPage, SanityComponent } from '@/types/sanity';
 
 interface PageProps {
   params: Promise<{
@@ -8,59 +15,97 @@ interface PageProps {
   }>;
 }
 
+export async function generateStaticParams() {
+  try {
+    const pages = await client.fetch(allPagePathsQuery);
+    console.log('Pages from Sanity:', pages);
+    return pages
+      .filter(
+        (page: { slug: { current: string } }) =>
+          page.slug?.current && page.slug.current !== 'home'
+      ) // Exclude homepage
+      .map((page: { slug: { current: string } }) => ({
+        page: [page.slug.current], // Convert slug to array format for dynamic routes
+      }));
+  } catch (error) {
+    console.error('Error generating static params:', error);
+    return [];
+  }
+}
+
 export async function generateMetadata({
   params,
 }: PageProps): Promise<Metadata> {
   const resolvedParams = await params;
-  const urlPath = '/' + (resolvedParams?.page?.join('/') || '');
+  const slug = resolvedParams?.page?.[0] || '';
 
-  // Fetch Builder.io page content for metadata
-  const content = await builder
-    .get('page', {
-      userAttributes: {
-        urlPath: urlPath,
-      },
-      prerender: false,
-    })
-    .toPromise();
+  try {
+    const page: LandingPage = await client.fetch(landingPageByPathQuery, {
+      slug,
+    });
 
-  if (!content) {
+    if (!page) {
+      return {
+        title: 'Page Not Found',
+        description: 'The requested page could not be found.',
+      };
+    }
+
     return {
-      title: 'Page Not Found',
-      description: 'The requested page could not be found.',
+      title: page.seo?.metaTitle || page.title || 'Coterie',
+      description:
+        page.seo?.metaDescription ||
+        'Premium baby products designed for safety and comfort.',
+      openGraph: {
+        title: page.seo?.metaTitle || page.title || 'Coterie',
+        description:
+          page.seo?.metaDescription ||
+          'Premium baby products designed for safety and comfort.',
+      },
+    };
+  } catch (error) {
+    console.error('Error fetching page metadata:', error);
+    return {
+      title: 'Coterie',
+      description: 'Premium baby products designed for safety and comfort.',
     };
   }
-
-  return {
-    title: content.data?.title || content.data?.name || 'Coterie',
-    description:
-      content.data?.description ||
-      'Premium baby products designed for safety and comfort.',
-    openGraph: {
-      title: content.data?.title || content.data?.name || 'Coterie',
-      description:
-        content.data?.description ||
-        'Premium baby products designed for safety and comfort.',
-      images: content.data?.image ? [content.data.image] : [],
-    },
-  };
 }
 
 export default async function Page(props: PageProps) {
   const params = await props.params;
-  const model = 'page';
-  const content = await builder
-    .get('page', {
-      userAttributes: {
-        urlPath: '/' + (params?.page?.join('/') || ''),
-      },
-      prerender: false,
-    })
-    .toPromise();
+  const slug = params?.page?.[0] || '';
+  const { isEnabled } = await draftMode();
 
-  return (
-    <>
-      <RenderBuilderContent content={content} model={model} />
-    </>
-  );
+  try {
+    const page: LandingPage = await client.fetch(
+      landingPageByPathQuery,
+      { slug },
+      isEnabled
+        ? {
+            perspective: 'previewDrafts',
+            useCdn: false,
+            stega: true,
+          }
+        : undefined
+    );
+
+    if (!page) {
+      notFound();
+    }
+
+    return (
+      <main>
+        {page.components?.map((component: SanityComponent, index: number) => (
+          <ComponentRenderer
+            key={component._key || index}
+            component={component}
+          />
+        ))}
+      </main>
+    );
+  } catch (error) {
+    console.error('Error fetching page:', error);
+    notFound();
+  }
 }
