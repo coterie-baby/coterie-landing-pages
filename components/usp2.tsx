@@ -10,11 +10,12 @@ interface ProductCardProps {
 }
 
 interface USP2Props {
+  headline: string;
   cards?: number; // 2 or 3 cards
   productCards?: ProductCardProps[];
 }
 
-export default function USP2({ cards = 3, productCards }: USP2Props) {
+export default function USP2({ headline, cards = 3, productCards }: USP2Props) {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [activeCard, setActiveCard] = useState<number>(0);
 
@@ -61,7 +62,7 @@ export default function USP2({ cards = 3, productCards }: USP2Props) {
     <section className="py-15 px-2.5 md:py-20 md:px-10">
       <div className="flex flex-col gap-10">
         <h3 className="text-[44px] leading-[110%] tracking-[-0.44px] md:text-center md:text-[56px] md:leading-[111%] md:tracking-[-1.12px]">
-          Shop more diapering essentials
+          {headline}
         </h3>
         <div
           ref={scrollContainerRef}
@@ -69,6 +70,7 @@ export default function USP2({ cards = 3, productCards }: USP2Props) {
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
         >
           {Array.from({ length: cards }, (_, index) => {
+            console.log(productCards);
             const cardData = productCards?.[index] || {
               image:
                 'https://cdn.sanity.io/images/e4q6bkl9/production/5da7c8766e7d65c99fd249291e84f0faaef4adb8-1000x1000.png?w=960&h=960&q=100&fit=crop&auto=format',
@@ -98,7 +100,7 @@ export default function USP2({ cards = 3, productCards }: USP2Props) {
 function ProductCard({ image, headline, bodyCopy }: ProductCardProps) {
   return (
     <div className="flex flex-col gap-5">
-      <div className="aspect-[5/4] md:h-[310px] relative rounded-lg md:rounded-none overflow-hidden">
+      <div className="aspect-[5/4] md:h-[310px] relative rounded-lg overflow-hidden">
         <Image
           src={image}
           alt={headline}

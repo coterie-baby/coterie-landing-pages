@@ -81,7 +81,7 @@ export default function ProductCardHero({
             {headline}
           </h3>
           {subheading && (
-            <p className="text-sm text-[#525252] leading-[140%] max-w-2xl mx-auto md:text-[17px]">
+            <p className="text-sm text-[#525252] leading-[140%] max-w-2xl mx-auto md:text-[17px] md:mx-0">
               {subheading}
             </p>
           )}
