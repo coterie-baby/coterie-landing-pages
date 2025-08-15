@@ -48,22 +48,13 @@ export default function ComparisonTable({
     footnotes?.map((f) =>
       typeof f === 'object' && f !== null && 'footnote' in f ? f.footnote : f
     ) || [];
-  const renderValue = (value: string | boolean, unit?: string) => {
-    if (typeof value === 'boolean') {
-      return (
-        <div className="flex justify-center">
-          <div
-            className={`w-3 h-3 rounded-full ${
-              value ? 'bg-[#0000C9]' : 'border border-gray-400'
-            }`}
-          />
-        </div>
-      );
-    }
+  const renderValue = (value: string | boolean, unit?: string, isHighlighted?: boolean) => {
+    const displayValue = typeof value === 'boolean' ? (value ? 'Yes' : 'No') : value;
+    
     return (
       <div className="text-center">
-        <span className="text-sm">{value}</span>
-        {unit && <span className="text-xs text-gray-600 ml-1">{unit}</span>}
+        <span className={`text-sm ${isHighlighted ? 'text-[#0000C9]' : ''}`}>{displayValue}</span>
+        {unit && <span className={`text-xs ml-1 ${isHighlighted ? 'text-[#0000C9]' : 'text-gray-600'}`}>{unit}</span>}
       </div>
     );
   };
@@ -95,7 +86,7 @@ export default function ComparisonTable({
                     <th
                       key={index}
                       className={`p-4 ${columnWidth} ${
-                        column.highlighted ? 'bg-[#D1E3FB]' : ''
+                        index === 0 ? 'bg-[#D1E3FB]' : ''
                       } ${
                         index < columns.length - 1
                           ? 'border-r border-[#E0E0E0]'
@@ -105,7 +96,7 @@ export default function ComparisonTable({
                       <div className="text-center">
                         <div
                           className={`text-sm ${
-                            column.highlighted ? 'text-[#0000C9]' : ''
+                            index === 0 ? 'text-[#0000C9]' : ''
                           }`}
                         >
                           {column.name}
@@ -145,18 +136,18 @@ export default function ComparisonTable({
                         </div>
                       )}
                     </td>
-                    {columns?.map((column, colIndex) => (
+                    {columns?.map((_, colIndex) => (
                       <td
                         key={colIndex}
                         className={`p-4 ${columnWidth} ${
-                          column.highlighted ? 'bg-[#D1E3FB]' : ''
+                          colIndex === 0 ? 'bg-[#D1E3FB]' : ''
                         } ${
                           colIndex < columns.length - 1
                             ? 'border-r border-[#E0E0E0]'
                             : ''
                         } md:h-[100px]`}
                       >
-                        {renderValue(row.values?.[colIndex], row.unit)}
+                        {renderValue(row.values?.[colIndex], row.unit, colIndex === 0)}
                       </td>
                     ))}
                   </tr>

@@ -283,21 +283,23 @@ export default function Reviews({
 
   return (
     <div className="px-4 py-10 md:px-10 md:pt-20 md:pb-16">
-      <div className="flex flex-col md:flex-row md:gap-20">
+      <div className="flex flex-col md:flex-row md:justify-between">
         <div className="flex flex-col gap-6 mb-10 md:items-start">
-          <h3 className="text-2xl font-normal mb-4">What do parents think?</h3>
-          <div className="flex flex-col gap-2">
+          <h3 className="text-2xl font-normal mb-4 md:w-[225px] md:text-[42px] md:tracking-[-0.84px]">
+            What do parents think?
+          </h3>
+          <div className="flex flex-col gap-2 md:flex-row md:items-center">
             <div className="flex justify-center">
               <StarRating rating={Math.floor(displayAverageRating)} />
             </div>
-            <p className="text-sm text-[#272727B2]">
+            <p className="text-sm text-[#272727B2] md:text-[10px]">
               {displayAverageRating.toFixed(1)}/5 based on{' '}
               {displayTotalReviews.toLocaleString()} reviews
             </p>
           </div>
         </div>
 
-        <div className="w-full">
+        <div className="w-full md:w-1/2">
           <div className="flex gap-4 mb-6">
             <FilterDropdown
               label="Rating"
