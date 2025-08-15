@@ -6,6 +6,7 @@ import { GoogleTagManager } from '@next/third-parties/google';
 import { draftMode } from 'next/headers';
 import { VisualEditing } from 'next-sanity';
 import { DisableDraftMode } from '@/components/disable-draft-mode';
+import { VercelToolbar } from '@vercel/toolbar/next';
 
 export const metadata: Metadata = {
   title:
@@ -19,6 +20,8 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const shouldInjectToolbar = process.env.NODE_ENV === 'development';
+  
   return (
     <html lang="en">
       <GoogleTagManager gtmId="GTM-N9NL6XQ" />
@@ -32,6 +35,7 @@ export default async function RootLayout({
             <DisableDraftMode />
           </>
         )}
+        {shouldInjectToolbar && <VercelToolbar />}
       </body>
     </html>
   );
