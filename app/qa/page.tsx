@@ -9,10 +9,10 @@ import Listicle from '@/components/listicle';
 import ProductCardHero from '@/components/product-card-hero';
 import ProductCrossSell from '@/components/product-cross-sell';
 import SafetyStandards from '@/components/safety-standards';
-import ThreeColumnTable from '@/components/three-column-table';
+// import ThreeColumnTable from '@/components/three-column-table';
 import TitleBanner from '@/components/title-banner';
 import USP2 from '@/components/usp2';
-import Reviews from '@/components/reviews';
+// import Reviews from '@/components/reviews';
 
 export default function QAPage() {
   // Sample data for components
@@ -202,27 +202,27 @@ export default function QAPage() {
     ],
   };
 
-  const reviewsData = {
-    reviews: [
-      {
-        id: 1,
-        score: 5,
-        votes_up: 10,
-        votes_down: 1,
-        content: 'These diapers are amazing! No leaks and so comfortable.',
-        title: 'Best diapers ever',
-        created_at: '2024-01-15',
-        verified_buyer: true,
-        custom_fields: {
-          size: { title: 'Size', value: 'Medium' },
-        },
-        user: { display_name: 'Sarah M.' },
-      },
-    ],
-    totalReviews: 1234,
-    averageRating: 4.8,
-    productId: '4471557914690',
-  };
+  // const reviewsData = {
+  //   reviews: [
+  //     {
+  //       id: 1,
+  //       score: 5,
+  //       votes_up: 10,
+  //       votes_down: 1,
+  //       content: 'These diapers are amazing! No leaks and so comfortable.',
+  //       title: 'Best diapers ever',
+  //       created_at: '2024-01-15',
+  //       verified_buyer: true,
+  //       custom_fields: {
+  //         size: { title: 'Size', value: 'Medium' },
+  //       },
+  //       user: { display_name: 'Sarah M.' },
+  //     },
+  //   ],
+  //   totalReviews: 1234,
+  //   averageRating: 4.8,
+  //   productId: '4471557914690',
+  // };
 
   return (
     <div className="min-h-screen bg-white">
@@ -287,10 +287,10 @@ export default function QAPage() {
           </section>
 
           {/* Three Column Table */}
-          <section className="border-b pb-16">
+          {/* <section className="border-b pb-16">
             <h2 className="text-2xl font-semibold mb-4">Three Column Table</h2>
             <ThreeColumnTable />
-          </section>
+          </section> */}
 
           {/* Title Banner */}
           <section className="border-b pb-16">
@@ -313,10 +313,10 @@ export default function QAPage() {
           </section>
 
           {/* Reviews */}
-          <section className="pb-16">
+          {/* <section className="pb-16">
             <h2 className="text-2xl font-semibold mb-4">Reviews</h2>
             <Reviews {...reviewsData} />
-          </section>
+          </section> */}
         </div>
       </div>
     </div>
