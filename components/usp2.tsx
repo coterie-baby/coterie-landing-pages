@@ -6,7 +6,7 @@ import Image from 'next/image';
 interface ProductCardProps {
   image: string;
   headline: string;
-  bodyCopy: string;
+  bodyCopy?: string;
 }
 
 interface USP2Props {
@@ -113,7 +113,7 @@ function ProductCard({ image, headline, bodyCopy }: ProductCardProps) {
           {headline}
         </p>
         <p className="leading-[140%] text-[#525252] md:tracking-[0.28px]">
-          {bodyCopy} 
+          {bodyCopy || ''} 
         </p>
       </div>
     </div>
