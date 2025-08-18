@@ -7,6 +7,7 @@ import {
   allPagePathsQuery,
 } from '@/lib/sanity/queries';
 import { ComponentRenderer } from '@/components/ComponentRenderer';
+import { getComponentsForAudience, getAudienceDataFromHeaders } from '@/lib/audience-targeting';
 import type { LandingPage, SanityComponent } from '@/types/sanity';
 
 interface PageProps {
@@ -18,7 +19,6 @@ interface PageProps {
 export async function generateStaticParams() {
   try {
     const pages = await client.fetch(allPagePathsQuery);
-    console.log('Pages from Sanity:', pages);
     return pages
       .filter(
         (page: { slug: { current: string } }) =>
@@ -94,9 +94,19 @@ export default async function Page(props: PageProps) {
       notFound();
     }
 
+    // Get audience targeting data from middleware headers
+    const { isTargetingEnabled, matchingVariant } = await getAudienceDataFromHeaders();
+
+    // Get the appropriate components based on audience targeting
+    const components = getComponentsForAudience(
+      page.audienceTargeting || null,
+      page.components || [],
+      matchingVariant
+    );
+
     return (
       <main>
-        {page.components?.map((component: SanityComponent, index: number) => (
+        {components.map((component: SanityComponent, index: number) => (
           <ComponentRenderer
             key={component._key || index}
             component={component}

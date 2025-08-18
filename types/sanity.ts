@@ -166,6 +166,25 @@ export type SanityComponent =
   | SafetyStandardsComponent
   | ListicleComponent;
 
+export interface TargetingRule {
+  parameterType: 'query' | 'utm_source' | 'utm_medium' | 'utm_campaign' | 'utm_term' | 'utm_content';
+  parameterName?: string;
+  value: string;
+  matchType: 'exact' | 'contains' | 'startsWith';
+}
+
+export interface AudienceVariant {
+  name: string;
+  description?: string;
+  targetingRules: TargetingRule[];
+  components: SanityComponent[];
+}
+
+export interface AudienceTargeting {
+  enabled: boolean;
+  variants: AudienceVariant[];
+}
+
 export interface LandingPage {
   _id: string;
   _type: 'page';
@@ -178,5 +197,6 @@ export interface LandingPage {
     metaDescription?: string;
     noIndex?: boolean;
   };
+  audienceTargeting?: AudienceTargeting;
   components?: SanityComponent[];
 }
