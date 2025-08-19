@@ -57,12 +57,23 @@ function matchesRule(paramValue: string | null, rule: TargetingRule): boolean {
 }
 
 function evaluateTargetingRules(url: URL, rules: TargetingRule[]): boolean {
-  if (!rules || rules.length === 0) return false;
+  if (!rules || rules.length === 0) {
+    console.log(`[Middleware] No rules to evaluate`);
+    return false;
+  }
 
-  return rules.every(rule => {
+  console.log(`[Middleware] Evaluating ${rules.length} rules against URL: ${url.href}`);
+  
+  const results = rules.map(rule => {
     const paramValue = getParameterValue(url, rule);
-    return matchesRule(paramValue, rule);
+    const matches = matchesRule(paramValue, rule);
+    console.log(`[Middleware] Rule: ${rule.parameterType}${rule.parameterName ? ` (${rule.parameterName})` : ''} = "${paramValue}" ${rule.matchType} "${rule.value}" -> ${matches}`);
+    return matches;
   });
+
+  const allMatch = results.every(result => result);
+  console.log(`[Middleware] All rules match: ${allMatch}`);
+  return allMatch;
 }
 
 function findMatchingVariant(url: URL, variants: AudienceVariant[]): string | null {
@@ -134,13 +145,20 @@ export async function middleware(request: NextRequest) {
     slug = 'home';
   }
 
+  console.log(`[Middleware] Processing: ${url.pathname} with params: ${url.search}`);
+  console.log(`[Middleware] Extracted slug: ${slug}`);
+
   try {
     // Get audience targeting data for this page
     const pageData = await getPageAudienceData(slug);
+    console.log(`[Middleware] Page data:`, pageData);
     
     if (!pageData?.audienceTargeting?.enabled) {
+      console.log(`[Middleware] Audience targeting not enabled or no page data`);
       return NextResponse.next();
     }
+
+    console.log(`[Middleware] Audience targeting enabled, checking variants:`, pageData.audienceTargeting.variants);
 
     // Find matching variant
     const matchingVariant = findMatchingVariant(
@@ -148,8 +166,11 @@ export async function middleware(request: NextRequest) {
       pageData.audienceTargeting.variants
     );
 
+    console.log(`[Middleware] Matching variant:`, matchingVariant);
+
     if (matchingVariant) {
       // Add the matching variant to headers so the page can access it
+      console.log(`[Middleware] Setting headers for variant: ${matchingVariant}`);
       const response = NextResponse.next();
       response.headers.set('x-audience-variant', matchingVariant);
       response.headers.set('x-audience-targeting-enabled', 'true');
@@ -157,6 +178,7 @@ export async function middleware(request: NextRequest) {
     }
 
     // No variant matched, proceed normally
+    console.log(`[Middleware] No variant matched, using default`);
     const response = NextResponse.next();
     response.headers.set('x-audience-targeting-enabled', 'false');
     return response;
