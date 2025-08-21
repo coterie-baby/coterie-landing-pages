@@ -32,7 +32,7 @@ export default function SafetyStandards({ button }: SafetyStandardsProps) {
   const label = button?.label || 'Read the safety standards';
   const href = button?.href || 'https://www.coterie.com/safety-reports';
   return (
-    <div className="px-4 py-15 md:px-10">
+    <div className="bg-white px-4 py-15 md:px-10">
       <div className="md:flex gap-[140px]">
         <h4 className="hidden md:block md:max-w-[337px]">
           Made better in every way

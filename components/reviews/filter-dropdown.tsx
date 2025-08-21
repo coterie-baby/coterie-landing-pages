@@ -14,7 +14,7 @@ export function FilterDropdown({
       <select
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="appearance-none bg-white border border-gray-300 rounded-lg px-3 py-3 pr-8 text-sm w-full focus:outline-none focus:border-gray-500"
+        className="appearance-none bg-white border border-gray-300 rounded-lg px-3 py-3 pr-8 text-sm w-full focus:outline-none focus:border-gray-500 text-[#272727B2]"
       >
         <option value="">{label}</option>
         {options.map((option) => (
@@ -25,7 +25,7 @@ export function FilterDropdown({
       </select>
       <div className="absolute right-2 top-1/2 transform -translate-y-1/2 pointer-events-none">
         <svg
-          className="w-4 h-4"
+          className="w-4 h-4 text-[#272727B2]"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"

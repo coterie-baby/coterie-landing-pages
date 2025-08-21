@@ -84,7 +84,7 @@ export default function ThreeColumnTable() {
           className={`grid grid-cols-3 gap-4 pb-4 ${
             isMobile
               ? 'bg-[#ffffff] border-b'
-              : 'bg-[#e0e0e0] border-b border-[#d9d9d9]'
+              : 'bg-[#ffffff] border-b border-[#d9d9d9]'
           } border-[#e0e0e0]`}
         >
           {/* Empty space for label column */}
@@ -119,7 +119,7 @@ export default function ThreeColumnTable() {
             {/* Empty space for label column */}
             <div></div>
             {/* Button for column 2 */}
-            <div className="flex justify-center">
+            <div className="flex">
               <button className="px-4 py-3 bg-[#0000c9] text-white text-sm font-medium rounded-full hover:bg-[#0000a0] transition-colors">
                 {buttonText}
               </button>
@@ -178,36 +178,42 @@ export default function ThreeColumnTable() {
         </div>
 
         {/* Desktop Layout */}
-        <div className="hidden lg:block">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
-            {/* Left Column - Heading and Tabs */}
-            <div className="space-y-6">
-              <h1 className="text-5xl lg:text-6xl font-bold text-[#141414] leading-tight">
-                Lorem ipsum headline
-              </h1>
+        <div className="hidden md:block">
+          <div className="flex gap-12 items-start">
+            {/* Left Column - Heading */}
+            <div className="w-1/3 space-y-6">
+              <h3 className="">Lorem ipsum headline</h3>
+              <div className="space-y-3">
+                <div className="text-sm font-medium text-[#0000c9]">Label</div>
+                <div className="text-sm font-medium text-[#0000c9]">Label</div>
+              </div>
+            </div>
+
+            {/* Right Column - Table */}
+            <div className="w-2/3">
               <Tabs defaultValue="tab1" className="w-full">
-                <TabsList className="grid w-full grid-cols-2 bg-transparent gap-3 p-0 h-auto">
+                <TabsList className="grid w-full grid-cols-2 bg-transparent gap-3 p-0 h-auto mb-6">
                   <TabsTrigger
                     value="tab1"
-                    className="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium bg-[#d1e3fb] text-[#0000c9] data-[state=active]:bg-[#0000c9] data-[state=active]:text-white"
+                    className="inline-flex items-center px-6 py-3 rounded-full text-sm font-medium bg-[#d1e3fb] text-[#0000c9] data-[state=active]:bg-[#0000c9] data-[state=active]:text-white"
                   >
                     {tabsData.tab1.title}
                   </TabsTrigger>
                   <TabsTrigger
                     value="tab2"
-                    className="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium bg-[#d1e3fb] text-[#0000c9] data-[state=active]:bg-[#0000c9] data-[state=active]:text-white"
+                    className="inline-flex items-center px-6 py-3 rounded-full text-sm font-medium bg-[#d1e3fb] text-[#0000c9] data-[state=active]:bg-[#0000c9] data-[state=active]:text-white"
                   >
                     {tabsData.tab2.title}
                   </TabsTrigger>
                 </TabsList>
-                <TabsContent value="tab1" className="mt-6">
+                <TabsContent value="tab1">
                   {renderTable(
                     tabsData.tab1.data,
                     tabsData.tab1.buttonText,
                     false
                   )}
                 </TabsContent>
-                <TabsContent value="tab2" className="mt-6">
+                <TabsContent value="tab2">
                   {renderTable(
                     tabsData.tab2.data,
                     tabsData.tab2.buttonText,
@@ -216,9 +222,6 @@ export default function ThreeColumnTable() {
                 </TabsContent>
               </Tabs>
             </div>
-
-            {/* Right Column - Empty for desktop since table moved to tabs */}
-            <div></div>
           </div>
         </div>
       </div>

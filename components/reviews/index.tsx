@@ -77,9 +77,9 @@ function Pagination({
   if (totalPages <= 1) return null;
 
   return (
-    <div className="flex items-center justify-center gap-2 mt-6">
+    <div className="flex items-center justify-center gap-2 md:gap-[10px] mt-6">
       <button
-        className="p-1 disabled:opacity-50"
+        className="p-1 disabled:opacity-50 enabled:cursor-pointer"
         disabled={currentPage === 1}
         onClick={() => onPageChange(currentPage - 1)}
       >
@@ -101,10 +101,10 @@ function Pagination({
       {getPageNumbers().map((page) => (
         <button
           key={page}
-          className={`px-3 py-1 rounded text-sm ${
+          className={`px-3 md:px-1 py-1 text-sm md:text-[12px] ${
             page === currentPage
-              ? 'bg-black text-white'
-              : 'text-gray-600 hover:bg-gray-100'
+              ? 'text-[#141414] font-medium'
+              : 'text-[#272727B2] hover:text-[#141414]'
           }`}
           onClick={() => onPageChange(page)}
         >
@@ -113,11 +113,11 @@ function Pagination({
       ))}
 
       {totalPages > 5 && currentPage < totalPages - 2 && (
-        <span className="text-gray-400 px-2">...</span>
+        <span className="text-[#272727B2] px-2 text-sm md:text-[12px]">...</span>
       )}
 
       <button
-        className="p-1 disabled:opacity-50"
+        className="p-1 disabled:opacity-50 enabled:cursor-pointer"
         disabled={currentPage === totalPages}
         onClick={() => onPageChange(currentPage + 1)}
       >
@@ -283,21 +283,23 @@ export default function Reviews({
 
   return (
     <div className="px-4 py-10 md:px-10 md:pt-20 md:pb-16">
-      <div className="flex flex-col md:flex-row md:gap-20">
+      <div className="flex flex-col md:flex-row md:justify-between">
         <div className="flex flex-col gap-6 mb-10 md:items-start">
-          <h3 className="text-2xl font-normal mb-4">What do parents think?</h3>
-          <div className="flex flex-col gap-2">
+          <h3 className="text-2xl font-normal mb-4 md:w-[225px] md:text-[42px] md:tracking-[-0.84px]">
+            What do parents think?
+          </h3>
+          <div className="flex flex-col gap-2 md:flex-row md:items-center">
             <div className="flex justify-center">
               <StarRating rating={Math.floor(displayAverageRating)} />
             </div>
-            <p className="text-sm text-[#272727B2]">
+            <p className="text-sm text-[#272727B2] md:text-[10px]">
               {displayAverageRating.toFixed(1)}/5 based on{' '}
               {displayTotalReviews.toLocaleString()} reviews
             </p>
           </div>
         </div>
 
-        <div className="w-full">
+        <div className="w-full md:w-1/2">
           <div className="flex gap-4 mb-6">
             <FilterDropdown
               label="Rating"

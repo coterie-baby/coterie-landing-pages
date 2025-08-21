@@ -3,6 +3,7 @@ import ContentBanner from './content-banner';
 import ProductCardHero from './product-card-hero';
 import ComparisonTable from './comparison-table';
 import DiptychMediaTitle from './diptych-media-title';
+import USP2 from './usp2';
 import SafetyStandards from './safety-standards';
 import Listicle from './listicle';
 import { urlFor } from '@/lib/sanity/image';
@@ -14,6 +15,7 @@ import type {
   ProductCardHeroComponent,
   ComparisonTableComponent,
   DiptychMediaTitleComponent,
+  USP2Component,
   SafetyStandardsComponent,
   ListicleComponent,
   ListicleContentComponent,
@@ -153,6 +155,28 @@ export function ComponentRenderer({ component }: ComponentRendererProps) {
           rightColumnContent={diptychProps.rightColumnContent}
           imagePosition={diptychProps.imagePosition}
           backgroundColor={diptychProps.backgroundColor?.hex}
+        />
+      );
+    }
+
+    case 'usp2': {
+      const usp2Props = component as USP2Component;
+      console.log('USP2 Sanity data:', usp2Props);
+      const productCards = usp2Props.productCards?.map((card) => {
+        console.log('Processing card:', card);
+        return {
+          image: card.featuredImage ? urlFor(card.featuredImage).url() : 'https://cdn.sanity.io/images/e4q6bkl9/production/5da7c8766e7d65c99fd249291e84f0faaef4adb8-1000x1000.png?w=960&h=960&q=100&fit=crop&auto=format',
+          headline: card.headline,
+          bodyCopy: card.bodyCopy,
+        };
+      });
+      console.log('Transformed productCards:', productCards);
+      
+      return (
+        <USP2
+          headline={usp2Props.headline || ''}
+          cards={usp2Props.cards || productCards?.length || 3}
+          productCards={productCards}
         />
       );
     }

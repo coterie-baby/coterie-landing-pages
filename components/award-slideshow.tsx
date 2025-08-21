@@ -109,9 +109,11 @@ const AwardSlideshow: React.FC<AwardSlideshowProps> = ({
               <Image
                 src={icon}
                 alt={`Award ${index + 1}`}
-                width={32}
-                height={32}
-                className="w-12 h-12 md:w-16 md:h-16 opacity-75"
+                width={64}
+                height={64}
+                className={`w-12 h-12 md:w-16 md:h-16 transition-opacity duration-300 ${
+                  index === currentSlide ? 'opacity-100' : 'opacity-75'
+                }`}
               />
             </div>
           ))}

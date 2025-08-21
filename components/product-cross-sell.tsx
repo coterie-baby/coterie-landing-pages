@@ -130,7 +130,7 @@ function ProductListingCard({
           src={product?.imageUrl || '/placeholder.png'}
           alt={product?.title || 'Product'}
           fill
-          className="object-cover rounded-t-lg"
+          className="object-cover rounded-t-[8px]"
         />
         <button
           onClick={handleAddToCart}
