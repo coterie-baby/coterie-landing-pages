@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import Footer from '@/components/global/footer';
 import { GoogleTagManager } from '@next/third-parties/google';
@@ -7,6 +7,11 @@ import { VisualEditing } from 'next-sanity';
 import { DisableDraftMode } from '@/components/disable-draft-mode';
 import { VercelToolbar } from '@vercel/toolbar/next';
 import AnnouncementBar from '@/components/announcement-bar';
+import Header from '@/components/global/header';
+
+export const viewport: Viewport = {
+  themeColor: 'white',
+};
 
 export const metadata: Metadata = {
   title:
@@ -27,7 +32,7 @@ export default async function RootLayout({
       <GoogleTagManager gtmId="GTM-N9NL6XQ" />
       <body className={`antialiased bg-white`}>
         <AnnouncementBar />
-        {/* <Header /> */}
+        <Header />
         <main className="bg-white min-h-screen">{children}</main>
         <Footer />
         {(await draftMode()).isEnabled && (

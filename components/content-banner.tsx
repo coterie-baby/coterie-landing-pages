@@ -9,6 +9,7 @@ export interface ContentBannerProps {
   backgroundColor?: string;
   overlay?: 10 | 20 | 30 | 40 | 50 | 60 | 70 | 80 | 90;
   position?: 'top' | 'middle' | 'bottom';
+  textColor?: string;
   button?: {
     label: string;
     href: string;
@@ -22,6 +23,7 @@ export default function ContentBanner({
   backgroundColor,
   overlay,
   position = 'middle',
+  textColor = 'white',
   button,
 }: ContentBannerProps) {
   const label = button?.label || 'Read the safety standards';
@@ -51,7 +53,7 @@ export default function ContentBanner({
     <section className="relative h-[56vh]">
       {/* Background layer with image/color */}
       <div className="absolute inset-0" style={backgroundStyle} />
-      
+
       {/* Overlay layer */}
       {overlay && (
         <div
@@ -59,10 +61,15 @@ export default function ContentBanner({
           style={{ opacity: overlay / 100 }}
         />
       )}
-      
+
       {/* Content layer */}
-      <div className={`relative z-10 h-full flex flex-col ${getJustifyClass()} md:justify-center px-4 md:px-20`}>
-        <div className="flex flex-col gap-4 text-center text-white max-w-[846px] md:mx-auto">
+      <div
+        className={`relative z-10 h-full flex flex-col ${getJustifyClass()} md:justify-center px-4 md:px-20`}
+      >
+        <div
+          className="flex flex-col gap-4 text-center max-w-[846px] md:mx-auto"
+          style={{ color: textColor }}
+        >
           <h3 className="md:text-[72px]! md:leading-[100%]! md:tracking-[-2.24px]!">
             {headline}
           </h3>
