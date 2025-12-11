@@ -3,11 +3,11 @@ interface AnnouncementBarProps {
 }
 
 export default function AnnouncementBar({
-  announcement = 'Default announcement text',
+  announcement = '10% off every Auto Renew order. Free shipping when you bundle.',
 }: AnnouncementBarProps) {
   return (
-    <div className="p-3 bg-[#0000C9] text-white text-center">
-      <p className="font-medium text-[15px]">{announcement}</p>
+    <div className="px-3 h-8 flex items-center justify-center bg-[#0000C9] text-white text-center">
+      <p className="mono text-[11px] md:text-xs">{announcement}</p>
     </div>
   );
 }

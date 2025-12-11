@@ -10,7 +10,7 @@ import AnnouncementBar from '@/components/announcement-bar';
 import Header from '@/components/global/header';
 
 export const viewport: Viewport = {
-  themeColor: 'white',
+  themeColor: '#FFFFFF',
 };
 
 export const metadata: Metadata = {
