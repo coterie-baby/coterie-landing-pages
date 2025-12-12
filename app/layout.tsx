@@ -1,12 +1,17 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import './globals.css';
-import Header from '@/components/global/header';
 import Footer from '@/components/global/footer';
 import { GoogleTagManager } from '@next/third-parties/google';
 import { draftMode } from 'next/headers';
 import { VisualEditing } from 'next-sanity';
 import { DisableDraftMode } from '@/components/disable-draft-mode';
 import { VercelToolbar } from '@vercel/toolbar/next';
+import AnnouncementBar from '@/components/announcement-bar';
+import Header from '@/components/global/header';
+
+export const viewport: Viewport = {
+  themeColor: '#FFFFFF',
+};
 
 export const metadata: Metadata = {
   title:
@@ -21,13 +26,14 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const shouldInjectToolbar = process.env.NODE_ENV === 'development';
-  
+
   return (
     <html lang="en">
       <GoogleTagManager gtmId="GTM-N9NL6XQ" />
-      <body className={`antialiased`}>
+      <body className={`antialiased bg-white`}>
+        <AnnouncementBar />
         <Header />
-        <main>{children}</main>
+        <main className="bg-white min-h-screen">{children}</main>
         <Footer />
         {(await draftMode()).isEnabled && (
           <>

@@ -9,7 +9,7 @@ import Listicle from '@/components/listicle';
 import ProductCardHero from '@/components/product-card-hero';
 import ProductCrossSell from '@/components/product-cross-sell';
 import SafetyStandards from '@/components/safety-standards';
-// import ThreeColumnTable from '@/components/three-column-table';
+// co
 import TitleBanner from '@/components/title-banner';
 import USP2 from '@/components/usp2';
 // import Reviews from '@/components/reviews';
