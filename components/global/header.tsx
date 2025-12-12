@@ -1,6 +1,6 @@
 export default function Header() {
   return (
-    <header className="w-full py-4 md:py-5">
+    <header className="w-full py-4 md:py-5 border-b border-[#E7E7E7]">
       <div className="w-full flex justify-center">
         <svg
           xmlns="http://www.w3.org/2000/svg"
