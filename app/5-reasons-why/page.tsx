@@ -57,7 +57,11 @@ export default function FiveReasonsWhyPage() {
   return (
     <div>
       <Listicle {...listicleData} />
-      <CTABanner />
+      <CTABanner
+        headline="Ready to see why our products have over 25,000 5-star reviews?"
+        buttonText="Shop Now"
+        buttonHref="https://www.coterie.com/products/the-diaper"
+      />
     </div>
   );
 }

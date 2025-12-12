@@ -44,19 +44,17 @@ export default function CTABanner({
       {/* Headline Text */}
       <div className="mb-8">
         <h4
-          className="text-3xl md:text-4xl font-bold leading-tight"
+          className="text-3xl md:text-4xl font-bold leading-tight md:max-w-[75%] mx-auto"
           style={{ color: textColor }}
         >
-          {headline || question ? (
-            displayHeadline
-          ) : (
-            questionLines.map((line, index) => (
-              <span key={index}>
-                {line}
-                {index < questionLines.length - 1 && <br />}
-              </span>
-            ))
-          )}
+          {headline || question
+            ? displayHeadline
+            : questionLines.map((line, index) => (
+                <span key={index}>
+                  {line}
+                  {index < questionLines.length - 1 && <br />}
+                </span>
+              ))}
         </h4>
       </div>
 
