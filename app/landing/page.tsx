@@ -1,7 +1,5 @@
-/* A sample landing page that highlights Coterie's core value props */
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { CoterieLogo } from '@/components/logo';
 import USP2 from '@/components/usp2';
 import DiptychMediaTitle from '@/components/diptych-media-title';
 import { ReviewsToggleSection } from '@/components/reviews-toggle';
@@ -49,10 +47,7 @@ export default function LandingPage() {
         className="h-[70vh] p-4"
       >
         <div className="h-full">
-          <div className="w-full flex justify-center">
-            <CoterieLogo />
-          </div>
-          <div className="flex flex-col gap-2 justify-end pb-10 h-full text-center">
+          <div className="flex flex-col gap-3 justify-end pb-10 h-full text-center">
             <h3 className="text-2xl font-medium text-white">
               Diapering without all the stress
             </h3>

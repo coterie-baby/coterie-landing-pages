@@ -86,7 +86,7 @@ export function ReviewsToggleSection() {
       <div className="max-w-4xl mx-auto">
         {/* Main Headline */}
         <h3 className="text-3xl md:text-4xl font-bold text-center mb-8 text-[#0000C9]">
-          Join 1,000,000+ Parents Trusting Coterie
+          Some Really Really Good Copy Here!
         </h3>
 
         {/* Filter Buttons */}
@@ -119,48 +119,11 @@ export function ReviewsToggleSection() {
                 {testimonial.text}
               </p>
               {/* Author */}
-              <p className="text-sm font-semibold text-[#0000C9]">
-                {testimonial.author}
-              </p>
+              <p className="text-sm">{testimonial.author}</p>
             </div>
           ))}
         </div>
       </div>
-
-      {/* Floating CTA Button */}
-      {/* <button className="fixed bottom-6 left-6 bg-[#0000C9] text-white px-6 py-3 rounded-full font-semibold text-sm shadow-lg hover:bg-[#0000AA] transition-colors z-50 flex items-center gap-2">
-          <svg
-            className="w-5 h-5"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M6 18L18 6M6 6l12 12"
-            />
-          </svg>
-          Claim 15% Off!
-        </button> */}
-
-      {/* Floating Chat Icon */}
-      {/* <button className="fixed bottom-6 right-6 bg-[#0000C9] text-white w-14 h-14 rounded-full shadow-lg hover:bg-[#0000AA] transition-colors z-50 flex items-center justify-center">
-          <svg
-            className="w-6 h-6"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
-            />
-          </svg>
-        </button> */}
     </section>
   );
 }
