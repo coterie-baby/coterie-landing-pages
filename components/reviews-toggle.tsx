@@ -82,7 +82,7 @@ export function ReviewsToggleSection() {
   );
 
   return (
-    <section className="relative py-12 px-4 bg-white min-h-screen">
+    <section className="relative py-12 px-4 bg-white">
       <div className="max-w-4xl mx-auto">
         {/* Main Headline */}
         <h3 className="text-3xl md:text-4xl font-bold text-center mb-8 text-[#0000C9]">
