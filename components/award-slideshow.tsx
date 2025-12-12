@@ -68,6 +68,8 @@ const AwardSlideshow: React.FC<AwardSlideshowProps> = ({
               fill
               className="object-cover"
               priority={index === 0}
+              quality={90}
+              sizes="100vw"
             />
           </div>
         ))}
@@ -115,6 +117,7 @@ const AwardSlideshow: React.FC<AwardSlideshowProps> = ({
                 className={`w-12 h-12 md:w-16 md:h-16 transition-opacity duration-300 ${
                   index === currentSlide ? 'opacity-100' : 'opacity-75'
                 }`}
+                quality={90}
               />
             </div>
           ))}

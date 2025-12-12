@@ -14,7 +14,7 @@ export default function UGCPage() {
         heroText: '"Best Overall Subscription Diapers of 2025"',
         subText: 'The Bump',
         backgroundImage:
-          'https://cdn.sanity.io/images/e4q6bkl9/production/f5071fcf4f2840303ed703792cdb7644bd65016b-2560x1440.jpg',
+          'https://cdn.sanity.io/images/e4q6bkl9/production/f5071fcf4f2840303ed703792cdb7644bd65016b-2560x1440.jpg?w=2560&h=1440&q=90&fit=crop&auto=format',
         backgroundAlt: 'Award background',
       },
       {
@@ -22,7 +22,7 @@ export default function UGCPage() {
         heroText: '"Best Overnight Diapers of 2025"',
         subText: 'Babylist',
         backgroundImage:
-          'https://cdn.sanity.io/images/e4q6bkl9/production/f791aefa05c69535c0cf41b2349fd5e73d80230e-2560x1440.jpg',
+          'https://cdn.sanity.io/images/e4q6bkl9/production/f791aefa05c69535c0cf41b2349fd5e73d80230e-2560x1440.jpg?w=2560&h=1440&q=90&fit=crop&auto=format',
         backgroundAlt: 'Babylist Best Of Award',
       },
       {
@@ -31,7 +31,7 @@ export default function UGCPage() {
           '"Good Housekeeping Popular Premium Pick of 2025: The Diaper"',
         subText: 'Good Housekeeping',
         backgroundImage:
-          'https://cdn.sanity.io/images/e4q6bkl9/production/f4eb6d4b4d5b279034d3cfd66d14b58aff320b01-2667x4000.jpg',
+          'https://cdn.sanity.io/images/e4q6bkl9/production/f4eb6d4b4d5b279034d3cfd66d14b58aff320b01-2667x4000.jpg?w=2667&h=4000&q=90&fit=crop&auto=format',
         backgroundAlt: 'A child playing with a ball.',
       },
       {
@@ -39,11 +39,11 @@ export default function UGCPage() {
         heroText: '"The Best Baby & Toddler Products of 2025"',
         subText: "Parents' Pick Awards",
         backgroundImage:
-          'https://cdn.sanity.io/images/e4q6bkl9/production/bec524a38f8f3cc1f1a9a2606c690ef95174c8f0-3000x3000.jpg',
+          'https://cdn.sanity.io/images/e4q6bkl9/production/bec524a38f8f3cc1f1a9a2606c690ef95174c8f0-3000x3000.jpg?w=3000&h=3000&q=90&fit=crop&auto=format',
         backgroundAlt: 'A child playing with a ball.',
       },
     ],
-    eyebrowText: 'PRE-HEADER GOES HERE',
+    eyebrowText: 'MORE GOOD COPY HERE',
     awardIcons: [
       'https://cdn.sanity.io/images/e4q6bkl9/production/bd555c4a348a1a12c6f04210d2144fea56135969-556x522.png',
       'https://cdn.sanity.io/images/e4q6bkl9/production/37a5c26978657e1d3b3b78ffd5bea7f2ba3fc1fc-556x522.png',
@@ -53,7 +53,7 @@ export default function UGCPage() {
   };
 
   const usp2Data = {
-    headline: 'Why Parents Love Coterie',
+    headline: 'Even More Good Coterie Copy',
     cards: 3,
     productCards: [
       {
