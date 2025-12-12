@@ -119,7 +119,7 @@ export function ReviewsToggleSection() {
                 {testimonial.text}
               </p>
               {/* Author */}
-              <p className="text-sm font-semibold">{testimonial.author}</p>
+              <p className="text-sm">{testimonial.author}</p>
             </div>
           ))}
         </div>
