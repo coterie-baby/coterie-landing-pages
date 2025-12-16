@@ -10,9 +10,8 @@ import { useQuiz, getQuestion, sizingQuizConfig } from '@/lib/quiz';
 const QUESTION_ID = 'current-diaper';
 
 export default function CurrentDiaperQuestion() {
-  const { goToNext, totalSteps, setAnswer } = useQuiz();
+  const { goToNext, flowTotalSteps, setAnswer } = useQuiz();
   const question = getQuestion(sizingQuizConfig, QUESTION_ID);
-  const currentStep = sizingQuizConfig.questionOrder.indexOf(QUESTION_ID) + 1;
 
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [selectedBrand, setSelectedBrand] = useState<string | null>(null);
@@ -30,10 +29,11 @@ export default function CurrentDiaperQuestion() {
 
   if (!question || !question.sizeOptions || !question.brandOptions) return null;
 
+  // Step 4 in "already here" flow
   return (
     <div className="flex flex-col h-full overflow-hidden bg-white">
       <QuizHeader questionId={QUESTION_ID} />
-      <QuizProgress currentStep={currentStep} totalSteps={totalSteps} />
+      <QuizProgress currentStep={4} totalSteps={flowTotalSteps} />
 
       {/* Question Content */}
       <div className="flex-1 flex flex-col items-center justify-center px-6 overflow-y-auto">

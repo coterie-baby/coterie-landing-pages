@@ -1,14 +1,39 @@
 interface QuizProgressProps {
   currentStep: number;
   totalSteps: number;
+  flowSelected?: boolean;
 }
 
 export default function QuizProgress({
   currentStep,
   totalSteps,
+  flowSelected = true,
 }: QuizProgressProps) {
   // Add 1 to include the results page as the final step
   const totalWithResults = totalSteps + 1;
+
+  // If no flow selected yet, just show first and last dot with a line between
+  if (!flowSelected) {
+    return (
+      <div className="w-full px-4 py-4 border-b border-[#E7E7E7]">
+        <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center flex-1">
+            {/* First dot - current */}
+            <div className="w-2.5 h-2.5 rounded-full flex-shrink-0 border border-[#0000C9] bg-[#0000C9]" />
+            {/* Connector line */}
+            <div className="h-[2px] flex-1 mx-1 bg-[#E7E7E7]" />
+            {/* Last dot - incomplete */}
+            <div className="w-2.5 h-2.5 rounded-full flex-shrink-0 border border-[#E7E7E7] bg-transparent" />
+          </div>
+        </div>
+        {/* Labels */}
+        <div className="flex justify-between">
+          <span className="text-[12px] text-[#0000C9]">My baby</span>
+          <span className="text-[12px] text-[#525252]">My plan</span>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full px-4 py-4 border-b border-[#E7E7E7]">

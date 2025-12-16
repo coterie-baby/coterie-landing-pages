@@ -29,6 +29,8 @@ interface QuizContextValue {
   currentQuestion: Question | null;
   currentStep: number;
   totalSteps: number;
+  flowTotalSteps: number;
+  flowSelected: boolean;
   setAnswer: (questionId: string, answer: string | string[]) => void;
   getAnswer: (questionId: string) => string | string[] | undefined;
   goToNext: (currentQuestionId: string, answer?: string | string[]) => void;
@@ -75,6 +77,14 @@ export function QuizProvider({
     : 0;
 
   const totalSteps = getTotalQuestions(config);
+
+  // Determine flow based on baby answer
+  const babyAnswer = answers.baby as string | undefined;
+  const flowSelected = !!babyAnswer;
+
+  // "Already here" flow: baby → name → birthdate → current-diaper → results (4 questions + results = 5)
+  // "On the way" flow: baby → due-date → results (2 questions + results = 3)
+  const flowTotalSteps = babyAnswer === 'expecting' ? 2 : babyAnswer === 'here' ? 4 : 0;
 
   const setAnswer = useCallback((questionId: string, answer: string | string[]) => {
     setAnswers((prev) => ({ ...prev, [questionId]: answer }));
@@ -202,6 +212,8 @@ export function QuizProvider({
     currentQuestion,
     currentStep,
     totalSteps,
+    flowTotalSteps,
+    flowSelected,
     setAnswer,
     getAnswer,
     goToNext,

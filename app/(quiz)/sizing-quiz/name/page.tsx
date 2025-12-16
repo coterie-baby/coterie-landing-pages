@@ -10,9 +10,8 @@ import { useQuiz, getQuestion, sizingQuizConfig } from '@/lib/quiz';
 const QUESTION_ID = 'name';
 
 export default function NameQuestion() {
-  const { goToNext, totalSteps } = useQuiz();
+  const { goToNext, flowTotalSteps } = useQuiz();
   const question = getQuestion(sizingQuizConfig, QUESTION_ID);
-  const currentStep = sizingQuizConfig.questionOrder.indexOf(QUESTION_ID) + 1;
   const [inputValue, setInputValue] = useState('');
 
   const handleNext = () => {
@@ -21,10 +20,11 @@ export default function NameQuestion() {
 
   if (!question) return null;
 
+  // Step 2 in "already here" flow
   return (
     <div className="flex flex-col h-full overflow-hidden bg-white">
       <QuizHeader questionId={QUESTION_ID} />
-      <QuizProgress currentStep={currentStep} totalSteps={totalSteps} />
+      <QuizProgress currentStep={2} totalSteps={flowTotalSteps} />
 
       {/* Question Content */}
       <div className="flex-1 flex flex-col items-center justify-center px-6">

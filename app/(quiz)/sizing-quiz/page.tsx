@@ -38,7 +38,7 @@ export default function SizingQuizLanding() {
             <Button className="py-4 px-12 text-xs">Get started</Button>
           </Link>
           <Link
-            href="#"
+            href="https://www.coterie.com/legal/consumer-health-policy"
             className="text-[13px] text-[#141414] underline underline-offset-2"
           >
             Health Policy

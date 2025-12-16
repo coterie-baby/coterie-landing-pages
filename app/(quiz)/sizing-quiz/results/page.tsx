@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { useQuiz } from '@/lib/quiz';
 
 export default function ResultsPage() {
-  const { getRecommendation, totalSteps, answers } = useQuiz();
+  const { getRecommendation, flowTotalSteps, answers } = useQuiz();
   const [email, setEmail] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [emailSaved, setEmailSaved] = useState(false);
@@ -48,13 +48,13 @@ export default function ResultsPage() {
     );
   }
 
-  // Results page is the final step
-  const currentStep = totalSteps + 1;
+  // Results page is the final step (flowTotalSteps + 1)
+  const currentStep = flowTotalSteps + 1;
 
   return (
     <div className="flex flex-col h-full overflow-hidden bg-white">
       <QuizHeader questionId="results" showBackButton={false} />
-      <QuizProgress currentStep={currentStep} totalSteps={totalSteps} />
+      <QuizProgress currentStep={currentStep} totalSteps={flowTotalSteps} />
 
       {/* Content */}
       <div className="flex-1 overflow-y-auto">
@@ -152,7 +152,7 @@ export default function ResultsPage() {
         </Button>
 
         {/* Secondary buttons */}
-        <div className="flex gap-3 mt-3">
+        <div className="flex gap-3 mt-2">
           <button
             onClick={handleAddToBabylist}
             className="flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-full border border-[#E7E7E7] text-[13px] font-bold bg-[#6e3264] text-white transition-colors hover:opacity-90"

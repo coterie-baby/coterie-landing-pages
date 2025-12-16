@@ -8,9 +8,8 @@ import { useQuiz, getQuestion, sizingQuizConfig } from '@/lib/quiz';
 const QUESTION_ID = 'baby';
 
 export default function BabyQuestion() {
-  const { goToNext, totalSteps } = useQuiz();
+  const { goToNext, flowTotalSteps, flowSelected } = useQuiz();
   const question = getQuestion(sizingQuizConfig, QUESTION_ID);
-  const currentStep = sizingQuizConfig.questionOrder.indexOf(QUESTION_ID) + 1;
 
   const handleSelection = (value: string) => {
     goToNext(QUESTION_ID, value);
@@ -21,7 +20,7 @@ export default function BabyQuestion() {
   return (
     <div className="flex flex-col h-full overflow-hidden bg-white">
       <QuizHeader questionId={QUESTION_ID} />
-      <QuizProgress currentStep={currentStep} totalSteps={totalSteps} />
+      <QuizProgress currentStep={1} totalSteps={flowTotalSteps} flowSelected={flowSelected} />
 
       {/* Question Content */}
       <div className="flex-1 flex flex-col items-center justify-center px-6">

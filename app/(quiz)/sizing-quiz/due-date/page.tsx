@@ -7,7 +7,7 @@ import WhyWeAsk from '@/components/quiz/why-we-ask';
 import { Button } from '@/components/ui/button';
 import { useQuiz, getQuestion, sizingQuizConfig } from '@/lib/quiz';
 
-const QUESTION_ID = 'birthdate';
+const QUESTION_ID = 'due-date';
 
 const MONTHS = [
   { value: '01', label: 'January' },
@@ -24,7 +24,7 @@ const MONTHS = [
   { value: '12', label: 'December' },
 ];
 
-export default function BirthdateQuestion() {
+export default function DueDateQuestion() {
   const { goToNext, flowTotalSteps } = useQuiz();
   const question = getQuestion(sizingQuizConfig, QUESTION_ID);
 
@@ -32,14 +32,10 @@ export default function BirthdateQuestion() {
   const [day, setDay] = useState('');
   const [year, setYear] = useState('');
 
-  // Generate years from current year back to 4 years ago (babies up to ~4 years)
+  // Generate years from current year forward to next year (due dates)
   const years = useMemo(() => {
     const currentYear = new Date().getFullYear();
-    const yearOptions = [];
-    for (let y = currentYear; y >= currentYear - 4; y--) {
-      yearOptions.push(y.toString());
-    }
-    return yearOptions;
+    return [currentYear.toString(), (currentYear + 1).toString()];
   }, []);
 
   // Generate days based on selected month and year
@@ -57,8 +53,8 @@ export default function BirthdateQuestion() {
 
   const handleNext = () => {
     if (month && day && year) {
-      const birthdate = `${year}-${month}-${day}`;
-      goToNext(QUESTION_ID, birthdate);
+      const dueDate = `${year}-${month}-${day}`;
+      goToNext(QUESTION_ID, dueDate);
     }
   };
 
@@ -72,7 +68,7 @@ export default function BirthdateQuestion() {
   return (
     <div className="flex flex-col h-full overflow-hidden bg-white">
       <QuizHeader questionId={QUESTION_ID} />
-      <QuizProgress currentStep={3} totalSteps={flowTotalSteps} />
+      <QuizProgress currentStep={2} totalSteps={flowTotalSteps} />
 
       {/* Question Content */}
       <div className="flex-1 flex flex-col items-center justify-center px-6">
