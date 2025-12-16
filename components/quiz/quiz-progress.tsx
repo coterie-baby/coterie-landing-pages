@@ -18,14 +18,17 @@ export default function QuizProgress({
             const isCurrent = stepNumber === currentStep;
 
             return (
-              <div key={index} className="flex items-center flex-1 last:flex-none">
+              <div
+                key={index}
+                className="flex items-center flex-1 last:flex-none"
+              >
                 {/* Step dot */}
                 <div
                   className={`w-2.5 h-2.5 rounded-full flex-shrink-0 border ${
                     isCompleted
                       ? 'bg-[#0000C9] border-[#0000C9]'
                       : isCurrent
-                        ? 'bg-transparent border-[#0000C9]'
+                        ? 'border-[#0000C9] bg-[#0000C9]'
                         : 'bg-transparent border-[#E7E7E7]'
                   }`}
                 />
@@ -44,7 +47,7 @@ export default function QuizProgress({
       </div>
       {/* Labels */}
       <div className="flex justify-between">
-        <span className="text-[12px] text-[#0000C9] font-medium">My baby</span>
+        <span className="text-[12px] text-[#0000C9]">My baby</span>
         <span className="text-[12px] text-[#525252]">My plan</span>
       </div>
     </div>

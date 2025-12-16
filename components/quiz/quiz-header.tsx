@@ -8,11 +8,14 @@ interface QuizHeaderProps {
   showBackButton?: boolean;
 }
 
-export default function QuizHeader({ questionId, showBackButton = true }: QuizHeaderProps) {
+export default function QuizHeader({
+  questionId,
+  showBackButton = true,
+}: QuizHeaderProps) {
   const { goToPrevious } = useQuiz();
 
   return (
-    <header className="w-full py-4 md:py-5 border-b border-[#E7E7E7] flex-shrink-0">
+    <header className="w-full py-4 md:py-5 flex-shrink-0">
       <div className="w-full flex items-center justify-center relative px-4">
         {showBackButton && (
           <button
