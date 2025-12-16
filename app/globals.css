@@ -248,6 +248,22 @@ th {
   animation: loadingDot 1.4s ease-in-out infinite;
 }
 
+/* Page Transition Animation */
+@keyframes pageEnter {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-page-enter {
+  animation: pageEnter 0.35s ease-out forwards;
+}
+
 @media (min-width: 768px) {
   h3 {
     font-size: 56px;
