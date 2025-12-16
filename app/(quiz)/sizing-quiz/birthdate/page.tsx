@@ -66,13 +66,16 @@ export default function BirthdateQuestion() {
 
   if (!question) return null;
 
+  // Step 3 in "already here" flow (5 questions total)
+  const totalSteps = flowTotalSteps || 5;
+
   const selectClassName =
     'flex-1 py-3 px-4 rounded-lg text-[14px] bg-white text-[#141414] border border-[#E7E7E7] outline-none appearance-none cursor-pointer focus:border-[#0000C9] transition-colors';
 
   return (
     <div className="flex flex-col h-full overflow-hidden bg-white">
       <QuizHeader questionId={QUESTION_ID} />
-      <QuizProgress currentStep={3} totalSteps={flowTotalSteps} />
+      <QuizProgress currentStep={3} totalSteps={totalSteps} />
 
       {/* Question Content */}
       <div className="flex-1 flex flex-col items-center justify-center px-6">

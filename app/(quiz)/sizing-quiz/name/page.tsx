@@ -20,11 +20,13 @@ export default function NameQuestion() {
 
   if (!question) return null;
 
-  // Step 2 in "already here" flow
+  // Step 2 in "already here" flow (5 questions total)
+  const totalSteps = flowTotalSteps || 5;
+
   return (
     <div className="flex flex-col h-full overflow-hidden bg-white">
       <QuizHeader questionId={QUESTION_ID} />
-      <QuizProgress currentStep={2} totalSteps={flowTotalSteps} />
+      <QuizProgress currentStep={2} totalSteps={totalSteps} />
 
       {/* Question Content */}
       <div className="flex-1 flex flex-col items-center justify-center px-6">
