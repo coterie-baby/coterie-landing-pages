@@ -29,6 +29,23 @@ export default async function RootLayout({
 
   return (
     <html lang="en">
+      <head>
+        {/* Preload critical fonts for faster text rendering */}
+        <link
+          rel="preload"
+          href="/fonts/CoterieSuisse-Regular-WebXL.woff2"
+          as="font"
+          type="font/woff2"
+          crossOrigin="anonymous"
+        />
+        <link
+          rel="preload"
+          href="/fonts/CoterieSuisse-Medium-WebXL.woff2"
+          as="font"
+          type="font/woff2"
+          crossOrigin="anonymous"
+        />
+      </head>
       <GoogleTagManager gtmId="GTM-N9NL6XQ" />
       <body className={`antialiased bg-white`}>
         <AnnouncementBar />

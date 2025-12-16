@@ -89,7 +89,7 @@ export default function ProductCardHero({
 
         <div className={`flex flex-col gap-4 md:flex-row`}>
           {cards.map((card, i) => (
-            <ProductCardComponent key={i} card={card} />
+            <ProductCardComponent key={i} card={card} priority={i === 0} />
           ))}
         </div>
       </div>

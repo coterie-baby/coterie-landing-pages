@@ -18,7 +18,6 @@ interface PageProps {
 export async function generateStaticParams() {
   try {
     const pages = await client.fetch(allPagePathsQuery);
-    console.log('Pages from Sanity:', pages);
     return pages
       .filter(
         (page: { slug: { current: string } }) =>

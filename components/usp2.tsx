@@ -1,7 +1,19 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import Image from 'next/image';
+
+// Debounce utility
+function debounce<T extends (...args: Parameters<T>) => void>(
+  func: T,
+  wait: number
+): (...args: Parameters<T>) => void {
+  let timeout: ReturnType<typeof setTimeout> | null = null;
+  return (...args: Parameters<T>) => {
+    if (timeout) clearTimeout(timeout);
+    timeout = setTimeout(() => func(...args), wait);
+  };
+}
 
 interface ProductCardProps {
   image: string;
@@ -19,36 +31,41 @@ export default function USP2({ headline, cards = 3, productCards }: USP2Props) {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [activeCard, setActiveCard] = useState<number>(0);
 
+  const updateActiveCard = useCallback(() => {
+    const container = scrollContainerRef.current;
+    if (!container) return;
+
+    const containerRect = container.getBoundingClientRect();
+    const cardElements = container.querySelectorAll('[data-card]');
+    let closestCard = 0;
+    let closestDistance = Infinity;
+
+    cardElements.forEach((card, index) => {
+      const cardRect = card.getBoundingClientRect();
+      const cardLeft = cardRect.left;
+      const containerLeft = containerRect.left;
+      const distance = Math.abs(cardLeft - containerLeft);
+
+      if (distance < closestDistance) {
+        closestDistance = distance;
+        closestCard = index;
+      }
+    });
+
+    setActiveCard(closestCard);
+  }, []);
+
   useEffect(() => {
     const container = scrollContainerRef.current;
     if (!container) return;
 
-    const handleScroll = () => {
-      const containerRect = container.getBoundingClientRect();
-      const cardElements = container.querySelectorAll('[data-card]');
-      let closestCard = 0;
-      let closestDistance = Infinity;
+    const debouncedScroll = debounce(updateActiveCard, 16); // ~60fps
 
-      cardElements.forEach((card, index) => {
-        const cardRect = card.getBoundingClientRect();
-        const cardLeft = cardRect.left;
-        const containerLeft = containerRect.left;
-        const distance = Math.abs(cardLeft - containerLeft);
+    container.addEventListener('scroll', debouncedScroll);
+    updateActiveCard(); // Initial check
 
-        if (distance < closestDistance) {
-          closestDistance = distance;
-          closestCard = index;
-        }
-      });
-
-      setActiveCard(closestCard);
-    };
-
-    container.addEventListener('scroll', handleScroll);
-    handleScroll(); // Initial check
-
-    return () => container.removeEventListener('scroll', handleScroll);
-  }, []);
+    return () => container.removeEventListener('scroll', debouncedScroll);
+  }, [updateActiveCard]);
 
   const getCardOpacity = (index: number) => {
     // Active card is always full opacity, previous and next cards are 30% opacity
@@ -70,7 +87,6 @@ export default function USP2({ headline, cards = 3, productCards }: USP2Props) {
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
         >
           {Array.from({ length: cards }, (_, index) => {
-            console.log(productCards);
             const cardData = productCards?.[index] || {
               image:
                 'https://cdn.sanity.io/images/e4q6bkl9/production/5da7c8766e7d65c99fd249291e84f0faaef4adb8-1000x1000.png?w=960&h=960&q=100&fit=crop&auto=format',

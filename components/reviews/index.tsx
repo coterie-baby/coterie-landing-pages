@@ -140,17 +140,10 @@ function Pagination({
 }
 
 export default function Reviews({
-  reviews = [],
   totalReviews = 1234,
   averageRating = 4.3,
   productId,
 }: ReviewsProps) {
-  console.log('Reviews component props:', {
-    productId,
-    reviews,
-    totalReviews,
-    averageRating,
-  });
 
   const [ratingFilter, setRatingFilter] = useState('');
   const [sizeFilter, setSizeFilter] = useState('');
@@ -168,10 +161,7 @@ export default function Reviews({
 
   const fetchReviews = useCallback(
     async (page: number = 1) => {
-      console.log('fetchReviews called with:', { productId, page });
-
       if (!productId) {
-        console.log('No productId provided, skipping API call');
         return;
       }
 
@@ -179,34 +169,23 @@ export default function Reviews({
       setError(null);
 
       try {
-        console.log('Making API call to getReviews with:', { productId, page });
         const response = await getReviews({
           productId,
           page,
           customFilters: {},
         });
 
-        console.log('API response:', response);
-
         if (response && response.ok) {
           const data: ApiResponse = await response.json();
-          console.log('API data received:', data);
 
           setFetchedReviews(data.reviews);
           setApiTotalReviews(data.pagination.total);
           setPagination(data.pagination);
           setProductName(data.products?.[0]?.name || 'Product');
           setCurrentPage(page);
-        } else {
-          console.log(
-            'API response not ok:',
-            response?.status,
-            response?.statusText
-          );
         }
-      } catch (err) {
+      } catch {
         setError('Failed to fetch reviews');
-        console.error('Error fetching reviews:', err);
       } finally {
         setLoading(false);
       }
@@ -221,7 +200,6 @@ export default function Reviews({
   const handleVote = useCallback(
     async (reviewId: number, voteType: 'up' | 'down') => {
       try {
-        console.log('Voting on review:', reviewId, voteType);
         const response = await voteReview(reviewId, voteType);
 
         if (response && response.ok) {
@@ -242,11 +220,9 @@ export default function Reviews({
               return review;
             })
           );
-        } else {
-          console.error('Vote failed:', response?.status, response?.statusText);
         }
-      } catch (error) {
-        console.error('Error voting:', error);
+      } catch {
+        // Vote failed silently
       }
     },
     []

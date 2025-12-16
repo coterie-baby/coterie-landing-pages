@@ -1,6 +1,24 @@
 'use client';
-import { useState } from 'react';
+import { useState, memo } from 'react';
 import { StarRating } from './reviews/star-rating';
+
+interface Testimonial {
+  category: string;
+  text: string;
+  author: string;
+}
+
+const TestimonialCard = memo(function TestimonialCard({ testimonial }: { testimonial: Testimonial }) {
+  return (
+    <div className="bg-[#f5f5f5] rounded-lg p-4 flex flex-col gap-3">
+      <StarRating rating={5} />
+      <p className="text-[#525252] text-sm leading-relaxed">
+        {testimonial.text}
+      </p>
+      <p className="text-sm">{testimonial.author}</p>
+    </div>
+  );
+});
 
 const reviewTestimonials = [
   {
@@ -82,20 +100,20 @@ export function ReviewsToggleSection() {
   );
 
   return (
-    <section className="relative py-12 px-4 bg-white">
-      <div className="max-w-4xl mx-auto">
+    <section className="relative py-12 px-4 md:px-10 bg-white">
+      <div className="">
         {/* Main Headline */}
         <h3 className="text-3xl md:text-4xl font-bold text-center mb-8 text-[#0000C9]">
           Some Really Really Good Copy Here!
         </h3>
 
         {/* Filter Buttons */}
-        <div className="grid grid-cols-2 gap-3 mb-12">
+        <div className="grid grid-cols-2 md:grid-cols-6 gap-3 mb-12">
           {filters.map((filter) => (
             <button
               key={filter}
               onClick={() => setSelectedFilter(filter)}
-              className={`px-4 py-2 rounded-full text-sm text-[#0000C9] font-medium transition-all ${
+              className={`cursor-pointer px-4 py-2 rounded-full text-sm text-[#0000C9] font-medium transition-all ${
                 selectedFilter === filter
                   ? 'bg-[#D1E3FB]'
                   : 'bg-white border border-gray-300 hover:border-[#0000C9]'
@@ -109,18 +127,7 @@ export function ReviewsToggleSection() {
         {/* Testimonials */}
         <div className="space-y-6">
           {filteredTestimonials.map((testimonial, i) => (
-            <div
-              key={i}
-              className="bg-[#f5f5f5] rounded-lg p-4 flex flex-col gap-3"
-            >
-              <StarRating rating={5} />
-              {/* Testimonial Text */}
-              <p className="text-[#525252] text-sm leading-relaxed">
-                {testimonial.text}
-              </p>
-              {/* Author */}
-              <p className="text-sm">{testimonial.author}</p>
-            </div>
+            <TestimonialCard key={`${testimonial.category}-${i}`} testimonial={testimonial} />
           ))}
         </div>
       </div>
