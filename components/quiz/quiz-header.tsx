@@ -1,7 +1,31 @@
-export default function Header() {
+'use client';
+
+import { ChevronLeftIcon } from '@heroicons/react/24/outline';
+import { useQuiz } from '@/lib/quiz';
+
+interface QuizHeaderProps {
+  questionId: string;
+  showBackButton?: boolean;
+}
+
+export default function QuizHeader({
+  questionId,
+  showBackButton = true,
+}: QuizHeaderProps) {
+  const { goToPrevious } = useQuiz();
+
   return (
-    <header className="w-full py-4 md:py-5 border-b border-[#E7E7E7]">
-      <div className="w-full flex justify-center">
+    <header className="w-full py-4 md:py-5 flex-shrink-0">
+      <div className="w-full flex items-center justify-center relative px-4">
+        {showBackButton && (
+          <button
+            onClick={() => goToPrevious(questionId)}
+            className="absolute left-4 p-1"
+            aria-label="Go back"
+          >
+            <ChevronLeftIcon className="w-5 h-5 text-[#141414]" />
+          </button>
+        )}
         <svg
           xmlns="http://www.w3.org/2000/svg"
           fill="#0000C9"

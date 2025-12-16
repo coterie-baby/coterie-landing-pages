@@ -21,7 +21,7 @@ interface Product {
   price: string;
 }
 
-export function ProductCard({ card }: { card: ProductCard }) {
+export function ProductCard({ card, priority = false }: { card: ProductCard; priority?: boolean }) {
   return (
     <Link
       href={card.product.href || '#'}
@@ -37,6 +37,7 @@ export function ProductCard({ card }: { card: ProductCard }) {
             alt={card.thumbnail.altText}
             fill
             sizes="(max-width: 768px) 80px, (max-width: 1024px) 256px, 300px"
+            priority={priority}
           />
           {card.badge && (
             <div className="hidden bg-white py-0.5 px-1 border border-[#E0E0E0] rounded-[2px] md:block absolute top-2 right-2">

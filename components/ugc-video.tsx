@@ -1,10 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import {
-  SpeakerWaveIcon,
-  SpeakerXMarkIcon,
-} from '@heroicons/react/24/outline';
+import { SpeakerWaveIcon, SpeakerXMarkIcon } from '@heroicons/react/24/outline';
 
 export default function UGCVideo() {
   const [isMuted, setIsMuted] = useState(true);
@@ -58,7 +55,7 @@ export default function UGCVideo() {
         className="w-full h-full object-cover relative z-10"
       ></video>
       <div className="absolute inset-0 w-full h-full bg-black opacity-20 pointer-events-none" />
-      
+
       {/* Floating Mute/Unmute Button */}
       <button
         onClick={toggleMute}

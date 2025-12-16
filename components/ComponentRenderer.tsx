@@ -1,11 +1,4 @@
-import TitleBanner from './title-banner';
-import ContentBanner from './content-banner';
-import ProductCardHero from './product-card-hero';
-import ComparisonTable from './comparison-table';
-import DiptychMediaTitle from './diptych-media-title';
-import USP2 from './usp2';
-import SafetyStandards from './safety-standards';
-import Listicle from './listicle';
+import dynamic from 'next/dynamic';
 import { urlFor } from '@/lib/sanity/image';
 import type {
   SanityComponent,
@@ -20,6 +13,16 @@ import type {
   ListicleComponent,
   ListicleContentComponent,
 } from '@/types/sanity';
+
+// Dynamic imports for code splitting - heavy components loaded on demand
+const TitleBanner = dynamic(() => import('./title-banner'));
+const ContentBanner = dynamic(() => import('./content-banner'));
+const ProductCardHero = dynamic(() => import('./product-card-hero'));
+const ComparisonTable = dynamic(() => import('./comparison-table'));
+const DiptychMediaTitle = dynamic(() => import('./diptych-media-title'));
+const USP2 = dynamic(() => import('./usp2'));
+const SafetyStandards = dynamic(() => import('./safety-standards'));
+const Listicle = dynamic(() => import('./listicle'));
 
 interface ComponentRendererProps {
   component: SanityComponent;
@@ -161,16 +164,11 @@ export function ComponentRenderer({ component }: ComponentRendererProps) {
 
     case 'usp2': {
       const usp2Props = component as USP2Component;
-      console.log('USP2 Sanity data:', usp2Props);
-      const productCards = usp2Props.productCards?.map((card) => {
-        console.log('Processing card:', card);
-        return {
-          image: card.featuredImage ? urlFor(card.featuredImage).url() : 'https://cdn.sanity.io/images/e4q6bkl9/production/5da7c8766e7d65c99fd249291e84f0faaef4adb8-1000x1000.png?w=960&h=960&q=100&fit=crop&auto=format',
-          headline: card.headline,
-          bodyCopy: card.bodyCopy,
-        };
-      });
-      console.log('Transformed productCards:', productCards);
+      const productCards = usp2Props.productCards?.map((card) => ({
+        image: card.featuredImage ? urlFor(card.featuredImage).url() : 'https://cdn.sanity.io/images/e4q6bkl9/production/5da7c8766e7d65c99fd249291e84f0faaef4adb8-1000x1000.png?w=960&h=960&q=100&fit=crop&auto=format',
+        headline: card.headline,
+        bodyCopy: card.bodyCopy,
+      }));
       
       return (
         <USP2

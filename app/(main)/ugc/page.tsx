@@ -84,7 +84,7 @@ export default function UGCPage() {
     <>
       <UGCVideo />
       <FlexAnnouncementBar
-        announcement="Over 25,000 5-Star Reviews!"
+        announcement="Over 25,000 5-Star Reviews"
         showStars={true}
         rating={5}
       />

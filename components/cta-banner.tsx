@@ -60,7 +60,9 @@ export default function CTABanner({
 
       {/* CTA Button */}
       <Link href={buttonUrl}>
-        <Button>{buttonLabel}</Button>
+        <Button data-cta-location="CTA Banner" data-cta-text={buttonLabel}>
+          {buttonLabel}
+        </Button>
       </Link>
     </section>
   );

@@ -1,13 +1,10 @@
 import type { Metadata, Viewport } from 'next';
 import './globals.css';
-import Footer from '@/components/global/footer';
 import { GoogleTagManager } from '@next/third-parties/google';
 import { draftMode } from 'next/headers';
 import { VisualEditing } from 'next-sanity';
 import { DisableDraftMode } from '@/components/disable-draft-mode';
 import { VercelToolbar } from '@vercel/toolbar/next';
-import AnnouncementBar from '@/components/announcement-bar';
-import Header from '@/components/global/header';
 
 export const viewport: Viewport = {
   themeColor: '#FFFFFF',
@@ -29,12 +26,26 @@ export default async function RootLayout({
 
   return (
     <html lang="en">
+      <head>
+        {/* Preload critical fonts for faster text rendering */}
+        <link
+          rel="preload"
+          href="/fonts/CoterieSuisse-Regular-WebXL.woff2"
+          as="font"
+          type="font/woff2"
+          crossOrigin="anonymous"
+        />
+        <link
+          rel="preload"
+          href="/fonts/CoterieSuisse-Medium-WebXL.woff2"
+          as="font"
+          type="font/woff2"
+          crossOrigin="anonymous"
+        />
+      </head>
       <GoogleTagManager gtmId="GTM-N9NL6XQ" />
-      <body className={`antialiased bg-white`}>
-        <AnnouncementBar />
-        <Header />
-        <main className="bg-white min-h-screen">{children}</main>
-        <Footer />
+      <body className="antialiased bg-white">
+        {children}
         {(await draftMode()).isEnabled && (
           <>
             <VisualEditing />
