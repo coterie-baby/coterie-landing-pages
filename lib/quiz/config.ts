@@ -44,7 +44,7 @@ export const sizingQuizConfig: QuizConfig = {
   id: 'sizing-quiz',
   title: 'Sizing Quiz',
   startQuestion: 'baby',
-  questionOrder: ['baby', 'name', 'birthdate', 'current-diaper'],
+  questionOrder: ['baby', 'name', 'birthdate', 'diaper-brand', 'diaper-size'],
   questions: [
     {
       id: 'baby',
@@ -85,7 +85,7 @@ export const sizingQuizConfig: QuizConfig = {
       helpAnswer:
         "Your baby's age helps us understand their growth stage and recommend the most comfortable diaper fit for their current needs.",
       autoAdvance: false,
-      nextQuestion: 'current-diaper',
+      nextQuestion: 'diaper-brand',
     },
     {
       id: 'due-date',
@@ -98,14 +98,32 @@ export const sizingQuizConfig: QuizConfig = {
       nextQuestion: 'results',
     },
     {
-      id: 'current-diaper',
+      id: 'diaper-brand',
       type: 'single-select',
-      question: 'What diaper does your baby currently wear?',
+      question: 'What brand of diapers do you currently use?',
       helpText: 'Why do we ask?',
       helpAnswer:
-        'Different brands fit differently. Knowing your current size and brand helps us recommend the best Coterie fit for your baby.',
-      autoAdvance: false,
-      sizeOptions: [
+        'Different brands fit differently. Knowing your current brand helps us recommend the best Coterie size for your baby.',
+      autoAdvance: true,
+      options: [
+        { label: 'Pampers', value: 'pampers' },
+        { label: 'Huggies', value: 'huggies' },
+        { label: 'Millie Moon', value: 'millie-moon' },
+        { label: 'Honest', value: 'honest' },
+        { label: 'Hello Bello', value: 'hello-bello' },
+        { label: 'Other', value: 'other' },
+      ],
+      nextQuestion: 'diaper-size',
+    },
+    {
+      id: 'diaper-size',
+      type: 'single-select',
+      question: 'What size diaper is your baby currently in?',
+      helpText: 'Why do we ask?',
+      helpAnswer:
+        'Your current diaper size helps us recommend the right Coterie fit for your baby.',
+      autoAdvance: true,
+      options: [
         { label: 'N', value: 'n' },
         { label: '1', value: '1' },
         { label: '2', value: '2' },
@@ -114,14 +132,6 @@ export const sizingQuizConfig: QuizConfig = {
         { label: '5', value: '5' },
         { label: '6', value: '6' },
         { label: '7', value: '7' },
-      ],
-      brandOptions: [
-        { label: 'Pampers', value: 'pampers' },
-        { label: 'Huggies', value: 'huggies' },
-        { label: 'Luvs', value: 'luvs' },
-        { label: 'Honest', value: 'honest' },
-        { label: 'Hello Bello', value: 'hello-bello' },
-        { label: 'Other', value: 'other' },
       ],
       nextQuestion: 'results',
     },

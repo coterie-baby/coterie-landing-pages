@@ -82,9 +82,9 @@ export function QuizProvider({
   const babyAnswer = answers.baby as string | undefined;
   const flowSelected = !!babyAnswer;
 
-  // "Already here" flow: baby → name → birthdate → current-diaper → results (4 questions + results = 5)
+  // "Already here" flow: baby → name → birthdate → diaper-brand → diaper-size → results (5 questions + results = 6)
   // "On the way" flow: baby → due-date → results (2 questions + results = 3)
-  const flowTotalSteps = babyAnswer === 'expecting' ? 2 : babyAnswer === 'here' ? 4 : 0;
+  const flowTotalSteps = babyAnswer === 'expecting' ? 2 : babyAnswer === 'here' ? 5 : 0;
 
   const setAnswer = useCallback((questionId: string, answer: string | string[]) => {
     setAnswers((prev) => ({ ...prev, [questionId]: answer }));
