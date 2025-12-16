@@ -44,6 +44,9 @@ export interface ProductRecommendation {
   productName: string;
   size: string;
   reason: string;
+  imageUrl: string;
+  price: string;
+  description: string;
 }
 
 const QuizContext = createContext<QuizContextValue | null>(null);
@@ -147,41 +150,49 @@ export function QuizProvider({
   }, [router, basePath]);
 
   const getRecommendation = useCallback((): ProductRecommendation | null => {
-    // Logic to determine product recommendation based on answers
-    const weight = answers.weight as string;
     const babyStatus = answers.baby as string;
+    const diaperSize = answers['diaper-size'] as string;
+    const babyName = answers.name as string;
 
-    if (!weight && babyStatus === 'expecting') {
+    const baseImageUrl = 'https://cdn.sanity.io/images/e4q6bkl9/production';
+
+    // For expecting parents
+    if (babyStatus === 'expecting') {
       return {
         productId: 'newborn-bundle',
-        productName: 'Newborn Bundle',
+        productName: 'The Newborn Bundle',
         size: 'Newborn',
-        reason: 'Perfect for expecting parents to be prepared',
+        reason: 'Everything you need to be prepared for baby\'s arrival',
+        imageUrl: `${baseImageUrl}/4a078422f76dfdda4483b4c621917c725061e9a8-2919x4355.jpg`,
+        price: '$89',
+        description: 'Our softest diapers in sizes Newborn and 1, plus a pack of our gentle wipes.',
       };
     }
 
-    // Size recommendation based on weight
-    const sizeMap: Record<string, { size: string; productId: string }> = {
-      'under-6': { size: 'Preemie', productId: 'diaper-preemie' },
-      '6-9': { size: 'Newborn', productId: 'diaper-newborn' },
-      '9-14': { size: 'Size 1', productId: 'diaper-size-1' },
-      '14-20': { size: 'Size 2', productId: 'diaper-size-2' },
-      '20-26': { size: 'Size 3', productId: 'diaper-size-3' },
-      '26-34': { size: 'Size 4', productId: 'diaper-size-4' },
-      '34+': { size: 'Size 5', productId: 'diaper-size-5' },
+    // Size recommendation based on current diaper size
+    const sizeMap: Record<string, { size: string; displaySize: string }> = {
+      'n': { size: 'Newborn', displaySize: 'Newborn' },
+      '1': { size: '1', displaySize: 'Size 1' },
+      '2': { size: '2', displaySize: 'Size 2' },
+      '3': { size: '3', displaySize: 'Size 3' },
+      '4': { size: '4', displaySize: 'Size 4' },
+      '5': { size: '5', displaySize: 'Size 5' },
+      '6': { size: '6', displaySize: 'Size 6' },
+      '7': { size: '7', displaySize: 'Size 7' },
     };
 
-    const recommendation = sizeMap[weight];
-    if (recommendation) {
-      return {
-        productId: recommendation.productId,
-        productName: 'The Diaper',
-        size: recommendation.size,
-        reason: `Based on your baby's weight of ${weight} lbs`,
-      };
-    }
+    const sizeInfo = sizeMap[diaperSize] || { size: '3', displaySize: 'Size 3' };
+    const personalizedName = babyName ? `${babyName}'s` : 'Your baby\'s';
 
-    return null;
+    return {
+      productId: `diaper-size-${sizeInfo.size}`,
+      productName: 'The Diaper',
+      size: sizeInfo.displaySize,
+      reason: `${personalizedName} perfect fit based on their current size`,
+      imageUrl: `${baseImageUrl}/4a078422f76dfdda4483b4c621917c725061e9a8-2919x4355.jpg`,
+      price: '$85',
+      description: 'Ultra-soft, ultra-absorbent diapers that keep baby comfortable day and night.',
+    };
   }, [answers]);
 
   const value: QuizContextValue = {

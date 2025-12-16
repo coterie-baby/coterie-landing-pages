@@ -2,7 +2,7 @@
 
 import QuizHeader from '@/components/quiz/quiz-header';
 import QuizProgress from '@/components/quiz/quiz-progress';
-import WhyWeAskIcon from '@/components/quiz/why-we-ask-icon';
+import WhyWeAsk from '@/components/quiz/why-we-ask';
 import { useQuiz, getQuestion, sizingQuizConfig } from '@/lib/quiz';
 
 const QUESTION_ID = 'baby';
@@ -43,14 +43,9 @@ export default function BabyQuestion() {
       </div>
 
       {/* Bottom Section */}
-      {question.helpText && (
+      {question.helpText && question.helpAnswer && (
         <div className="flex-shrink-0 px-6 py-8">
-          <div className="flex flex-col items-center gap-2">
-            <WhyWeAskIcon className="text-[#0000C9]" />
-            <button className="text-[14px] text-[#0000C9]">
-              {question.helpText}
-            </button>
-          </div>
+          <WhyWeAsk helpText={question.helpText} helpAnswer={question.helpAnswer} />
         </div>
       )}
     </div>

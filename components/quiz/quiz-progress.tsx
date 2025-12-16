@@ -7,12 +7,15 @@ export default function QuizProgress({
   currentStep,
   totalSteps,
 }: QuizProgressProps) {
+  // Add 1 to include the results page as the final step
+  const totalWithResults = totalSteps + 1;
+
   return (
     <div className="w-full px-4 py-4 border-b border-[#E7E7E7]">
       <div className="flex items-center justify-between mb-2">
         {/* Progress bar */}
         <div className="flex items-center flex-1">
-          {Array.from({ length: totalSteps }, (_, index) => {
+          {Array.from({ length: totalWithResults }, (_, index) => {
             const stepNumber = index + 1;
             const isCompleted = stepNumber < currentStep;
             const isCurrent = stepNumber === currentStep;
@@ -33,7 +36,7 @@ export default function QuizProgress({
                   }`}
                 />
                 {/* Connector line */}
-                {index < totalSteps - 1 && (
+                {index < totalWithResults - 1 && (
                   <div
                     className={`h-[2px] flex-1 mx-1 ${
                       isCompleted ? 'bg-[#0000C9]' : 'bg-[#E7E7E7]'
