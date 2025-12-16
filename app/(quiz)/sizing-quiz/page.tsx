@@ -8,7 +8,7 @@ export default function SizingQuizLanding() {
     <div className="flex flex-col h-full overflow-hidden bg-white">
       <Header />
       {/* Hero Image Section */}
-      <div className="relative w-full aspect-square flex-shrink-0 min-h-0">
+      <div className="relative w-full h-[300px] flex-shrink-0 min-h-0">
         <Image
           src="https://cdn.sanity.io/images/e4q6bkl9/production/4a078422f76dfdda4483b4c621917c725061e9a8-2919x4355.jpg"
           alt="Baby crawling on cushions wearing a diaper"
@@ -33,9 +33,9 @@ export default function SizingQuizLanding() {
 
       {/* Bottom Section */}
       <div className="flex-shrink-0 bg-white border-t border-[#E7E7E7] px-6 py-6">
-        <div className="flex flex-col items-center gap-4">
-          <Link href="/sizing-quiz/baby" className="w-full max-w-xs">
-            <Button className="w-full py-4 text-[15px]">Get started</Button>
+        <div className="flex flex-col justify-center items-center gap-4">
+          <Link href="/sizing-quiz/baby">
+            <Button className="py-4 px-12 text-xs">Get started</Button>
           </Link>
           <Link
             href="#"
