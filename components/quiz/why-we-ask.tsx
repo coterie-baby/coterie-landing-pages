@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState } from 'react';
 import { XMarkIcon } from '@heroicons/react/24/outline';
 import WhyWeAskIcon from './why-we-ask-icon';
 
@@ -11,14 +11,6 @@ interface WhyWeAskProps {
 
 export default function WhyWeAsk({ helpText, helpAnswer }: WhyWeAskProps) {
   const [isExpanded, setIsExpanded] = useState(false);
-  const [contentHeight, setContentHeight] = useState(0);
-  const contentRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (contentRef.current) {
-      setContentHeight(contentRef.current.scrollHeight);
-    }
-  }, [helpAnswer]);
 
   return (
     <div className="relative">
@@ -55,7 +47,6 @@ export default function WhyWeAsk({ helpText, helpAnswer }: WhyWeAskProps) {
 
         {/* Card */}
         <div
-          ref={contentRef}
           className={`border border-[#0000C9] rounded-2xl p-4 pt-8 relative bg-white transition-all duration-500 ${
             isExpanded ? 'shadow-lg shadow-[#0000C9]/10' : ''
           }`}
