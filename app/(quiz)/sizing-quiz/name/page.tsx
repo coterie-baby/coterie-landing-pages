@@ -52,13 +52,16 @@ export default function NameQuestion() {
       <div className="flex-shrink-0">
         {question.helpText && question.helpAnswer && (
           <div className="px-6 mb-6">
-            <WhyWeAsk helpText={question.helpText} helpAnswer={question.helpAnswer} />
+            <WhyWeAsk
+              helpText={question.helpText}
+              helpAnswer={question.helpAnswer}
+            />
           </div>
         )}
 
         <div className="border-t border-[#E7E7E7] px-6 py-4">
           <div className="flex justify-center">
-            <Button onClick={handleNext} className="py-4 px-12 text-[15px]">
+            <Button onClick={handleNext} className="py-4 px-12 text-xs">
               Next
             </Button>
           </div>

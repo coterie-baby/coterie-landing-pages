@@ -12,6 +12,7 @@ export default function ResultsPage() {
   const [email, setEmail] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [emailSaved, setEmailSaved] = useState(false);
+  const [showEmailForm, setShowEmailForm] = useState(false);
 
   const recommendation = getRecommendation();
   const babyName = answers.name as string;
@@ -19,6 +20,11 @@ export default function ResultsPage() {
   const handleAddToCart = () => {
     // TODO: Implement add to cart functionality
     alert('Added to cart!');
+  };
+
+  const handleAddToBabylist = () => {
+    // TODO: Implement Babylist integration
+    window.open('https://www.babylist.com', '_blank');
   };
 
   const handleSaveEmail = async (e: React.FormEvent) => {
@@ -35,7 +41,9 @@ export default function ResultsPage() {
   if (!recommendation) {
     return (
       <div className="flex flex-col h-full overflow-hidden bg-white items-center justify-center">
-        <p className="text-[#525252]">Unable to generate recommendation. Please try again.</p>
+        <p className="text-[#525252]">
+          Unable to generate recommendation. Please try again.
+        </p>
       </div>
     );
   }
@@ -93,62 +101,96 @@ export default function ResultsPage() {
             </div>
           </div>
         </div>
-
-        {/* Email Capture Section */}
-        <div className="px-6 py-6">
-          <div className="border border-[#E7E7E7] rounded-2xl p-4">
-            <h3 className="text-[16px] font-medium text-[#141414] mb-2">
-              Save your recommendation
-            </h3>
-            <p className="text-[14px] text-[#525252] mb-4">
-              Enter your email and we&apos;ll send you a link to your personalized results.
-            </p>
-
-            {emailSaved ? (
-              <div className="flex items-center gap-2 text-[14px] text-[#0000C9]">
-                <svg
-                  className="w-5 h-5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M5 13l4 4L19 7"
-                  />
-                </svg>
-                <span>Saved! Check your inbox.</span>
-              </div>
-            ) : (
-              <form onSubmit={handleSaveEmail} className="flex gap-2">
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="Enter your email"
-                  className="flex-1 px-4 py-3 rounded-lg border border-[#E7E7E7] text-[14px] outline-none focus:border-[#0000C9] transition-colors"
-                  required
-                />
-                <button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="px-4 py-3 bg-white border border-[#0000C9] text-[#0000C9] rounded-lg text-[14px] font-medium hover:bg-[#0000C9] hover:text-white transition-colors disabled:opacity-50"
-                >
-                  {isSubmitting ? '...' : 'Save'}
-                </button>
-              </form>
-            )}
-          </div>
-        </div>
       </div>
 
       {/* Bottom Section */}
       <div className="flex-shrink-0 border-t border-[#E7E7E7] px-6 py-4">
-        <Button onClick={handleAddToCart} className="w-full py-4 text-[15px]">
+        {/* Email Form - shows when Save is clicked */}
+        {showEmailForm && !emailSaved && (
+          <form onSubmit={handleSaveEmail} className="flex gap-2 mb-4">
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Enter your email"
+              className="flex-1 px-4 py-3 rounded-full border border-[#E7E7E7] text-[14px] outline-none focus:border-[#0000C9] transition-colors"
+              required
+              autoFocus
+            />
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="px-6 py-3 bg-[#0000C9] text-white rounded-full text-[14px] font-bold hover:bg-[#0000C9]/90 transition-colors disabled:opacity-50"
+            >
+              {isSubmitting ? '...' : 'Send'}
+            </button>
+          </form>
+        )}
+
+        {emailSaved && (
+          <div className="flex items-center justify-center gap-2 text-[14px] text-[#0000C9] mb-4">
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M5 13l4 4L19 7"
+              />
+            </svg>
+            <span>Saved! Check your inbox.</span>
+          </div>
+        )}
+
+        {/* Main CTA */}
+        <Button onClick={handleAddToCart} className="w-full text-xs">
           Add to cart
         </Button>
+
+        {/* Secondary buttons */}
+        <div className="flex gap-3 mt-3">
+          <button
+            onClick={handleAddToBabylist}
+            className="flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-full border border-[#E7E7E7] text-[13px] font-bold bg-[#6e3264] text-white transition-colors hover:opacity-90"
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/babylist-heart.png"
+              alt=""
+              width={20}
+              height={20}
+              className="object-contain"
+            />
+            Add to Babylist
+          </button>
+
+          {!emailSaved && (
+            <button
+              onClick={() => setShowEmailForm(!showEmailForm)}
+              className="flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-full bg-[#F7F7F7] text-[13px] font-bold text-[#141414] hover:border-[#0000C9] hover:text-[#0000C9] transition-colors"
+            >
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
+                <polyline points="17 21 17 13 7 13 7 21" />
+                <polyline points="7 3 7 8 15 8" />
+              </svg>
+              Save
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );

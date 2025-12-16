@@ -46,10 +46,14 @@ export default function BirthdateQuestion() {
   // Generate days based on selected month and year
   const days = useMemo(() => {
     if (!month || !year) {
-      return Array.from({ length: 31 }, (_, i) => (i + 1).toString().padStart(2, '0'));
+      return Array.from({ length: 31 }, (_, i) =>
+        (i + 1).toString().padStart(2, '0')
+      );
     }
     const daysInMonth = new Date(parseInt(year), parseInt(month), 0).getDate();
-    return Array.from({ length: daysInMonth }, (_, i) => (i + 1).toString().padStart(2, '0'));
+    return Array.from({ length: daysInMonth }, (_, i) =>
+      (i + 1).toString().padStart(2, '0')
+    );
   }, [month, year]);
 
   const handleNext = () => {
@@ -135,7 +139,10 @@ export default function BirthdateQuestion() {
       <div className="flex-shrink-0">
         {question.helpText && question.helpAnswer && (
           <div className="px-6 mb-6">
-            <WhyWeAsk helpText={question.helpText} helpAnswer={question.helpAnswer} />
+            <WhyWeAsk
+              helpText={question.helpText}
+              helpAnswer={question.helpAnswer}
+            />
           </div>
         )}
 
@@ -144,7 +151,7 @@ export default function BirthdateQuestion() {
             <Button
               onClick={handleNext}
               disabled={!isComplete}
-              className="py-4 px-12 text-[15px] disabled:opacity-50 disabled:cursor-not-allowed"
+              className="py-4 px-12 text-xs disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Next
             </Button>
