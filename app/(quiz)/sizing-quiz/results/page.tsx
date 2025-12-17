@@ -1,9 +1,25 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import Image from 'next/image';
+import { Button } from '@/components/ui/button';
 import QuizHeader from '@/components/quiz/quiz-header';
 import { useQuiz } from '@/lib/quiz';
+
+// Icon paths for value props
+const VALUE_PROP_ICONS = {
+  'fragrance-free': '/fragrance-free.svg',
+  sleep: '/sleep.svg',
+  leaks: '/leaks.svg',
+} as const;
+
+type IconType = keyof typeof VALUE_PROP_ICONS;
+
+interface ValueProp {
+  icon: IconType;
+  title: string;
+  description: string;
+}
 
 // Loading screen component
 function LoadingScreen({ babyName }: { babyName?: string }) {
@@ -64,6 +80,54 @@ function LoadingScreen({ babyName }: { babyName?: string }) {
   );
 }
 
+// Generate personalized value props based on quiz answers
+function getPersonalizedValueProps(
+  answers: Record<string, string | string[]>,
+  babyName?: string
+): ValueProp[] {
+  const isExpecting = answers.baby === 'expecting';
+  const name = babyName || 'your baby';
+
+  if (isExpecting) {
+    return [
+      {
+        icon: 'fragrance-free',
+        title: 'Fragrance free',
+        description: `No harsh chemicals or irritants for ${name}'s delicate skin`,
+      },
+      {
+        icon: 'sleep',
+        title: '12-hour comfort',
+        description: 'Soft, breathable materials for peaceful nights',
+      },
+      {
+        icon: 'leaks',
+        title: 'Leak protection',
+        description: 'Triple-layer core keeps newborn messes contained',
+      },
+    ];
+  }
+
+  // For babies already here - personalized based on name
+  return [
+    {
+      icon: 'fragrance-free',
+      title: 'Fragrance free',
+      description: `Clean, gentle ingredients safe for ${name}'s sensitive skin`,
+    },
+    {
+      icon: 'sleep',
+      title: '12-hour overnight',
+      description: `Superior absorption so ${name} wakes up dry`,
+    },
+    {
+      icon: 'leaks',
+      title: 'No leaks',
+      description: `Flexible fit that moves with ${name} all day`,
+    },
+  ];
+}
+
 export default function ResultsPage() {
   const { getRecommendation, answers } = useQuiz();
   const [isLoading, setIsLoading] = useState(true);
@@ -75,6 +139,12 @@ export default function ResultsPage() {
 
   const recommendation = getRecommendation();
   const babyName = answers.name as string;
+
+  // Get personalized value props based on quiz answers
+  const personalizedValueProps = useMemo(
+    () => getPersonalizedValueProps(answers, babyName),
+    [answers, babyName]
+  );
 
   // Handle loading to results transition
   useEffect(() => {
@@ -123,12 +193,6 @@ export default function ResultsPage() {
     );
   }
 
-  const valueProps = [
-    { icon: '✦', label: 'Ultra-soft' },
-    { icon: '◎', label: '12hr protect' },
-    { icon: '♡', label: 'Clean ingredients' },
-  ];
-
   return (
     <div
       className={`flex flex-col h-full overflow-hidden bg-[#FAF9F7] transition-opacity duration-500 ${
@@ -138,9 +202,7 @@ export default function ResultsPage() {
       <QuizHeader questionId="results" showBackButton={false} />
 
       {/* Main Content - Flex to fill available space */}
-      <div className="flex-1 flex flex-col px-5 pb-5">
-        {/* Product Showcase */}
-
+      <div className="flex-1 flex flex-col px-5 pb-5 overflow-y-auto">
         {/* Personalized Message */}
         <div
           className="text-center mt-5 animate-fade-up"
@@ -154,63 +216,94 @@ export default function ResultsPage() {
           </p>
         </div>
 
-        {/* Value Props */}
+        {/* Enhanced Product Recommendation Card */}
         <div
-          className="flex justify-center gap-2 mt-4 animate-fade-up"
-          style={{ opacity: 0, animationDelay: '400ms' }}
+          className="relative bg-white rounded-2xl overflow-hidden shadow-[0_4px_24px_rgba(0,0,0,0.08)] animate-scale-in mt-5"
+          style={{ opacity: 0, animationDelay: '300ms' }}
         >
-          {valueProps.map((prop, index) => (
-            <div
-              key={prop.label}
-              className="flex items-center gap-1.5 bg-white border border-[#E8E4DF] rounded-full px-3 py-1.5"
-              style={{
-                animationDelay: `${400 + index * 100}ms`,
-              }}
-            >
-              <span className="text-[12px] text-[#0000C9]">{prop.icon}</span>
-              <span className="text-[11px] text-[#525252] font-medium">
-                {prop.label}
-              </span>
+          {/* Top Section: Product Info */}
+          <div className="flex p-4 gap-4">
+            {/* Product Image */}
+            <div className="relative w-24 h-24 rounded-xl overflow-hidden bg-[#F5F4F2] flex-shrink-0">
+              <Image
+                src={recommendation.imageUrl}
+                alt={recommendation.productName}
+                fill
+                className="object-cover"
+                priority
+              />
             </div>
-          ))}
-        </div>
 
-        <div
-          className="flex relative bg-white rounded-2xl overflow-hidden shadow-[0_2px_20px_rgba(0,0,0,0.06)] animate-scale-in mt-4 p-4"
-          style={{ opacity: 0 }}
-        >
-          <div className="relative w-15 h-15">
-            <Image
-              src={recommendation.imageUrl}
-              alt={recommendation.productName}
-              fill
-              className="object-cover"
-              priority
-            />
-          </div>
-
-          {/* Product Info Bar */}
-          <div className="flex px-4 py-3">
-            <div className="flex flex-col gap-2">
-              <span className="text-[15px] font-medium text-[#141414]">
+            {/* Product Details */}
+            <div className="flex flex-col justify-center flex-1 min-w-0">
+              <span className="text-[11px] font-medium tracking-[0.5px] uppercase text-[#0000C9]">
+                Recommended
+              </span>
+              <span className="text-[20px] text-[#141414] mt-0.5 leading-tight">
                 {recommendation.productName}
               </span>
-              <span>Size 6</span>
-              <span className="text-[13px] text-[#525252]">·</span>
-              <span className="text-[15px] font-medium text-[#0000C9]">
-                {recommendation.price}
-              </span>
+              <div className="flex items-center gap-2 mt-1">
+                <span className="text-sm text-[#525252]">
+                  {recommendation.size}
+                </span>
+                <span className="text-[#D4D4D4]">|</span>
+                <span className="text-sm text-[#525252]">
+                  {recommendation.price} per month
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Divider with subtle gradient */}
+          <div className="h-px bg-gradient-to-r from-transparent via-[#E8E4DF] to-transparent mx-4" />
+
+          {/* Bottom Section: Personalized Value Props */}
+          <div className="px-4 py-4">
+            <p className="text-[10px] font-medium tracking-[0.8px] uppercase text-[#8A8A8A] mb-3">
+              Why we chose this for {babyName || 'your baby'}
+            </p>
+            <div className="space-y-3">
+              {personalizedValueProps.map((prop, index) => (
+                <div
+                  key={prop.title}
+                  className="flex items-start gap-3 animate-fade-up"
+                  style={{
+                    opacity: 0,
+                    animationDelay: `${500 + index * 100}ms`,
+                    animationFillMode: 'forwards',
+                  }}
+                >
+                  {/* Icon */}
+                  <div className="w-5 h-5 flex-shrink-0 mt-0.5">
+                    <Image
+                      src={VALUE_PROP_ICONS[prop.icon]}
+                      alt=""
+                      width={20}
+                      height={20}
+                    />
+                  </div>
+                  {/* Text Content */}
+                  <div className="flex-1 min-w-0 pt-0.5">
+                    <p className="text-sm font-medium text-[#141414] leading-tight">
+                      {prop.title}
+                    </p>
+                    <p className="text-[12px] text-[#6B6B6B] leading-[1.4] mt-0.5">
+                      {prop.description}
+                    </p>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </div>
 
         {/* Spacer */}
-        <div className="flex-1 min-h-3" />
+        <div className="flex-1 min-h-4" />
 
         {/* CTA Section */}
         <div
-          className="animate-fade-up"
-          style={{ opacity: 0, animationDelay: '500ms' }}
+          className="animate-fade-up pt-2"
+          style={{ opacity: 0, animationDelay: '700ms' }}
         >
           {/* Email Form - shows when Save is clicked */}
           {showEmailForm && !emailSaved && (
@@ -254,12 +347,12 @@ export default function ResultsPage() {
           )}
 
           {/* Primary CTA */}
-          <button
+          <Button
             onClick={handleAddToCart}
-            className="w-full py-4 bg-[#0000C9] text-white rounded-full text-[13px] font-semibold tracking-wide hover:bg-[#0000A0] active:scale-[0.98] transition-all"
+            className="w-full bg-[#0000C9] text-white rounded-full text-xs font-semibold tracking-wide hover:bg-[#0000A0] active:scale-[0.98] transition-all"
           >
             Add to cart
-          </button>
+          </Button>
 
           {/* Secondary Actions */}
           <div className="flex gap-2 mt-2">
@@ -275,7 +368,7 @@ export default function ResultsPage() {
                 height={16}
                 className="object-contain"
               />
-              Babylist
+              Add to Babylist
             </button>
 
             {!emailSaved && (
