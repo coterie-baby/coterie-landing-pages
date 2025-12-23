@@ -108,7 +108,7 @@ export function ReviewsToggleSection() {
       <div className="">
         {/* Main Headline */}
         <h3 className="text-3xl md:text-4xl font-bold text-center mb-8 text-[#0000C9]">
-          The Internet's Favorite Diaper
+          The Internet&apos;s Favorite Diaper
         </h3>
 
         {/* Filter Buttons */}
