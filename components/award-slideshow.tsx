@@ -68,8 +68,8 @@ const AwardSlideshow: React.FC<AwardSlideshowProps> = ({
               alt={award.backgroundAlt}
               fill
               className="object-cover"
-              priority={index === 0}
-              quality={90}
+              loading="lazy"
+              quality={85}
               sizes="100vw"
             />
           </div>

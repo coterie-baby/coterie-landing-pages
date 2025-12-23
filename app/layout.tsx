@@ -27,6 +27,12 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <head>
+        {/* DNS prefetch and preconnect for external domains */}
+        <link rel="preconnect" href="https://cdn.sanity.io" crossOrigin="anonymous" />
+        <link rel="dns-prefetch" href="https://cdn.sanity.io" />
+        <link rel="preconnect" href="https://player.vimeo.com" crossOrigin="anonymous" />
+        <link rel="dns-prefetch" href="https://player.vimeo.com" />
+
         {/* Preload critical fonts for faster text rendering */}
         <link
           rel="preload"
