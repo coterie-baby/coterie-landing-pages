@@ -27,21 +27,21 @@ const defaultPosts: SocialPost[] = [
   },
   {
     id: '2',
-    username: '@lismi',
+    username: '@lismilice',
     imageUrl:
       'https://cdn.sanity.io/images/e4q6bkl9/production/3d0908ac274ce13ec0b7dc5904a38c5c3dc98b98-469x637.png?w=560&h=747&q=80&fit=crop&auto=format',
     imageAlt: 'Baby at the beach',
   },
   {
     id: '3',
-    username: '@sarahk',
+    username: '@thesuncoastblonde',
     imageUrl:
       'https://cdn.sanity.io/images/e4q6bkl9/production/a491f5df1009b55bee0467f7109eaeb8ace4a2e1-1440x1800.jpg?w=560&h=747&q=80&fit=crop&auto=format',
     imageAlt: 'Baby with plants',
   },
   {
     id: '4',
-    username: '@mamabear',
+    username: '@elyse.fox',
     imageUrl:
       'https://cdn.sanity.io/images/e4q6bkl9/production/4c14d3696ee3355ab40e7a8049c4aa034d400fa5-531x642.png?w=560&h=747&q=80&fit=crop&auto=format',
     imageAlt: 'Baby smiling',
@@ -271,19 +271,6 @@ export default function SocialPosts({
                     <InstagramIcon className="w-6 h-6" />
                     <span className="text-sm font-medium">{post.username}</span>
                   </div>
-
-                  {/* Reels icon for some posts */}
-                  {(index % posts.length) % 2 === 1 && (
-                    <div className="absolute top-4 right-4 text-white drop-shadow-lg">
-                      <svg
-                        className="w-6 h-6"
-                        viewBox="0 0 24 24"
-                        fill="currentColor"
-                      >
-                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z" />
-                      </svg>
-                    </div>
-                  )}
                 </div>
               </div>
             );
