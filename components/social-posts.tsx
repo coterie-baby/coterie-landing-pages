@@ -62,10 +62,10 @@ function InstagramIcon({ className }: { className?: string }) {
 }
 
 export default function SocialPosts({
-  title = 'Good enough to post',
+  title = 'Diapers good enough to post',
   subtitle = '',
   posts = defaultPosts,
-  backgroundColor = '#FFFFFF',
+  backgroundColor = '#f9f4ec',
 }: SocialPostsProps) {
   // Create extended array with clones for infinite loop
   const extendedPosts = [...posts, ...posts, ...posts];
