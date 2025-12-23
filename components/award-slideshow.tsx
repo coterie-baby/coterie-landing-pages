@@ -35,7 +35,8 @@ const AwardSlideshow: React.FC<AwardSlideshowProps> = ({
     }, autoPlayInterval);
 
     return () => clearInterval(interval);
-  }, [currentSlide, awards.length, autoPlayInterval]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [awards.length, autoPlayInterval]);
 
   const nextSlide = () => {
     if (isAnimating) return;

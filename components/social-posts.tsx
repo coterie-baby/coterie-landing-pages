@@ -16,33 +16,34 @@ interface SocialPostsProps {
   backgroundColor?: string;
 }
 
+// Mobile-optimized: 280px cards × 2x retina = 560px, aspect ratio 3:4
 const defaultPosts: SocialPost[] = [
   {
     id: '1',
     username: '@aileciajones',
     imageUrl:
-      'https://cdn.sanity.io/images/e4q6bkl9/production/ea68440bf4fd21982bc70029fa437bdede6b0040-1080x1350.jpg?rect=160,0,760,1350&w=960&h=1706&q=100&fit=crop&auto=format',
+      'https://cdn.sanity.io/images/e4q6bkl9/production/ea68440bf4fd21982bc70029fa437bdede6b0040-1080x1350.jpg?w=560&h=747&q=80&fit=crop&auto=format',
     imageAlt: 'Mother holding baby',
   },
   {
     id: '2',
     username: '@lismi',
     imageUrl:
-      'https://cdn.sanity.io/images/e4q6bkl9/production/3d0908ac274ce13ec0b7dc5904a38c5c3dc98b98-469x637.png?rect=0,26,469,586&w=960&h=1200&q=100&fit=crop&auto=format',
+      'https://cdn.sanity.io/images/e4q6bkl9/production/3d0908ac274ce13ec0b7dc5904a38c5c3dc98b98-469x637.png?w=560&h=747&q=80&fit=crop&auto=format',
     imageAlt: 'Baby at the beach',
   },
   {
     id: '3',
     username: '@sarahk',
     imageUrl:
-      'https://cdn.sanity.io/images/e4q6bkl9/production/a491f5df1009b55bee0467f7109eaeb8ace4a2e1-1440x1800.jpg?rect=0,180,1440,1440&w=960&h=960&q=100&fit=crop&auto=format',
+      'https://cdn.sanity.io/images/e4q6bkl9/production/a491f5df1009b55bee0467f7109eaeb8ace4a2e1-1440x1800.jpg?w=560&h=747&q=80&fit=crop&auto=format',
     imageAlt: 'Baby with plants',
   },
   {
     id: '4',
     username: '@mamabear',
     imageUrl:
-      'https://cdn.sanity.io/images/e4q6bkl9/production/4c14d3696ee3355ab40e7a8049c4aa034d400fa5-531x642.png?rect=0,56,531,531&w=960&h=960&q=100&fit=crop&auto=format',
+      'https://cdn.sanity.io/images/e4q6bkl9/production/4c14d3696ee3355ab40e7a8049c4aa034d400fa5-531x642.png?w=560&h=747&q=80&fit=crop&auto=format',
     imageAlt: 'Baby smiling',
   },
 ];
@@ -259,6 +260,7 @@ export default function SocialPosts({
                     src={post.imageUrl}
                     alt={post.imageAlt}
                     fill
+                    loading="lazy"
                     className="object-cover"
                     sizes="280px"
                     draggable={false}
