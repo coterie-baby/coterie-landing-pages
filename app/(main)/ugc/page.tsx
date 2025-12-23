@@ -1,10 +1,10 @@
 import { ReviewsToggleSection } from '@/components/reviews-toggle';
 import UGCVideo from '@/components/ugc-video';
 import FlexAnnouncementBar from '@/components/flex-announcement-bar';
-import USP2 from '@/components/usp2';
 import CTABanner from '@/components/cta-banner';
 import AwardSlideshow from '@/components/award-slideshow';
 import { FloatingCTA } from '@/components/floating-cta';
+import SocialPosts from '@/components/social-posts';
 
 export default function UGCPage() {
   const awardSlideshowData = {
@@ -43,40 +43,12 @@ export default function UGCPage() {
         backgroundAlt: 'A child playing with a ball.',
       },
     ],
-    eyebrowText: 'MORE GOOD COPY HERE',
+    eyebrowText: 'The Trophy Case Is Full',
     awardIcons: [
       'https://cdn.sanity.io/images/e4q6bkl9/production/bd555c4a348a1a12c6f04210d2144fea56135969-556x522.png',
       'https://cdn.sanity.io/images/e4q6bkl9/production/37a5c26978657e1d3b3b78ffd5bea7f2ba3fc1fc-556x522.png',
       'https://cdn.sanity.io/images/e4q6bkl9/production/e7913ff0a2d016cde5d5bcd627e28cccf79c0e20-556x522.png',
       'https://cdn.sanity.io/images/e4q6bkl9/production/088f06422cacba9c57bcfe3083b0caa479e3775e-556x522.png',
-    ],
-  };
-
-  const usp2Data = {
-    headline: 'Even More Good Coterie Copy',
-    cards: 3,
-    productCards: [
-      {
-        image:
-          'https://cdn.sanity.io/images/e4q6bkl9/production/bd6462c2724c47ddc7cf46050ac3e940bfae9345-6000x4500.jpg?fit=max&w=1200&h=1200',
-        headline: 'Fast-Wicking Technology',
-        bodyCopy:
-          'Keeps your baby dry all night with superior absorbency and leak protection.',
-      },
-      {
-        image:
-          'https://cdn.sanity.io/images/e4q6bkl9/production/bd6462c2724c47ddc7cf46050ac3e940bfae9345-6000x4500.jpg?fit=max&w=1200&h=1200',
-        headline: 'Clean Ingredients',
-        bodyCopy:
-          'No fragrance, lotion, latex, dyes, chlorine, or parabens. Hypoallergenic and dermatologist tested.',
-      },
-      {
-        image:
-          'https://cdn.sanity.io/images/e4q6bkl9/production/bd6462c2724c47ddc7cf46050ac3e940bfae9345-6000x4500.jpg?fit=max&w=1200&h=1200',
-        headline: 'Perfect Fit & Comfort',
-        bodyCopy:
-          'Soft, stretchy material with 360° fit that moves with your baby for ultimate comfort.',
-      },
     ],
   };
 
@@ -90,7 +62,7 @@ export default function UGCPage() {
       />
       <ReviewsToggleSection />
       <AwardSlideshow {...awardSlideshowData} />
-      <USP2 {...usp2Data} />
+      <SocialPosts />
       <CTABanner
         headline="Ready to see why our products have over 25,000 5-star reviews?"
         buttonText="Shop Now"

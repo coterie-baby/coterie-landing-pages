@@ -8,7 +8,11 @@ interface Testimonial {
   author: string;
 }
 
-const TestimonialCard = memo(function TestimonialCard({ testimonial }: { testimonial: Testimonial }) {
+const TestimonialCard = memo(function TestimonialCard({
+  testimonial,
+}: {
+  testimonial: Testimonial;
+}) {
   return (
     <div className="bg-[#f5f5f5] rounded-lg p-4 flex flex-col gap-3">
       <StarRating rating={5} />
@@ -104,7 +108,7 @@ export function ReviewsToggleSection() {
       <div className="">
         {/* Main Headline */}
         <h3 className="text-3xl md:text-4xl font-bold text-center mb-8 text-[#0000C9]">
-          Some Really Really Good Copy Here!
+          The Internet's Favorite Diaper
         </h3>
 
         {/* Filter Buttons */}
@@ -127,7 +131,10 @@ export function ReviewsToggleSection() {
         {/* Testimonials */}
         <div className="space-y-6">
           {filteredTestimonials.map((testimonial, i) => (
-            <TestimonialCard key={`${testimonial.category}-${i}`} testimonial={testimonial} />
+            <TestimonialCard
+              key={`${testimonial.category}-${i}`}
+              testimonial={testimonial}
+            />
           ))}
         </div>
       </div>
