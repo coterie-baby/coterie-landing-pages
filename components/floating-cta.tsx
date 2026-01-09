@@ -1,6 +1,7 @@
 'use client';
 import Link from 'next/link';
 import posthog from 'posthog-js';
+import { Button } from './ui/button';
 
 export function FloatingCTA() {
   const handleClick = () => {
@@ -11,10 +12,13 @@ export function FloatingCTA() {
   };
 
   return (
-    <Link href="https://www.coterie.com/products/the-diaper" onClick={handleClick}>
-      <button className="fixed bottom-6 right-6 bg-[#0000C9] text-white px-6 py-4 rounded-full font-medium text-sm shadow-lg hover:bg-[#0000AA] transition-colors z-50 flex items-center gap-2">
+    <Link
+      href="https://www.coterie.com/products/the-diaper"
+      onClick={handleClick}
+    >
+      <Button className="fixed bottom-6 right-6 bg-[#0000C9] text-white px-6 py-4 rounded-full font-medium text-sm shadow-lg hover:bg-[#0000AA] transition-colors z-50 flex items-center gap-2">
         Try Coterie →
-      </button>
+      </Button>
     </Link>
   );
 }
