@@ -1,15 +1,27 @@
 'use client';
 import { useState } from 'react';
 import AIChatAssistant from './ai-chat-assistant';
+import posthog from 'posthog-js';
 
 export default function FloatingAIButton() {
   const [isOpen, setIsOpen] = useState(false);
+
+  const handleToggle = () => {
+    const newIsOpen = !isOpen;
+    setIsOpen(newIsOpen);
+
+    if (newIsOpen) {
+      posthog.capture('ai_assistant_opened', {
+        source: 'floating_button',
+      });
+    }
+  };
 
   return (
     <>
       {/* Floating Button */}
       <button
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={handleToggle}
         className="fixed bottom-6 right-6 w-16 h-16 rounded-full bg-[#0000C9] text-white shadow-lg hover:bg-[#0000AA] transition-all z-50 flex items-center justify-center group"
         aria-label="Open AI Assistant"
       >

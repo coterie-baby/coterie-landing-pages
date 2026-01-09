@@ -5,6 +5,7 @@ import { getReviews, voteReview } from '../../utils/reviews';
 import { ReviewCard } from './review-card';
 import { StarRating } from './star-rating';
 import { FilterDropdown } from './filter-dropdown';
+import posthog from 'posthog-js';
 
 export interface Review {
   id: number;
@@ -220,12 +221,19 @@ export default function Reviews({
               return review;
             })
           );
+
+          // Track review vote submitted event
+          posthog.capture('review_vote_submitted', {
+            review_id: reviewId,
+            vote_type: voteType,
+            product_name: productName,
+          });
         }
       } catch {
         // Vote failed silently
       }
     },
-    []
+    [productName]
   );
 
   const displayTotalReviews =

@@ -1,6 +1,7 @@
 'use client';
 import Image from 'next/image';
 import { useState } from 'react';
+import posthog from 'posthog-js';
 
 export default function OrderTypeSelector() {
   return (
@@ -35,6 +36,16 @@ function OrderTypeSelection() {
     'auto-renew'
   );
 
+  const handleOrderTypeSelect = (type: 'auto-renew' | 'one-time') => {
+    setSelectedType(type);
+    posthog.capture('order_type_selected', {
+      order_type: type,
+      price: type === 'auto-renew' ? 95.0 : 105.5,
+      discount_applied: type === 'auto-renew',
+      product_name: 'The Diaper',
+    });
+  };
+
   return (
     <div className="flex flex-col gap-4">
       {/* Header */}
@@ -46,7 +57,7 @@ function OrderTypeSelection() {
       <div className="grid grid-cols-2 gap-4">
         {/* Auto-Renew Card */}
         <button
-          onClick={() => setSelectedType('auto-renew')}
+          onClick={() => handleOrderTypeSelect('auto-renew')}
           className={`relative p-3 rounded-lg border-1 text-left transition-all ${
             selectedType === 'auto-renew'
               ? 'border-[#0000C9] bg-white'
@@ -76,7 +87,7 @@ function OrderTypeSelection() {
 
         {/* One-time Card */}
         <button
-          onClick={() => setSelectedType('one-time')}
+          onClick={() => handleOrderTypeSelect('one-time')}
           className={`relative p-3 rounded-lg border-1 text-left transition-all ${
             selectedType === 'one-time'
               ? 'border-[#0000C9] bg-white'

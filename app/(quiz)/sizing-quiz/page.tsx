@@ -1,9 +1,19 @@
+'use client';
+
 import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import Header from '@/components/global/header';
+import posthog from 'posthog-js';
 
 export default function SizingQuizLanding() {
+  const handleGetStarted = () => {
+    posthog.capture('quiz_started', {
+      quiz_type: 'sizing_quiz',
+      source: 'quiz_landing_page',
+    });
+  };
+
   return (
     <div className="flex flex-col h-full overflow-hidden bg-white">
       <Header />
@@ -34,7 +44,7 @@ export default function SizingQuizLanding() {
       {/* Bottom Section */}
       <div className="flex-shrink-0 bg-white border-t border-[#E7E7E7] px-6 py-4">
         <div className="flex flex-col justify-center items-center gap-4">
-          <Link href="/sizing-quiz/baby">
+          <Link href="/sizing-quiz/baby" onClick={handleGetStarted}>
             <Button className="py-4 px-12 text-xs">Get started</Button>
           </Link>
           <Link

@@ -1,6 +1,7 @@
 'use client';
 import { useState } from 'react';
 import Link from 'next/link';
+import posthog from 'posthog-js';
 
 interface ProductFinderProps {
   onRecommendation?: (size: string) => void;
@@ -58,6 +59,14 @@ export default function AIProductFinder({
 
     setRecommendation({ size: recommendedSize, reason });
     onRecommendation?.(recommendedSize);
+
+    // Track AI product finder completed event
+    posthog.capture('ai_product_finder_completed', {
+      recommended_size: recommendedSize,
+      baby_age: babyAge || undefined,
+      current_size: currentSize || undefined,
+      concerns: concerns,
+    });
   };
 
   const toggleConcern = (concern: string) => {

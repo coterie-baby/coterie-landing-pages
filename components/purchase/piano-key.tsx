@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { SizeOption } from '../pdp-hero';
+import posthog from 'posthog-js';
 
 interface PianoKeyProps {
   size: SizeOption;
@@ -8,10 +9,20 @@ interface PianoKeyProps {
 export default function PianoKey({ size }: PianoKeyProps) {
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
 
+  const handleSizeSelect = () => {
+    setSelectedSize(size.id);
+    posthog.capture('size_selected', {
+      size_id: size.id,
+      size_label: size.label,
+      weight_range: size.weightRange,
+      source: 'pdp_hero',
+    });
+  };
+
   return (
     <div
       key={size.id}
-      onClick={() => setSelectedSize(size.id)}
+      onClick={handleSizeSelect}
       className={`px-4 py-3 rounded-lg border-2 text-sm font-medium transition-all ${
         selectedSize === size.id
           ? 'border-[#0000C9] bg-[#0000C9] text-white'

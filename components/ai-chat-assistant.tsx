@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import { Button } from './ui/button';
 import { ArrowUpIcon, SparklesIcon } from '@heroicons/react/24/outline';
+import posthog from 'posthog-js';
 
 interface ChatMessage {
   role: 'user' | 'assistant';
@@ -39,6 +40,13 @@ export default function AIChatAssistant({
     setMessages((prev) => [...prev, { role: 'user', content: userMessage }]);
     setIsLoading(true);
     onMessageSent?.(userMessage);
+
+    // Track AI chat message sent event
+    posthog.capture('ai_chat_message_sent', {
+      message_text: userMessage,
+      message_number: messages.length + 1,
+      compact_mode: compact,
+    });
 
     // Simulate AI response (replace with actual API call)
     setTimeout(() => {

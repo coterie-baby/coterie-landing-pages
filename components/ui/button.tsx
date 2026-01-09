@@ -1,6 +1,9 @@
+'use client';
+
 import * as React from 'react';
 import { Slot } from '@radix-ui/react-slot';
 import { cva, type VariantProps } from 'class-variance-authority';
+import posthog from 'posthog-js';
 
 import { cn } from '@/lib/utils';
 
@@ -39,6 +42,8 @@ function Button({
   variant,
   size,
   asChild = false,
+  onClick,
+  children,
   ...props
 }: React.ComponentProps<'button'> &
   VariantProps<typeof buttonVariants> & {
@@ -46,12 +51,22 @@ function Button({
   }) {
   const Comp = asChild ? Slot : 'button';
 
+  const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    posthog.capture('Button Click', {
+      Label: typeof children === 'string' ? children : undefined,
+    });
+    onClick?.(e);
+  };
+
   return (
     <Comp
       data-slot="button"
       className={cn(buttonVariants({ variant, size, className }))}
+      onClick={handleClick}
       {...props}
-    />
+    >
+      {children}
+    </Comp>
   );
 }
 
