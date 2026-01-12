@@ -7,6 +7,7 @@ import { DisableDraftMode } from '@/components/disable-draft-mode';
 import { VercelToolbar } from '@vercel/toolbar/next';
 import { Amplitude } from '@/amplitude';
 import { Analytics } from '@vercel/analytics/next';
+import { SpeedInsights } from '@vercel/speed-insights/next';
 
 export const viewport: Viewport = {
   themeColor: '#FFFFFF',
@@ -71,6 +72,7 @@ export default async function RootLayout({
         )}
         {shouldInjectToolbar && <VercelToolbar />}
         <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );
