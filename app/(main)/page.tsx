@@ -18,7 +18,7 @@ export default function HomePage() {
   // Display the visitor ID once loaded
   return (
     <main>
-      <h1>Welcome!</h1>
+      <h1>Hi!</h1>
       {data && <p>Your visitor ID is: {data.visitorId}</p>}
     </main>
   );

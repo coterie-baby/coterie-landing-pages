@@ -1,5 +1,7 @@
 'use client';
 import { useState, memo } from 'react';
+import amplitude from '@/amplitude';
+import { track } from '@vercel/analytics';
 import { StarRating } from './reviews/star-rating';
 
 interface Testimonial {
@@ -98,6 +100,18 @@ export function ReviewsToggleSection() {
     'Value',
   ];
 
+  const handleFilterClick = (filter: string) => {
+    setSelectedFilter(filter);
+
+    amplitude.track('reviews_filter_clicked', {
+      filter_name: filter,
+    });
+
+    track('reviews_filter_clicked', {
+      filter_name: filter,
+    });
+  };
+
   // Filter testimonials based on selected filter
   const filteredTestimonials = reviewTestimonials.filter(
     (testimonial) => testimonial.category === selectedFilter
@@ -116,7 +130,7 @@ export function ReviewsToggleSection() {
           {filters.map((filter) => (
             <button
               key={filter}
-              onClick={() => setSelectedFilter(filter)}
+              onClick={() => handleFilterClick(filter)}
               className={`cursor-pointer px-4 py-2 rounded-full text-sm text-[#0000C9] font-medium transition-all ${
                 selectedFilter === filter
                   ? 'bg-[#D1E3FB]'

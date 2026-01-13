@@ -1,7 +1,8 @@
 'use client';
-import Link from 'next/link';
+import amplitude from '@/amplitude';
+import { track } from '@vercel/analytics';
 import { Button } from './ui/button';
-import posthog from 'posthog-js';
+import Link from 'next/link';
 
 interface CTABannerProps {
   headline?: string;
@@ -39,11 +40,19 @@ export default function CTABanner({
   const buttonUrl = button?.href || buttonHref;
 
   const handleCTAClick = () => {
-    posthog.capture('cta_clicked', {
+    amplitude.setTransport('beacon');
+    amplitude.track('cta_clicked', {
       cta_location: 'CTA Banner',
       cta_text: buttonLabel,
       cta_url: buttonUrl,
       headline: displayHeadline,
+    });
+    amplitude.flush();
+
+    track('cta_clicked', {
+      cta_location: 'CTA Banner',
+      cta_text: buttonLabel,
+      cta_url: buttonUrl,
     });
   };
 
