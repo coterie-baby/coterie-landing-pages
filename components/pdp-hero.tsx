@@ -118,6 +118,7 @@ export default function PDPHero({
   subscriptionNote = 'A shipment typically lasts one month',
 }: PDPHeroProps) {
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  const [selectedSize, setSelectedSize] = useState<string | null>(null);
 
   const currentImage = thumbnails[selectedImageIndex] || {
     src: mainImage,
@@ -401,7 +402,12 @@ export default function PDPHero({
 
                 <div className="grid grid-cols-4 gap-2">
                   {sizes.map((size) => (
-                    <PianoKey size={size} key={size.id} />
+                    <PianoKey
+                      size={size}
+                      key={size.id}
+                      isSelected={selectedSize === size.id}
+                      onSelect={() => setSelectedSize(size.id)}
+                    />
                   ))}
                 </div>
 
