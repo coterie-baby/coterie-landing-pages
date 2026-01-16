@@ -2,7 +2,6 @@ import dynamic from 'next/dynamic';
 import UGCVideo from '@/components/ugc-video';
 import FlexAnnouncementBar from '@/components/flex-announcement-bar';
 import { FloatingCTA } from '@/components/floating-cta';
-import UserTracker from '@/components/user-tracker';
 // Lazy load below-fold components
 const ReviewsToggleSection = dynamic(
   () =>
@@ -75,7 +74,6 @@ export default function UGCPage() {
 
   return (
     <>
-      <UserTracker />
       <UGCVideo />
       <FlexAnnouncementBar
         announcement="Over 25,000 5-Star Reviews"

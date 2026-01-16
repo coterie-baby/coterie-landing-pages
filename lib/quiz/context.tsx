@@ -8,7 +8,6 @@ import {
   ReactNode,
 } from 'react';
 import { useRouter } from 'next/navigation';
-import posthog from 'posthog-js';
 import {
   QuizConfig,
   Question,
@@ -116,16 +115,6 @@ export function QuizProvider({
       // Save answer if provided
       if (answer !== undefined) {
         setAnswer(currentQId, answer);
-
-        // Track quiz question answered event
-        posthog.capture('quiz_question_answered', {
-          quiz_type: 'sizing_quiz',
-          question_id: currentQId,
-          question_text: question.question,
-          answer: answer,
-          step_number: getQuestionIndex(config, currentQId),
-          total_steps: getTotalQuestions(config),
-        });
       }
 
       // Determine next question

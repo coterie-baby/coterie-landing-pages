@@ -1,7 +1,6 @@
 'use client';
 import Image from 'next/image';
 import { useState } from 'react';
-import posthog from 'posthog-js';
 
 export default function OrderTypeSelector() {
   return (
@@ -38,12 +37,6 @@ function OrderTypeSelection() {
 
   const handleOrderTypeSelect = (type: 'auto-renew' | 'one-time') => {
     setSelectedType(type);
-    posthog.capture('order_type_selected', {
-      order_type: type,
-      price: type === 'auto-renew' ? 95.0 : 105.5,
-      discount_applied: type === 'auto-renew',
-      product_name: 'The Diaper',
-    });
   };
 
   return (

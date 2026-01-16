@@ -8,7 +8,7 @@ import { VercelToolbar } from '@vercel/toolbar/next';
 import { Amplitude } from '@/amplitude';
 import { Analytics } from '@vercel/analytics/next';
 import { SpeedInsights } from '@vercel/speed-insights/next';
-import FingerprintWrapper from '@/components/fingerprint-wrapper';
+import { GTMTracking } from '@/lib/gtm';
 
 export const viewport: Viewport = {
   themeColor: '#FFFFFF',
@@ -64,7 +64,8 @@ export default async function RootLayout({
       <GoogleTagManager gtmId="GTM-N9NL6XQ" />
       <Amplitude />
       <body className="antialiased bg-white">
-        <FingerprintWrapper>{children}</FingerprintWrapper>
+        <GTMTracking />
+        {children}
         {(await draftMode()).isEnabled && (
           <>
             <VisualEditing />

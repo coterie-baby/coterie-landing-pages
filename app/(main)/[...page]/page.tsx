@@ -103,8 +103,7 @@ export default async function Page(props: PageProps) {
         ))}
       </main>
     );
-  } catch (error) {
-    console.error('Error fetching page:', error);
+  } catch {
     notFound();
   }
 }

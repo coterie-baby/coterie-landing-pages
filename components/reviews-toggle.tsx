@@ -2,6 +2,7 @@
 import { useState, memo } from 'react';
 import amplitude from '@/amplitude';
 import { track } from '@vercel/analytics';
+import { sendGTMEvent } from '@next/third-parties/google';
 import { StarRating } from './reviews/star-rating';
 
 interface Testimonial {
@@ -110,6 +111,17 @@ export function ReviewsToggleSection() {
     track('reviews_filter_clicked', {
       filter_name: filter,
     });
+
+    sendGTMEvent({
+      event: 'ui_custom_event',
+      customEventPayload: {
+        name: 'reviews_filter_clicked',
+        value: {
+          filter_name: filter,
+          location: 'Reviews Toggle',
+        },
+      },
+    });
   };
 
   // Filter testimonials based on selected filter
@@ -118,7 +130,7 @@ export function ReviewsToggleSection() {
   );
 
   return (
-    <section className="relative py-12 px-4 md:px-10 bg-white">
+    <section className="relative py-12 px-4 md:px-10 bg-white" data-gtm-ignore>
       <div className="">
         {/* Main Headline */}
         <h3 className="text-3xl md:text-4xl font-bold text-center mb-8 text-[#0000C9]">

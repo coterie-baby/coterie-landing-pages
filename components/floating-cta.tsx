@@ -1,6 +1,7 @@
 'use client';
 import amplitude from '@/amplitude';
 import { track } from '@vercel/analytics';
+import { sendGTMEvent } from '@next/third-parties/google';
 import { Button } from './ui/button';
 import Link from 'next/link';
 
@@ -18,6 +19,12 @@ export function FloatingCTA() {
     track('floating_cta_clicked', {
       cta_text: 'Try Coterie',
       cta_url: CTA_URL,
+    });
+
+    sendGTMEvent({
+      event: 'cta_click',
+      cta_text: 'Try Coterie',
+      location: 'floating_cta',
     });
   };
 

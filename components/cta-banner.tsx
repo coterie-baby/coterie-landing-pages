@@ -1,6 +1,7 @@
 'use client';
 import amplitude from '@/amplitude';
 import { track } from '@vercel/analytics';
+import { sendGTMEvent } from '@next/third-parties/google';
 import { Button } from './ui/button';
 import Link from 'next/link';
 
@@ -53,6 +54,12 @@ export default function CTABanner({
       cta_location: 'CTA Banner',
       cta_text: buttonLabel,
       cta_url: buttonUrl,
+    });
+
+    sendGTMEvent({
+      event: 'cta_click',
+      cta_text: buttonLabel,
+      location: 'cta_banner',
     });
   };
 

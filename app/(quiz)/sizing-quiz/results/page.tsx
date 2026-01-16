@@ -5,7 +5,6 @@ import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import QuizHeader from '@/components/quiz/quiz-header';
 import { useQuiz } from '@/lib/quiz';
-import posthog from 'posthog-js';
 
 // Icon paths for value props
 const VALUE_PROP_ICONS = {
@@ -154,47 +153,18 @@ export default function ResultsPage() {
       setIsLoading(false);
       // Small delay before showing results for smooth transition
       setTimeout(() => setShowResults(true), 100);
-
-      // Track quiz completion event (only once)
-      if (!hasTrackedCompletion.current && recommendation) {
-        hasTrackedCompletion.current = true;
-        posthog.capture('quiz_completed', {
-          quiz_type: 'sizing_quiz',
-          baby_status: answers.baby,
-          recommended_product: recommendation.productName,
-          recommended_size: recommendation.size,
-          baby_name: babyName || undefined,
-          answers: answers,
-        });
-      }
+      hasTrackedCompletion.current = true;
     }, 2400);
 
     return () => clearTimeout(loadingTimer);
-  }, [answers, babyName, recommendation]);
+  }, []);
 
   const handleAddToCart = () => {
-    // Track add to cart event
-    posthog.capture('add_to_cart_clicked', {
-      source: 'quiz_results',
-      product_name: recommendation?.productName,
-      product_size: recommendation?.size,
-      product_price: recommendation?.price,
-      baby_name: babyName || undefined,
-    });
-
     // TODO: Implement add to cart functionality
     alert('Added to cart!');
   };
 
   const handleAddToBabylist = () => {
-    // Track add to babylist event
-    posthog.capture('add_to_babylist_clicked', {
-      source: 'quiz_results',
-      product_name: recommendation?.productName,
-      product_size: recommendation?.size,
-      baby_name: babyName || undefined,
-    });
-
     // TODO: Implement Babylist integration
     window.open('https://www.babylist.com', '_blank');
   };
@@ -208,22 +178,6 @@ export default function ResultsPage() {
     await new Promise((resolve) => setTimeout(resolve, 1000));
     setEmailSaved(true);
     setIsSubmitting(false);
-
-    // Track email saved event and identify user
-    posthog.capture('email_saved', {
-      source: 'quiz_results',
-      product_name: recommendation?.productName,
-      product_size: recommendation?.size,
-      baby_name: babyName || undefined,
-    });
-
-    // Identify the user by email for future tracking
-    posthog.identify(email, {
-      email: email,
-      baby_name: babyName || undefined,
-      quiz_completed: true,
-      recommended_size: recommendation?.size,
-    });
   };
 
   // Show loading screen
