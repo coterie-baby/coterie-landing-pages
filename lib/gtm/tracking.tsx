@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect } from 'react';
-import { sendGTMEvent } from '@next/third-parties/google';
 import { buildGTMContext } from './context';
 
 function pushToDataLayer(data: Record<string, unknown>) {
@@ -48,31 +47,8 @@ export function GTMTracking() {
       window.addEventListener('load', delayedPush);
     }
 
-    // Auto-capture clicks on interactive elements
-    const handleClick = (e: MouseEvent) => {
-      const target = e.target as HTMLElement;
-      const clickable = target.closest('a, button, [role="button"]');
-
-      if (clickable) {
-        // Skip elements that handle their own tracking
-        if (target.closest('[data-gtm-ignore]')) {
-          return;
-        }
-
-        const element = clickable as HTMLElement;
-        sendGTMEvent({
-          event: 'cta_click',
-          cta_text: element.textContent?.trim().slice(0, 100) || '',
-          location: element.getAttribute('href') || '',
-          search_query: '',
-        });
-      }
-    };
-
-    document.addEventListener('click', handleClick);
     return () => {
       window.removeEventListener('load', delayedPush);
-      document.removeEventListener('click', handleClick);
     };
   }, []);
 

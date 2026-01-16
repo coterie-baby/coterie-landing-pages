@@ -37,7 +37,13 @@ export default function SizingQuizLanding() {
       <div className="flex-shrink-0 bg-white border-t border-[#E7E7E7] px-6 py-4">
         <div className="flex flex-col justify-center items-center gap-4">
           <Link href="/sizing-quiz/baby">
-            <Button className="py-4 px-12 text-xs">Get started</Button>
+            <Button
+              className="py-4 px-12 text-xs"
+              data-cta-text="Get started"
+              data-cta-location="sizing_quiz_landing"
+            >
+              Get started
+            </Button>
           </Link>
           <Link
             href="https://www.coterie.com/legal/consumer-health-policy"
