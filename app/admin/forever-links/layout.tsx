@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, ReactNode } from 'react';
+import { useState, useEffect, ReactNode, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 
 const AUTH_COOKIE_NAME = 'admin_auth';
@@ -16,11 +16,7 @@ function setCookie(name: string, value: string, maxAge: number): void {
   document.cookie = `${name}=${encodeURIComponent(value)}; path=/admin; max-age=${maxAge}; SameSite=Strict`;
 }
 
-export default function ForeverLinksLayout({
-  children,
-}: {
-  children: ReactNode;
-}) {
+function AuthWrapper({ children }: { children: ReactNode }) {
   const searchParams = useSearchParams();
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
   const [password, setPassword] = useState('');
@@ -153,5 +149,23 @@ export default function ForeverLinksLayout({
         {children}
       </main>
     </div>
+  );
+}
+
+export default function ForeverLinksLayout({
+  children,
+}: {
+  children: ReactNode;
+}) {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+          <div className="text-gray-500">Loading...</div>
+        </div>
+      }
+    >
+      <AuthWrapper>{children}</AuthWrapper>
+    </Suspense>
   );
 }
