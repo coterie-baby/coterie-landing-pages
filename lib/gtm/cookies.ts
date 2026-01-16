@@ -32,8 +32,6 @@ export function getMarketingCookies(): Record<string, string> {
     '_uetsid',        // Bing UET Session ID
     '_uetvid',        // Bing UET Visitor ID
     '_ga',            // Google Analytics
-    '_ga_6GVVFZ37XF', // GA4 property-specific
-    '_ga_Y17CX3NJ0H', // GA4 property-specific
     '_ttp',           // TikTok Pixel
     '_kx',            // Klaviyo
     'market_id',      // Market ID
@@ -45,6 +43,20 @@ export function getMarketingCookies(): Record<string, string> {
     const value = getCookie(name);
     if (value) {
       cookies[name] = value;
+    }
+  }
+
+  // Dynamically find GA4 property-specific cookies (_ga_XXXXXX)
+  if (typeof document !== 'undefined') {
+    const allCookies = document.cookie.split(';');
+    for (const cookie of allCookies) {
+      const [name] = cookie.trim().split('=');
+      if (name.startsWith('_ga_') && !cookies[name]) {
+        const value = getCookie(name);
+        if (value) {
+          cookies[name] = value;
+        }
+      }
     }
   }
 
