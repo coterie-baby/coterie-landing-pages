@@ -10,6 +10,7 @@ export interface GTMContext {
   user_properties: {
     session_id: string;
     user_id: string;
+    coterie_lp_id: string;
   };
   device: {
     screen_resolution: string;
@@ -42,6 +43,7 @@ export function buildGTMContext(): GTMContext {
       referrer: document.referrer,
       user_id: userProperties.user_id,
       session_id: userProperties.session_id,
+      coterie_lp_id: userProperties.coterie_lp_id,
       consent_v2: {
         ad_storage: { default: true },
         ad_user_data: { default: true },

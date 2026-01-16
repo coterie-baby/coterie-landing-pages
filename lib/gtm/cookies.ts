@@ -8,6 +8,23 @@ export function getCookie(name: string): string | undefined {
   return match ? decodeURIComponent(match[2]) : undefined;
 }
 
+export function setCookie(
+  name: string,
+  value: string,
+  options: { domain?: string; maxAge?: number; path?: string } = {}
+): void {
+  if (typeof document === 'undefined') return;
+
+  const { domain, maxAge = 31536000, path = '/' } = options; // Default 1 year
+  let cookie = `${name}=${encodeURIComponent(value)}; path=${path}; max-age=${maxAge}`;
+
+  if (domain) {
+    cookie += `; domain=${domain}`;
+  }
+
+  document.cookie = cookie;
+}
+
 export function getMarketingCookies(): Record<string, string> {
   const cookieNames = [
     '_fbp',           // Facebook Pixel
