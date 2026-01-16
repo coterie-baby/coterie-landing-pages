@@ -6,13 +6,13 @@ const MOBILE_REGEX =
   /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i;
 
 export function middleware(request: NextRequest) {
-  // const userAgent = request.headers.get('user-agent') || '';
-  // // Use pre-compiled regex for faster matching
-  // const isMobile = MOBILE_REGEX.test(userAgent);
-  // if (!isMobile) {
-  //   return NextResponse.redirect('https://www.coterie.com/products/the-diaper');
-  // }
-  // return NextResponse.next();
+  const userAgent = request.headers.get('user-agent') || '';
+  // Use pre-compiled regex for faster matching
+  const isMobile = MOBILE_REGEX.test(userAgent);
+  if (!isMobile) {
+    return NextResponse.redirect('https://www.coterie.com/products/the-diaper');
+  }
+  return NextResponse.next();
 }
 
 export const config = {
