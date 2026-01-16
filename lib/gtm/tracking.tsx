@@ -27,9 +27,19 @@ export function GTMTracking() {
       });
     };
 
+    // Follow-up event after GA4 and other tags have had time to set cookies
+    const pushEnrichedContext = () => {
+      const context = buildGTMContext();
+      pushToDataLayer({
+        ...context,
+      });
+    };
+
     // Wait for window load + small delay to ensure cookies are available
     const delayedPush = () => {
       setTimeout(pushContext, 100);
+      // Send follow-up event after 3 seconds to capture GA4 cookies
+      setTimeout(pushEnrichedContext, 3000);
     };
 
     if (document.readyState === 'complete') {
