@@ -128,10 +128,18 @@ export default function ForeverLinksPage() {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="max-w-5xl space-y-6">
+      {/* Page Header */}
+      <div className="mb-8">
+        <h1 className="text-2xl font-semibold text-gray-900">Forever Links</h1>
+        <p className="text-gray-500 mt-1">
+          Manage UTM-based routing for your ad traffic.
+        </p>
+      </div>
+
       {/* Default Fallback Section */}
-      <div className="bg-white rounded-lg border border-gray-200 p-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200/60 p-6">
+        <h2 className="text-base font-medium text-gray-900 mb-1">
           Default Fallback URL
         </h2>
         <p className="text-sm text-gray-600 mb-4">
@@ -166,9 +174,14 @@ export default function ForeverLinksPage() {
 
       {/* Mappings Table */}
       <div>
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">
-          Forever Links ({Object.keys(data?.mappings || {}).length})
-        </h2>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-base font-medium text-gray-900">
+            Link Mappings
+          </h2>
+          <span className="text-sm text-gray-500">
+            {Object.keys(data?.mappings || {}).length} total
+          </span>
+        </div>
 
         <ForeverLinkTable
           mappings={data?.mappings || {}}
@@ -179,27 +192,22 @@ export default function ForeverLinksPage() {
       </div>
 
       {/* Help Section */}
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
-        <h3 className="text-sm font-semibold text-blue-900 mb-2">
-          How Forever Links Work
+      <div className="bg-gray-50 rounded-xl border border-gray-200/60 p-5">
+        <h3 className="text-sm font-medium text-gray-700 mb-3">
+          How it works
         </h3>
-        <ul className="text-sm text-blue-800 space-y-1 list-disc list-inside">
-          <li>
-            Traffic with a <code className="bg-blue-100 px-1 rounded">utm_content</code> parameter
-            is matched against your configured links
+        <ul className="text-sm text-gray-600 space-y-2">
+          <li className="flex items-start gap-2">
+            <span className="text-gray-400 mt-1">•</span>
+            Traffic with a <code className="bg-gray-200/70 px-1.5 py-0.5 rounded text-xs font-mono">utm_content</code> parameter is matched against your configured links
           </li>
-          <li>
-            If a match is found, users are redirected to the destination (preserving other UTM params)
+          <li className="flex items-start gap-2">
+            <span className="text-gray-400 mt-1">•</span>
+            Matching traffic is redirected to the destination (all UTM params preserved)
           </li>
-          <li>
-            If no match is found, users go to the default fallback URL
-          </li>
-          <li>
-            Local routes (e.g., <code className="bg-blue-100 px-1 rounded">/sizing-quiz</code>) stay
-            on this domain
-          </li>
-          <li>
-            External URLs redirect to other domains
+          <li className="flex items-start gap-2">
+            <span className="text-gray-400 mt-1">•</span>
+            Unmatched traffic goes to the default fallback URL
           </li>
         </ul>
       </div>

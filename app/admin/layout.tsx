@@ -2,6 +2,15 @@
 
 import { useState, useEffect, ReactNode, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
+import { IBM_Plex_Sans } from 'next/font/google';
+import Sidebar from './(components)/sidebar';
+import AdminHeader from './(components)/header';
+
+const ibmPlexSans = IBM_Plex_Sans({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700'],
+  variable: '--font-ibm-plex-sans',
+});
 
 const AUTH_COOKIE_NAME = 'admin_auth';
 const AUTH_COOKIE_MAX_AGE = 60 * 60 * 24; // 24 hours
@@ -15,6 +24,10 @@ function getCookie(name: string): string | null {
 function setCookie(name: string, value: string, maxAge: number): void {
   document.cookie = `${name}=${encodeURIComponent(value)}; path=/admin; max-age=${maxAge}; SameSite=Strict`;
 }
+
+// function clearAuthCookie(): void {
+//   document.cookie = `${AUTH_COOKIE_NAME}=; path=/admin; max-age=0`;
+// }
 
 function AuthWrapper({ children }: { children: ReactNode }) {
   const searchParams = useSearchParams();
@@ -76,7 +89,7 @@ function AuthWrapper({ children }: { children: ReactNode }) {
   // Loading state
   if (isAuthenticated === null) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className={`${ibmPlexSans.className} min-h-screen bg-gray-50 flex items-center justify-center`}>
         <div className="text-gray-500">Loading...</div>
       </div>
     );
@@ -85,10 +98,10 @@ function AuthWrapper({ children }: { children: ReactNode }) {
   // Not authenticated - show login form
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+      <div className={`${ibmPlexSans.className} min-h-screen bg-gray-50 flex items-center justify-center p-4`}>
         <div className="bg-white rounded-lg shadow-md p-8 w-full max-w-md">
           <h1 className="text-2xl font-bold text-gray-900 mb-6 text-center">
-            Forever Links Admin
+            Admin Login
           </h1>
 
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -110,9 +123,7 @@ function AuthWrapper({ children }: { children: ReactNode }) {
               />
             </div>
 
-            {error && (
-              <p className="text-red-600 text-sm">{error}</p>
-            )}
+            {error && <p className="text-red-600 text-sm">{error}</p>}
 
             <button
               type="submit"
@@ -130,37 +141,25 @@ function AuthWrapper({ children }: { children: ReactNode }) {
     );
   }
 
-  // Authenticated - render children
+  // Authenticated - render children with admin layout
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-between">
-            <h1 className="text-xl font-semibold text-gray-900">
-              Forever Links Admin
-            </h1>
-            <span className="text-sm text-gray-500">
-              Coterie Landing Pages
-            </span>
-          </div>
-        </div>
-      </header>
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {children}
-      </main>
+    <div className={`${ibmPlexSans.className} fixed inset-0 flex flex-col`}>
+      <AdminHeader />
+      <div className="flex flex-1 min-h-0">
+        <Sidebar />
+        <main className="flex-1 min-h-0 bg-[#F4F5F6] overflow-y-auto">
+          <div className="px-8 py-8">{children}</div>
+        </main>
+      </div>
     </div>
   );
 }
 
-export default function ForeverLinksLayout({
-  children,
-}: {
-  children: ReactNode;
-}) {
+export default function AdminLayout({ children }: { children: ReactNode }) {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className={`${ibmPlexSans.className} min-h-screen bg-white flex items-center justify-center`}>
           <div className="text-gray-500">Loading...</div>
         </div>
       }

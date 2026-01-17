@@ -74,7 +74,7 @@ export function ForeverLinkTable({
 
   if (entries.length === 0) {
     return (
-      <div className="bg-white rounded-lg border border-gray-200 p-8 text-center">
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200/60 p-8 text-center">
         <p className="text-gray-500">No forever links configured yet.</p>
         <p className="text-sm text-gray-400 mt-1">
           Add your first link using the form above.
@@ -84,43 +84,43 @@ export function ForeverLinkTable({
   }
 
   return (
-    <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+    <div className="bg-white rounded-xl shadow-sm border border-gray-200/60 overflow-hidden">
       <div className="overflow-x-auto">
         <table className="w-full">
-          <thead className="bg-gray-50 border-b border-gray-200">
+          <thead className="bg-gray-50/80 border-b border-gray-200/60">
             <tr>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+              <th className="px-5 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 UTM Content
               </th>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+              <th className="px-5 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Destination
               </th>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+              <th className="px-5 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Notes
               </th>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+              <th className="px-5 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Updated
               </th>
-              <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">
+              <th className="px-5 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Actions
               </th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-200">
+          <tbody className="divide-y divide-gray-100">
             {entries.map(([utmContent, mapping]) => (
-              <tr key={utmContent} className="hover:bg-gray-50">
-                <td className="px-4 py-3">
-                  <code className="text-sm bg-gray-100 px-2 py-1 rounded text-gray-800">
+              <tr key={utmContent} className="hover:bg-gray-50/50 transition-colors">
+                <td className="px-5 py-3.5">
+                  <code className="text-sm bg-gray-100/80 px-2 py-1 rounded-md text-gray-800 font-mono">
                     {utmContent}
                   </code>
                 </td>
-                <td className="px-4 py-3">
+                <td className="px-5 py-3.5">
                   <div className="flex items-center gap-2">
                     <span
-                      className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
+                      className={`inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium ${
                         isLocalPath(mapping.destination)
-                          ? 'bg-green-100 text-green-800'
-                          : 'bg-blue-100 text-blue-800'
+                          ? 'bg-green-50 text-green-700'
+                          : 'bg-blue-50 text-blue-700'
                       }`}
                     >
                       {isLocalPath(mapping.destination) ? 'Local' : 'External'}
@@ -130,21 +130,21 @@ export function ForeverLinkTable({
                     </span>
                   </div>
                 </td>
-                <td className="px-4 py-3">
+                <td className="px-5 py-3.5">
                   <span className="text-sm text-gray-500">
                     {mapping.notes || '—'}
                   </span>
                 </td>
-                <td className="px-4 py-3">
+                <td className="px-5 py-3.5">
                   <span className="text-sm text-gray-500">
                     {formatDate(mapping.updatedAt)}
                   </span>
                 </td>
-                <td className="px-4 py-3 text-right">
-                  <div className="flex items-center justify-end gap-2">
+                <td className="px-5 py-3.5 text-right">
+                  <div className="flex items-center justify-end gap-3">
                     <button
                       onClick={() => onEdit(utmContent, mapping)}
-                      className="text-sm text-blue-600 hover:text-blue-800 font-medium"
+                      className="text-sm text-gray-600 hover:text-gray-900 font-medium transition-colors"
                     >
                       Edit
                     </button>
@@ -154,13 +154,13 @@ export function ForeverLinkTable({
                         <button
                           onClick={() => handleDelete(utmContent)}
                           disabled={deletingKey === utmContent}
-                          className="text-sm text-red-600 hover:text-red-800 font-medium disabled:opacity-50"
+                          className="text-sm text-red-600 hover:text-red-700 font-medium disabled:opacity-50 transition-colors"
                         >
                           {deletingKey === utmContent ? 'Deleting...' : 'Confirm'}
                         </button>
                         <button
                           onClick={() => setConfirmDelete(null)}
-                          className="text-sm text-gray-500 hover:text-gray-700 font-medium"
+                          className="text-sm text-gray-500 hover:text-gray-700 font-medium transition-colors"
                         >
                           Cancel
                         </button>
@@ -168,7 +168,7 @@ export function ForeverLinkTable({
                     ) : (
                       <button
                         onClick={() => setConfirmDelete(utmContent)}
-                        className="text-sm text-red-600 hover:text-red-800 font-medium"
+                        className="text-sm text-red-500 hover:text-red-600 font-medium transition-colors"
                       >
                         Delete
                       </button>

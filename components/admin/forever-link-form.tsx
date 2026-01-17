@@ -73,8 +73,8 @@ export function ForeverLinkForm({
   const isValidDestination = isLocalPath || isExternalUrl || destination === '';
 
   return (
-    <form onSubmit={handleSubmit} className="bg-white rounded-lg border border-gray-200 p-6">
-      <h2 className="text-lg font-semibold text-gray-900 mb-4">
+    <form onSubmit={handleSubmit} className="bg-white rounded-xl shadow-sm border border-gray-200/60 p-6">
+      <h2 className="text-base font-medium text-gray-900 mb-4">
         {isEditing ? 'Edit Forever Link' : 'Add New Forever Link'}
       </h2>
 
