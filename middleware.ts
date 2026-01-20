@@ -7,9 +7,19 @@ const MOBILE_REGEX =
 
 export function middleware(request: NextRequest) {
   const userAgent = request.headers.get('user-agent') || '';
-  // Use pre-compiled regex for faster matching
+  const { searchParams } = request.nextUrl;
+
+  // Check if request has any UTM parameters
+  const hasUtmParams =
+    searchParams.has('utm_source') ||
+    searchParams.has('utm_medium') ||
+    searchParams.has('utm_campaign') ||
+    searchParams.has('utm_term') ||
+    searchParams.has('utm_content');
+
+  // Only redirect non-mobile traffic that has UTM params
   const isMobile = MOBILE_REGEX.test(userAgent);
-  if (!isMobile) {
+  if (!isMobile && hasUtmParams) {
     return NextResponse.redirect('https://www.coterie.com/products/the-diaper');
   }
   return NextResponse.next();
