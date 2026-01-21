@@ -3,48 +3,77 @@
 import { useState } from 'react';
 import { Button } from '../ui/button';
 import { useProductOrder } from './context';
+import { createCart } from '@/lib/shopify/cart';
+import {
+  trackAddToCart,
+  trackBeginCheckout,
+  trackCheckoutError,
+} from '@/lib/gtm/ecommerce';
 
 interface AddToCartButtonProps {
   className?: string;
 }
 
 export default function AddToCartButton({ className = '' }: AddToCartButtonProps) {
-  const { state, isValid, displaySize, variantId, currentPrice } =
-    useProductOrder();
+  const { state, isValid, displaySize, currentPrice } = useProductOrder();
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleAddToCart = async () => {
-    if (!isValid || !variantId) return;
+    if (!isValid || !state.selectedSize) return;
 
     setIsLoading(true);
+    setError(null);
 
     try {
-      // Build cart payload for Shopify
-      const cartPayload = {
-        variantId,
-        quantity: state.quantity,
+      // Track add_to_cart event
+      trackAddToCart({
+        planType: state.selectedPlan,
         size: state.selectedSize,
-        plan: state.selectedPlan,
         orderType: state.orderType,
         price: currentPrice,
-        // Include subscription info if applicable
-        sellingPlan: state.orderType === 'subscription' ? 'subscription-plan-id' : null,
-      };
+        quantity: state.quantity,
+      });
 
-      // TODO: Implement actual Shopify cart addition
-      // This could be:
-      // 1. Direct Shopify Storefront API call
-      // 2. Server action that handles cart logic
-      // 3. Redirect to Shopify checkout with pre-filled cart
-      console.log('Adding to cart:', cartPayload);
+      // Create Shopify cart
+      const result = await createCart({
+        size: state.selectedSize,
+        planType: state.selectedPlan,
+        orderType: state.orderType,
+        quantity: state.quantity,
+      });
 
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      if (!result.success || !result.checkoutUrl) {
+        const errorMessage = result.error || 'Failed to create cart';
+        setError(errorMessage);
+        trackCheckoutError(errorMessage, {
+          plan_type: state.selectedPlan,
+          size: state.selectedSize,
+          order_type: state.orderType,
+        });
+        return;
+      }
 
-      // Success - could redirect to cart or show confirmation
-      // window.location.href = '/cart';
-    } catch (error) {
-      console.error('Failed to add to cart:', error);
+      // Track begin_checkout before redirect
+      trackBeginCheckout({
+        planType: state.selectedPlan,
+        size: state.selectedSize,
+        orderType: state.orderType,
+        price: currentPrice,
+        quantity: state.quantity,
+      });
+
+      // Redirect to Shopify checkout
+      window.location.href = result.checkoutUrl;
+    } catch (err) {
+      const errorMessage =
+        err instanceof Error ? err.message : 'An unexpected error occurred';
+      setError(errorMessage);
+      trackCheckoutError(errorMessage, {
+        plan_type: state.selectedPlan,
+        size: state.selectedSize,
+        order_type: state.orderType,
+      });
     } finally {
       setIsLoading(false);
     }
@@ -58,12 +87,17 @@ export default function AddToCartButton({ className = '' }: AddToCartButtonProps
   };
 
   return (
-    <Button
-      onClick={handleAddToCart}
-      disabled={!isValid || isLoading}
-      className={`w-full bg-[#0000C9] text-white py-3 rounded-full font-medium text-sm hover:bg-[#0000AA] transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed ${className}`}
-    >
-      {getButtonText()}
-    </Button>
+    <div className="w-full">
+      <Button
+        onClick={handleAddToCart}
+        disabled={!isValid || isLoading}
+        className={`w-full bg-[#0000C9] text-white py-3 rounded-full font-medium text-sm hover:bg-[#0000AA] transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed ${className}`}
+      >
+        {getButtonText()}
+      </Button>
+      {error && (
+        <p className="mt-2 text-sm text-red-600 text-center">{error}</p>
+      )}
+    </div>
   );
 }
