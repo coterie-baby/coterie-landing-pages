@@ -6,7 +6,11 @@ interface PianoKeyProps {
   onSelect: () => void;
 }
 
-export default function PianoKey({ size, isSelected, onSelect }: PianoKeyProps) {
+export default function PianoKey({
+  size,
+  isSelected,
+  onSelect,
+}: PianoKeyProps) {
   return (
     <div
       onClick={onSelect}
@@ -16,8 +20,10 @@ export default function PianoKey({ size, isSelected, onSelect }: PianoKeyProps) 
           : 'border-gray-200 bg-white hover:border-gray-300'
       }`}
     >
-      <div className="font-semibold text-sm">{size.label}</div>
-      <div className="text-xs mt-0.5 opacity-75">{size.weightRange}</div>
+      <span className="font-semibold text-sm">{size.label}</span>
+      <span className="text-xs text-[#515151] font-normal mt-0.5 ">
+        {size.weightRange}
+      </span>
     </div>
   );
 }
