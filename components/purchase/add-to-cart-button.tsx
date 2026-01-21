@@ -9,7 +9,7 @@ interface AddToCartButtonProps {
 }
 
 export default function AddToCartButton({ className = '' }: AddToCartButtonProps) {
-  const { state, isValid, displaySize, variantId, currentPrice, selectedPlanConfig } =
+  const { state, isValid, displaySize, variantId, currentPrice } =
     useProductOrder();
   const [isLoading, setIsLoading] = useState(false);
 

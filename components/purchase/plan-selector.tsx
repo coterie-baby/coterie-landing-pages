@@ -48,32 +48,32 @@ function PlanCard({
       }`}
     >
       {/* Header row */}
-        <div className="flex items-start justify-between mb-2 text-[14.5px]">
-          <span className="font-semibold">{name}</span>
-          <div className="text-right">
-            <span className="text-[#0000C9]">
-              ${subscriptionPrice.toFixed(2)}
+      <div className="flex items-start justify-between mb-2 text-[14.5px]">
+        <span className="font-semibold">{name}</span>
+        <div className="text-right">
+          <span className="text-[#0000C9]">
+            ${subscriptionPrice.toFixed(2)}
+          </span>
+          {subscriptionPrice < basePrice && (
+            <span className="ml-2 text-gray-400 line-through text-sm">
+              ${basePrice.toFixed(2)}
             </span>
-            {subscriptionPrice < basePrice && (
-              <span className="ml-2 text-gray-400 line-through text-sm">
-                ${basePrice.toFixed(2)}
-              </span>
-            )}
-          </div>
+          )}
         </div>
+      </div>
 
-        {/* Features list */}
-        <div className="space-y-1">
-          {features.map((feature, index) => (
-            <div
-              key={index}
-              className="flex items-center gap-2 text-sm text-gray-600"
-            >
-              <CheckIcon />
-              <span>{feature}</span>
-            </div>
-          ))}
-        </div>
+      {/* Features list */}
+      <div className="space-y-1">
+        {features.map((feature, index) => (
+          <div
+            key={index}
+            className="flex items-center gap-2 text-sm text-gray-600"
+          >
+            <CheckIcon />
+            <span>{feature}</span>
+          </div>
+        ))}
+      </div>
     </button>
   );
 }
