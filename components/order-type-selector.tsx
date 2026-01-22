@@ -69,7 +69,7 @@ export default function ProductOrderForm({
 
   return (
     <ProductOrderProvider>
-      <div className="py-6 px-4">
+      <div className="py-6 px-4" id="purchase">
         <div className="flex flex-col gap-4 max-w-2xl mx-auto">
           {/* Product Image */}
           <div className="relative w-full aspect-square">

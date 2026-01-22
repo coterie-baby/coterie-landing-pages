@@ -4,7 +4,7 @@ import { track } from '@vercel/analytics';
 import { Button } from './ui/button';
 import Link from 'next/link';
 
-const CTA_URL = 'https://www.coterie.com/products/the-diaper';
+const CTA_URL = '#purchase';
 const CTA_TEXT = 'Try Coterie';
 
 export function FloatingCTA() {

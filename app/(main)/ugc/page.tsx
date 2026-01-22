@@ -2,6 +2,8 @@ import dynamic from 'next/dynamic';
 import UGCVideo from '@/components/ugc-video';
 import FlexAnnouncementBar from '@/components/flex-announcement-bar';
 import { FloatingCTA } from '@/components/floating-cta';
+import OrderTypeSelector from '@/components/order-type-selector';
+
 // Lazy load below-fold components
 const ReviewsToggleSection = dynamic(
   () =>
@@ -88,6 +90,7 @@ export default function UGCPage() {
         buttonText="Shop Now"
         buttonHref="https://www.coterie.com/products/the-diaper"
       />
+      <OrderTypeSelector />
       <FloatingCTA />
     </>
   );
