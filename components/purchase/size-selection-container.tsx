@@ -149,7 +149,8 @@ export default function SizeSelectionContainer({
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Track if newborn option was selected (n or n+1)
-  const isNewbornSize = state.selectedSize === 'n' || state.selectedSize === 'n+1';
+  const isNewbornSize =
+    state.selectedSize === 'n' || state.selectedSize === 'n+1';
 
   const handleSizeClick = (sizeId: string) => {
     if (sizeId === 'n-or-n1') {
@@ -182,11 +183,11 @@ export default function SizeSelectionContainer({
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center justify-between">
-          <p className="">Pick your size</p>
+          <p className="text-sm">Pick your size</p>
         </div>
         <a
           href={sizeGuideHref}
-          className="text-sm text-[#0000C9] font-semibold underline underline-offset-2 hover:text-[#0000A0]"
+          className="text-xs text-[#0000C9] font-semibold underline underline-offset-2 hover:text-[#0000A0]"
         >
           Size + Fit Guide
         </a>

@@ -55,7 +55,7 @@ function PlanCard({
             ${subscriptionPrice.toFixed(2)}
           </span>
           {subscriptionPrice < basePrice && (
-            <span className="ml-2 text-gray-400 line-through text-sm">
+            <span className="ml-2 text-[#515151] line-through text-sm">
               ${basePrice.toFixed(2)}
             </span>
           )}
@@ -67,7 +67,7 @@ function PlanCard({
         {features.map((feature, index) => (
           <div
             key={index}
-            className="flex items-center gap-2 text-sm text-gray-600"
+            className="flex items-center gap-2 text-xs text-[#515151]"
           >
             <CheckIcon />
             <span>{feature}</span>
@@ -87,7 +87,7 @@ export default function PlanSelector() {
   return (
     <div className="space-y-2">
       {/* Header */}
-      <p className="text-gray-900">Pick your plan:</p>
+      <p className="text-sm">Pick your plan:</p>
 
       {/* Plan cards */}
       <div className="space-y-4">

@@ -1,16 +1,23 @@
 'use client';
 
+import { useState } from 'react';
 import Image from 'next/image';
 import { ProductOrderProvider } from './purchase/context';
 import SizeSelectionContainer from './purchase/size-selection-container';
 import PlanSelector from './purchase/plan-selector';
 import AddToCartButton from './purchase/add-to-cart-button';
 
+interface Thumbnail {
+  src: string;
+  alt: string;
+}
+
 interface ProductOrderFormProps {
   productImage?: string;
   productTitle?: string;
   productDescription?: string;
   showPlanSelector?: boolean;
+  thumbnails?: Thumbnail[];
 }
 
 /**
@@ -19,12 +26,47 @@ interface ProductOrderFormProps {
  * Wraps all order selection components with the ProductOrderProvider context.
  * Supports both simple (size + order type) and bundle (size + plan) configurations.
  */
+const defaultThumbnails: Thumbnail[] = [
+  {
+    src: 'https://m.media-amazon.com/images/I/815Q-eQIQkL._AC_SX679_.jpg',
+    alt: 'Diaper front view',
+  },
+  {
+    src: 'https://cdn.sanity.io/images/e4q6bkl9/production/1458639b9c78a72b373a98d4213c139d3a0c6fd5-1000x1000.png?w=1200&h=1200&q=100&fit=crop&auto=format',
+    alt: 'Diaper back view',
+  },
+  {
+    src: 'https://cdn.sanity.io/images/e4q6bkl9/production/cbe673400b84c6c6f99d5d895cb966ed6d4c55ec-4500x6000.jpg?rect=0,722,4500,4500&w=1200&h=1200&q=100&fit=crop&auto=format',
+    alt: 'Diaper side view',
+  },
+  {
+    src: 'https://cdn.sanity.io/images/e4q6bkl9/production/efd7fded0b766b196c98f754708a81eadd664810-4500x6000.jpg?rect=0,165,4500,4500&w=1200&h=1200&q=100&fit=crop&auto=format',
+    alt: 'Diaper detail',
+  },
+  {
+    src: 'https://cdn.sanity.io/images/e4q6bkl9/production/328d487a67fbe313e45cb6a0cbbc54c162aadfdb-6720x4480.png?rect=1120,0,4480,4480&w=1200&h=1200&q=100&fit=crop&auto=format',
+    alt: 'Diaper packaging',
+  },
+  {
+    src: 'https://cdn.sanity.io/images/e4q6bkl9/production/fafaef923e0bc3fe3a063b06998eba6e567acab9-2048x2048.jpg?w=1200&h=1200&q=100&fit=crop&auto=format',
+    alt: 'Diaper in use',
+  },
+];
+
 export default function ProductOrderForm({
   productImage = 'https://m.media-amazon.com/images/I/815Q-eQIQkL._AC_SX679_.jpg',
   productTitle = 'The Diaper',
   productDescription = 'A fast wicking, highly absorbent diaper with clean ingredients',
   showPlanSelector = true,
+  thumbnails = defaultThumbnails,
 }: ProductOrderFormProps) {
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+
+  const currentImage = thumbnails[selectedImageIndex] || {
+    src: productImage,
+    alt: productTitle,
+  };
+
   return (
     <ProductOrderProvider>
       <div className="py-6 px-4">
@@ -33,11 +75,36 @@ export default function ProductOrderForm({
           <div className="relative w-full aspect-square">
             <Image
               fill
-              src={productImage}
-              alt={productTitle}
+              src={currentImage.src}
+              alt={currentImage.alt}
               className="object-cover rounded-md"
             />
           </div>
+
+          {/* Thumbnail Gallery */}
+          {thumbnails.length > 0 && (
+            <div className="flex gap-2 justify-center">
+              {thumbnails.slice(0, 6).map((thumbnail, index) => (
+                <button
+                  key={index}
+                  onClick={() => setSelectedImageIndex(index)}
+                  className={`relative w-[41.6px] h-[41.6px] rounded-md overflow-hidden transition-all flex-shrink-0 ${
+                    selectedImageIndex === index
+                      ? 'border border-[#0000C9]'
+                      : ''
+                  }`}
+                >
+                  <Image
+                    src={thumbnail.src}
+                    alt={thumbnail.alt}
+                    fill
+                    className="object-cover"
+                    sizes="48px"
+                  />
+                </button>
+              ))}
+            </div>
+          )}
 
           {/* Product Info & Form */}
           <div>
@@ -53,11 +120,7 @@ export default function ProductOrderForm({
               <SizeSelectionContainer />
 
               {/* Plan/Bundle Selection or Order Type */}
-              {showPlanSelector ? (
-                <PlanSelector />
-              ) : (
-                <OrderTypeSelection />
-              )}
+              {showPlanSelector ? <PlanSelector /> : <OrderTypeSelection />}
 
               {/* Add to Cart */}
               <AddToCartButton />

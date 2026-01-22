@@ -49,9 +49,9 @@ export const PLAN_CONFIGS: PlanConfig[] = [
     name: 'Diaper Plan',
     description: 'Diapers only',
     features: ['6 packs per box'],
-    basePrice: 95.0,
-    subscriptionPrice: 80.75,
-    subscriptionDiscount: 15,
+    basePrice: 105.5,
+    subscriptionPrice: 95,
+    subscriptionDiscount: 10,
     variantIdMap: {
       n: 'gid://shopify/ProductVariant/diaper-n',
       'n+1': 'gid://shopify/ProductVariant/diaper-n1',
@@ -69,9 +69,9 @@ export const PLAN_CONFIGS: PlanConfig[] = [
     name: 'Diaper + Wipe Bundle',
     description: 'Best value for daily essentials',
     features: ['6 packs per box', '4 packs of wipes (224 wipes)'],
-    basePrice: 123.0,
-    subscriptionPrice: 104.55,
-    subscriptionDiscount: 15,
+    basePrice: 138.5,
+    subscriptionPrice: 123,
+    subscriptionDiscount: 10,
     isPopular: true,
     variantIdMap: {
       n: 'gid://shopify/ProductVariant/bundle-n',
@@ -90,9 +90,9 @@ export const PLAN_CONFIGS: PlanConfig[] = [
     name: 'Deluxe Plan',
     description: 'Maximum coverage',
     features: ['6 packs per box', '8 packs of wipes (448 wipes)'],
-    basePrice: 151.0,
-    subscriptionPrice: 128.35,
-    subscriptionDiscount: 15,
+    basePrice: 171.5,
+    subscriptionPrice: 151.0,
+    subscriptionDiscount: 10,
     variantIdMap: {
       n: 'gid://shopify/ProductVariant/deluxe-n',
       'n+1': 'gid://shopify/ProductVariant/deluxe-n1',
@@ -156,7 +156,9 @@ interface ProductOrderContextValue {
   displaySize: string;
 }
 
-const ProductOrderContext = createContext<ProductOrderContextValue | null>(null);
+const ProductOrderContext = createContext<ProductOrderContextValue | null>(
+  null
+);
 
 // Provider
 interface ProductOrderProviderProps {

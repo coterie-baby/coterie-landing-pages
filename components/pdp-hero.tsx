@@ -203,6 +203,44 @@ export default function PDPHero({
         </div>
       </div>
 
+      {/* Mobile Thumbnail Strip */}
+      {thumbnails.length > 0 && (
+        <div className="lg:hidden px-4 py-3 bg-white">
+          <div className="flex gap-2 justify-center">
+            {thumbnails.slice(0, 6).map((thumbnail, index) => (
+              <button
+                key={index}
+                onClick={() => setSelectedImageIndex(index)}
+                className={`relative w-14 h-14 rounded-lg overflow-hidden border-2 transition-all flex-shrink-0 ${
+                  selectedImageIndex === index
+                    ? 'border-[#0000C9]'
+                    : 'border-gray-200 hover:border-gray-300'
+                }`}
+              >
+                <Image
+                  src={thumbnail.src}
+                  alt={thumbnail.alt}
+                  fill
+                  className="object-cover"
+                  sizes="56px"
+                />
+                {thumbnail.isVideo && (
+                  <div className="absolute inset-0 flex items-center justify-center bg-black/20">
+                    <svg
+                      className="w-5 h-5 text-white"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
+                      <path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z" />
+                    </svg>
+                  </div>
+                )}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
       <div className="container mx-auto px-4 py-8 md:py-12">
         <div className="flex flex-col lg:flex-row gap-6 lg:gap-8">
           {/* Left Sidebar - Thumbnails (Desktop only) */}

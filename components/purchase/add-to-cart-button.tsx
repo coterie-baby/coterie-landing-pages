@@ -14,8 +14,10 @@ interface AddToCartButtonProps {
   className?: string;
 }
 
-export default function AddToCartButton({ className = '' }: AddToCartButtonProps) {
-  const { state, isValid, displaySize, currentPrice } = useProductOrder();
+export default function AddToCartButton({
+  className = '',
+}: AddToCartButtonProps) {
+  const { state, isValid, currentPrice } = useProductOrder();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -80,11 +82,11 @@ export default function AddToCartButton({ className = '' }: AddToCartButtonProps
   };
 
   // Button text based on selection state
-  const getButtonText = () => {
-    if (isLoading) return 'Adding...';
-    if (!state.selectedSize) return 'Select a size';
-    return `Add to cart – Size ${displaySize}`;
-  };
+  // const getButtonText = () => {
+  //   if (isLoading) return 'Adding...';
+  //   if (!state.selectedSize) return 'Select a size';
+  //   return `Add to cart – Size ${displaySize}`;
+  // };
 
   return (
     <div className="w-full">
@@ -93,7 +95,8 @@ export default function AddToCartButton({ className = '' }: AddToCartButtonProps
         disabled={!isValid || isLoading}
         className={`w-full bg-[#0000C9] text-white py-3 rounded-full font-medium text-sm hover:bg-[#0000AA] transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed ${className}`}
       >
-        {getButtonText()}
+        {/* {getButtonText()} */}
+        Continue to Checkout
       </Button>
       {error && (
         <p className="mt-2 text-sm text-red-600 text-center">{error}</p>
