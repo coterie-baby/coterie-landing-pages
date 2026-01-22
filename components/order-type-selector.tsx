@@ -108,11 +108,15 @@ export default function ProductOrderForm({
 
           {/* Product Info & Form */}
           <div>
-            <div className="flex flex-col gap-2 text-center mb-6">
+            <div className="flex flex-col gap-2 text-center mb-2">
               <h4 className="text-2xl font-bold">{productTitle}</h4>
               <p className="text-sm text-[#525252] leading-[140%]">
                 {productDescription}
               </p>
+            </div>
+
+            <div className="w-full text-center text-sm font-semibold mb-2">
+              <span>Starting at $95/month.</span>
             </div>
 
             <div className="flex flex-col gap-6">
