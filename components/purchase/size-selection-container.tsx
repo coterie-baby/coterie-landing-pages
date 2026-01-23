@@ -5,6 +5,7 @@ import PianoKey from './piano-key';
 import { SizeOption } from '../pdp-hero';
 import { Button } from '../ui/button';
 import { useProductOrder, DiaperSize } from './context';
+import { trackSelectProductVariant } from '@/lib/gtm/ecommerce';
 
 const sizes: SizeOption[] = [
   { id: 'n-or-n1', label: 'N or N+1', weightRange: 'Under 10 lbs' },
@@ -152,17 +153,33 @@ export default function SizeSelectionContainer({
   const isNewbornSize =
     state.selectedSize === 'n' || state.selectedSize === 'n+1';
 
+  const getDisplaySize = (size: string): string => {
+    if (size === 'n') return 'N';
+    if (size === 'n+1') return 'N+1';
+    return size;
+  };
+
   const handleSizeClick = (sizeId: string) => {
     if (sizeId === 'n-or-n1') {
       setIsModalOpen(true);
     } else {
       setSize(sizeId as DiaperSize);
+      trackSelectProductVariant({
+        itemName: 'The Diaper',
+        itemVariant: getDisplaySize(sizeId),
+        location: 'purchase_page',
+      });
     }
   };
 
   const handleNewbornConfirm = (option: 'n' | 'n+1') => {
     setSize(option);
     setIsModalOpen(false);
+    trackSelectProductVariant({
+      itemName: 'The Diaper',
+      itemVariant: getDisplaySize(option),
+      location: 'purchase_page',
+    });
   };
 
   // Get the display label for the first piano key

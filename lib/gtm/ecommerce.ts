@@ -1,5 +1,6 @@
 // GTM E-commerce Event Tracking (GA4 Schema)
 
+import { sendGTMEvent } from '@next/third-parties/google';
 import type { DiaperSize, PlanType, OrderType } from '@/components/purchase/context';
 
 function pushToDataLayer(data: Record<string, unknown>) {
@@ -114,5 +115,92 @@ export function trackCheckoutError(error: string, context?: Record<string, unkno
     event: 'checkout_error',
     error_message: error,
     ...context,
+  });
+}
+
+export interface SelectProductVariantEventData {
+  itemName: string;
+  itemVariant: string;
+  location: string;
+}
+
+/**
+ * Track product variant selection (e.g., size selection)
+ */
+export function trackSelectProductVariant(data: SelectProductVariantEventData): void {
+  sendGTMEvent({
+    event: 'ui_custom_event',
+    customEventPayload: {
+      name: 'select_product_variant',
+      value: {
+        item_name: data.itemName,
+        item_variant: data.itemVariant,
+        location: data.location,
+      },
+    },
+  });
+}
+
+export interface SelectPlanTypeEventData {
+  location: string;
+  planType: PlanType | 'one-time';
+}
+
+/**
+ * Track plan type selection
+ */
+export function trackSelectPlanType(data: SelectPlanTypeEventData): void {
+  const version =
+    data.planType === 'one-time'
+      ? 'One-Time Purchase'
+      : PLAN_NAMES[data.planType];
+
+  sendGTMEvent({
+    event: 'ui_custom_event',
+    customEventPayload: {
+      name: 'select_plan_type',
+      value: {
+        location: data.location,
+        version,
+      },
+    },
+  });
+}
+
+/**
+ * Extract image identifier from URL for tracking
+ * Converts Sanity URLs to format like "image-{id}-{dimensions}-{format}"
+ */
+function getImageIdentifier(src: string): string {
+  // Try to extract Sanity image ID
+  const sanityMatch = src.match(/\/([a-f0-9]+-\d+x\d+)\.(jpg|png|webp)/i);
+  if (sanityMatch) {
+    return `image-${sanityMatch[1]}-${sanityMatch[2]}`;
+  }
+
+  // Fallback: use last path segment
+  const urlPath = src.split('?')[0];
+  const filename = urlPath.split('/').pop() || 'unknown';
+  return `image-${filename.replace(/\./g, '-')}`;
+}
+
+export interface ClickCarouselThumbnailEventData {
+  imageSrc: string;
+  location: string;
+}
+
+/**
+ * Track carousel thumbnail click
+ */
+export function trackClickCarouselThumbnail(data: ClickCarouselThumbnailEventData): void {
+  sendGTMEvent({
+    event: 'ui_custom_event',
+    customEventPayload: {
+      name: 'click_carousel_thumbnail',
+      value: {
+        image: getImageIdentifier(data.imageSrc),
+        location: data.location,
+      },
+    },
   });
 }

@@ -6,6 +6,7 @@ import { ProductOrderProvider } from './purchase/context';
 import SizeSelectionContainer from './purchase/size-selection-container';
 import PlanSelector from './purchase/plan-selector';
 import CheckoutButtonsContainer from './purchase/checkout-buttons-container';
+import { trackClickCarouselThumbnail } from '@/lib/gtm/ecommerce';
 
 interface Thumbnail {
   src: string;
@@ -67,6 +68,14 @@ export default function ProductOrderForm({
     alt: productTitle,
   };
 
+  const handleThumbnailClick = (index: number, thumbnail: Thumbnail) => {
+    setSelectedImageIndex(index);
+    trackClickCarouselThumbnail({
+      imageSrc: thumbnail.src,
+      location: `PDP Hero | ${productTitle}`,
+    });
+  };
+
   return (
     <ProductOrderProvider>
       <div className="py-6 px-4" id="purchase">
@@ -87,7 +96,7 @@ export default function ProductOrderForm({
               {thumbnails.slice(0, 6).map((thumbnail, index) => (
                 <button
                   key={index}
-                  onClick={() => setSelectedImageIndex(index)}
+                  onClick={() => handleThumbnailClick(index, thumbnail)}
                   className={`relative w-[41.6px] h-[41.6px] rounded-md overflow-hidden transition-all flex-shrink-0 ${
                     selectedImageIndex === index
                       ? 'border border-[#0000C9]'
