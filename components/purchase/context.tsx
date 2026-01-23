@@ -16,6 +16,25 @@ export type PlanType = 'diaper-only' | 'diaper-wipe-bundle' | 'deluxe';
 
 export type OrderType = 'subscription' | 'one-time';
 
+export interface SizeConfig {
+  label: string;
+  count: number;
+  weightRange: string;
+}
+
+// Size configurations with diaper counts per box
+export const SIZE_CONFIGS: Record<DiaperSize, SizeConfig> = {
+  n: { label: 'N', count: 186, weightRange: 'Under 6 lbs' },
+  'n+1': { label: 'N+1', count: 192, weightRange: 'Under 10 lbs' },
+  '1': { label: '1', count: 198, weightRange: '8-12 lbs' },
+  '2': { label: '2', count: 186, weightRange: '10-16 lbs' },
+  '3': { label: '3', count: 168, weightRange: '14-24 lbs' },
+  '4': { label: '4', count: 150, weightRange: '20-32 lbs' },
+  '5': { label: '5', count: 132, weightRange: '27+ lbs' },
+  '6': { label: '6', count: 108, weightRange: '35+ lbs' },
+  '7': { label: '7', count: 96, weightRange: '41+ lbs' },
+};
+
 export interface PlanConfig {
   id: PlanType;
   name: string;
@@ -147,6 +166,7 @@ interface ProductOrderContextValue {
   reset: () => void;
   // Computed values
   selectedPlanConfig: PlanConfig | undefined;
+  selectedSizeConfig: SizeConfig | undefined;
   currentPrice: number;
   originalPrice: number;
   savingsAmount: number;
@@ -154,6 +174,7 @@ interface ProductOrderContextValue {
   variantId: string | null;
   isValid: boolean;
   displaySize: string;
+  diaperCount: number;
 }
 
 const ProductOrderContext = createContext<ProductOrderContextValue | null>(
@@ -208,6 +229,16 @@ export function ProductOrderProvider({
     [state.selectedPlan]
   );
 
+  const selectedSizeConfig = useMemo(
+    () => (state.selectedSize ? SIZE_CONFIGS[state.selectedSize] : undefined),
+    [state.selectedSize]
+  );
+
+  const diaperCount = useMemo(
+    () => selectedSizeConfig?.count ?? 0,
+    [selectedSizeConfig]
+  );
+
   const currentPrice = useMemo(() => {
     if (!selectedPlanConfig) return 0;
     return state.orderType === 'subscription'
@@ -252,6 +283,7 @@ export function ProductOrderProvider({
     setQuantity,
     reset,
     selectedPlanConfig,
+    selectedSizeConfig,
     currentPrice,
     originalPrice,
     savingsAmount,
@@ -259,6 +291,7 @@ export function ProductOrderProvider({
     variantId,
     isValid,
     displaySize,
+    diaperCount,
   };
 
   return (

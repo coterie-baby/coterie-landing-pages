@@ -80,12 +80,22 @@ function PlanCard({
 }
 
 export default function PlanSelector() {
-  const { state, setPlan, setOrderType } = useProductOrder();
+  const { state, setPlan, setOrderType, diaperCount } = useProductOrder();
 
   // Only show after size is selected
   if (!state.selectedSize) return null;
 
   const diaperOnlyPlan = PLAN_CONFIGS.find((p) => p.id === 'diaper-only');
+
+  // Transform features to include diaper count
+  const getFeatures = (features: string[]): string[] => {
+    return features.map((feature) => {
+      if (feature.includes('6 packs')) {
+        return `6 packs (${diaperCount} diapers total)`;
+      }
+      return feature;
+    });
+  };
   const isOneTimePurchaseSelected =
     state.orderType === 'one-time' && state.selectedPlan === 'diaper-only';
 
@@ -123,7 +133,7 @@ export default function PlanSelector() {
           <PlanCard
             key={plan.id}
             name={plan.name}
-            features={plan.features}
+            features={getFeatures(plan.features)}
             price={plan.subscriptionPrice}
             originalPrice={plan.basePrice}
             isSelected={
@@ -142,7 +152,7 @@ export default function PlanSelector() {
       {diaperOnlyPlan && (
         <PlanCard
           name="One-Time Purchase"
-          features={['6 packs of diapers, single purchase']}
+          features={[`6 packs (${diaperCount} diapers total), single purchase`]}
           price={diaperOnlyPlan.basePrice}
           isSelected={isOneTimePurchaseSelected}
           onSelect={handleOneTimePurchase}
