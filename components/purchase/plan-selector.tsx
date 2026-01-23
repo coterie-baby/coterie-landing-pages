@@ -21,11 +21,10 @@ function CheckIcon() {
 }
 
 interface PlanCardProps {
-  planId: PlanType;
   name: string;
   features: string[];
-  subscriptionPrice: number;
-  basePrice: number;
+  price: number;
+  originalPrice?: number;
   isSelected: boolean;
   onSelect: () => void;
 }
@@ -33,11 +32,14 @@ interface PlanCardProps {
 function PlanCard({
   name,
   features,
-  subscriptionPrice,
-  basePrice,
+  price,
+  originalPrice,
   isSelected,
   onSelect,
 }: PlanCardProps) {
+  const showStrikethrough =
+    originalPrice !== undefined && price < originalPrice;
+
   return (
     <button
       onClick={onSelect}
@@ -51,12 +53,10 @@ function PlanCard({
       <div className="flex items-start justify-between mb-2 text-[14.5px]">
         <span className="font-semibold">{name}</span>
         <div className="text-right">
-          <span className="text-[#0000C9]">
-            ${subscriptionPrice.toFixed(2)}
-          </span>
-          {subscriptionPrice < basePrice && (
+          <span className="text-[#0000C9]">${price.toFixed(2)}</span>
+          {showStrikethrough && (
             <span className="ml-2 text-[#515151] line-through text-sm">
-              ${basePrice.toFixed(2)}
+              ${originalPrice.toFixed(2)}
             </span>
           )}
         </div>
@@ -79,31 +79,66 @@ function PlanCard({
 }
 
 export default function PlanSelector() {
-  const { state, setPlan } = useProductOrder();
+  const { state, setPlan, setOrderType } = useProductOrder();
 
   // Only show after size is selected
   if (!state.selectedSize) return null;
 
+  const diaperOnlyPlan = PLAN_CONFIGS.find((p) => p.id === 'diaper-only');
+  const isOneTimePurchaseSelected =
+    state.orderType === 'one-time' && state.selectedPlan === 'diaper-only';
+
+  const handlePlanSelect = (planId: PlanType) => {
+    setPlan(planId);
+    setOrderType('subscription');
+  };
+
+  const handleOneTimePurchase = () => {
+    setPlan('diaper-only');
+    setOrderType('one-time');
+  };
+
   return (
-    <div className="space-y-2">
+    <div className="space-y-4">
       {/* Header */}
-      <p className="text-sm">Pick your plan:</p>
+      <div className="flex justify-between items-center">
+        <p className="text-sm">Pick your Auto-Renew plan:</p>
+        <div className="py-1 px-2 bg-[#D1E3FB] uppercase text-xs rounded">
+          <span>Save 10%</span>
+        </div>
+      </div>
 
       {/* Plan cards */}
       <div className="space-y-4">
         {PLAN_CONFIGS.map((plan) => (
           <PlanCard
             key={plan.id}
-            planId={plan.id}
             name={plan.name}
             features={plan.features}
-            subscriptionPrice={plan.subscriptionPrice}
-            basePrice={plan.basePrice}
-            isSelected={state.selectedPlan === plan.id}
-            onSelect={() => setPlan(plan.id)}
+            price={plan.subscriptionPrice}
+            originalPrice={plan.basePrice}
+            isSelected={
+              state.selectedPlan === plan.id &&
+              state.orderType === 'subscription'
+            }
+            onSelect={() => handlePlanSelect(plan.id)}
           />
         ))}
       </div>
+
+      {/* Divider */}
+      <div className="border-t border-gray-200 my-4" />
+
+      {/* One-time purchase option */}
+      {diaperOnlyPlan && (
+        <PlanCard
+          name="One-Time Purchase"
+          features={['6 packs of diapers, single purchase']}
+          price={diaperOnlyPlan.basePrice}
+          isSelected={isOneTimePurchaseSelected}
+          onSelect={handleOneTimePurchase}
+        />
+      )}
     </div>
   );
 }

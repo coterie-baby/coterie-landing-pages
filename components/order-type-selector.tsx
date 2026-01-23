@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { ProductOrderProvider } from './purchase/context';
 import SizeSelectionContainer from './purchase/size-selection-container';
 import PlanSelector from './purchase/plan-selector';
-import AddToCartButton from './purchase/add-to-cart-button';
+import CheckoutButtonsContainer from './purchase/checkout-buttons-container';
 
 interface Thumbnail {
   src: string;
@@ -127,7 +127,7 @@ export default function ProductOrderForm({
               {showPlanSelector ? <PlanSelector /> : <OrderTypeSelection />}
 
               {/* Add to Cart */}
-              <AddToCartButton />
+              <CheckoutButtonsContainer />
             </div>
           </div>
         </div>
