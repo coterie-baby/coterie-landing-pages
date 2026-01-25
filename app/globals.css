@@ -51,6 +51,7 @@ body {
     'Segoe UI',
     Roboto,
     sans-serif;
+  color: #141414;
 }
 
 :root {
@@ -138,13 +139,21 @@ th {
 }
 
 @keyframes wiggle {
-  0%, 100% {
+  0%,
+  100% {
     transform: rotate(0deg);
   }
-  10%, 30%, 50%, 70%, 90% {
+  10%,
+  30%,
+  50%,
+  70%,
+  90% {
     transform: rotate(-10deg);
   }
-  20%, 40%, 60%, 80% {
+  20%,
+  40%,
+  60%,
+  80% {
     transform: rotate(10deg);
   }
 }
@@ -215,7 +224,8 @@ th {
 }
 
 @keyframes loadingPulse {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 1;
     transform: scale(1);
   }
@@ -226,7 +236,9 @@ th {
 }
 
 @keyframes loadingDot {
-  0%, 80%, 100% {
+  0%,
+  80%,
+  100% {
     opacity: 0.3;
     transform: scale(0.8);
   }

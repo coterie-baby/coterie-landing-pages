@@ -6,6 +6,7 @@ import { SizeOption } from '../pdp-hero';
 import { Button } from '../ui/button';
 import { useProductOrder, DiaperSize } from './context';
 import { trackSelectProductVariant } from '@/lib/gtm/ecommerce';
+import SizeFitGuideDrawer from './size-fit-guide-drawer';
 
 const sizes: SizeOption[] = [
   { id: 'n-or-n1', label: 'N or N+1', weightRange: 'Under 10 lbs' },
@@ -139,15 +140,10 @@ function NewbornModal({ isOpen, onClose, onConfirm }: NewbornModalProps) {
   );
 }
 
-interface SizeSelectionContainerProps {
-  sizeGuideHref?: string;
-}
-
-export default function SizeSelectionContainer({
-  sizeGuideHref = '#',
-}: SizeSelectionContainerProps) {
+export default function SizeSelectionContainer() {
   const { state, setSize } = useProductOrder();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   // Track if newborn option was selected (n or n+1)
   const isNewbornSize =
@@ -202,12 +198,12 @@ export default function SizeSelectionContainer({
         <div className="flex items-center justify-between">
           <p className="text-sm">Pick your size</p>
         </div>
-        <a
-          href={sizeGuideHref}
+        <button
+          onClick={() => setIsDrawerOpen(true)}
           className="text-xs text-[#0000C9] font-semibold underline underline-offset-2 hover:text-[#0000A0]"
         >
           Size + Fit Guide
-        </a>
+        </button>
       </div>
 
       {/* Size Grid */}
@@ -231,6 +227,12 @@ export default function SizeSelectionContainer({
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onConfirm={handleNewbornConfirm}
+      />
+
+      {/* Size + Fit Guide Drawer */}
+      <SizeFitGuideDrawer
+        isOpen={isDrawerOpen}
+        onClose={() => setIsDrawerOpen(false)}
       />
     </div>
   );
