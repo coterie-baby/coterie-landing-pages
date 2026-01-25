@@ -1,9 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import { GoogleTagManager } from '@next/third-parties/google';
-import { draftMode } from 'next/headers';
-import { VisualEditing } from 'next-sanity';
-import { DisableDraftMode } from '@/components/disable-draft-mode';
 import { VercelToolbar } from '@vercel/toolbar/next';
 import { Amplitude } from '@/amplitude';
 import { Analytics } from '@vercel/analytics/next';
@@ -66,12 +63,6 @@ export default async function RootLayout({
       <body className="antialiased bg-white">
         <GTMTracking />
         {children}
-        {(await draftMode()).isEnabled && (
-          <>
-            <VisualEditing />
-            <DisableDraftMode />
-          </>
-        )}
         {shouldInjectToolbar && <VercelToolbar />}
         <Analytics />
         <SpeedInsights />

@@ -20,19 +20,25 @@ export interface SizeConfig {
   label: string;
   count: number;
   weightRange: string;
+  changesPerDay: number;
 }
 
 // Size configurations with diaper counts per box
 export const SIZE_CONFIGS: Record<DiaperSize, SizeConfig> = {
-  n: { label: 'N', count: 186, weightRange: 'Under 6 lbs' },
-  'n+1': { label: 'N+1', count: 192, weightRange: 'Under 10 lbs' },
-  '1': { label: '1', count: 198, weightRange: '8-12 lbs' },
-  '2': { label: '2', count: 186, weightRange: '10-16 lbs' },
-  '3': { label: '3', count: 168, weightRange: '14-24 lbs' },
-  '4': { label: '4', count: 150, weightRange: '20-32 lbs' },
-  '5': { label: '5', count: 132, weightRange: '27+ lbs' },
-  '6': { label: '6', count: 108, weightRange: '35+ lbs' },
-  '7': { label: '7', count: 96, weightRange: '41+ lbs' },
+  n: { label: 'N', count: 186, weightRange: 'Under 6 lbs', changesPerDay: 7 },
+  'n+1': {
+    label: 'N+1',
+    count: 192,
+    weightRange: 'Under 10 lbs',
+    changesPerDay: 7,
+  },
+  '1': { label: '1', count: 198, weightRange: '8-12 lbs', changesPerDay: 7 },
+  '2': { label: '2', count: 186, weightRange: '10-16 lbs', changesPerDay: 6 },
+  '3': { label: '3', count: 168, weightRange: '14-24 lbs', changesPerDay: 6 },
+  '4': { label: '4', count: 150, weightRange: '20-32 lbs', changesPerDay: 5 },
+  '5': { label: '5', count: 132, weightRange: '27+ lbs', changesPerDay: 5 },
+  '6': { label: '6', count: 108, weightRange: '35+ lbs', changesPerDay: 4 },
+  '7': { label: '7', count: 96, weightRange: '41+ lbs', changesPerDay: 4 },
 };
 
 export interface PlanConfig {
