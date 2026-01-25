@@ -1,5 +1,8 @@
-import Link from 'next/link';
+'use client';
+import amplitude from '@/amplitude';
+import { track } from '@vercel/analytics';
 import { Button } from './ui/button';
+import Link from 'next/link';
 
 interface CTABannerProps {
   headline?: string;
@@ -36,6 +39,23 @@ export default function CTABanner({
   const buttonLabel = button?.label || buttonText;
   const buttonUrl = button?.href || buttonHref;
 
+  const handleCTAClick = () => {
+    amplitude.setTransport('beacon');
+    amplitude.track('cta_clicked', {
+      cta_location: 'CTA Banner',
+      cta_text: buttonLabel,
+      cta_url: buttonUrl,
+      headline: displayHeadline,
+    });
+    amplitude.flush();
+
+    track('cta_clicked', {
+      cta_location: 'CTA Banner',
+      cta_text: buttonLabel,
+      cta_url: buttonUrl,
+    });
+  };
+
   return (
     <section
       className="py-12 px-4 flex flex-col items-center justify-center text-center"
@@ -59,7 +79,7 @@ export default function CTABanner({
       </div>
 
       {/* CTA Button */}
-      <Link href={buttonUrl}>
+      <Link href={buttonUrl} onClick={handleCTAClick}>
         <Button data-cta-location="CTA Banner" data-cta-text={buttonLabel}>
           {buttonLabel}
         </Button>

@@ -5,11 +5,15 @@ import AIChatAssistant from './ai-chat-assistant';
 export default function FloatingAIButton() {
   const [isOpen, setIsOpen] = useState(false);
 
+  const handleToggle = () => {
+    setIsOpen(!isOpen);
+  };
+
   return (
     <>
       {/* Floating Button */}
       <button
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={handleToggle}
         className="fixed bottom-6 right-6 w-16 h-16 rounded-full bg-[#0000C9] text-white shadow-lg hover:bg-[#0000AA] transition-all z-50 flex items-center justify-center group"
         aria-label="Open AI Assistant"
       >

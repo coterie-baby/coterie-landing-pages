@@ -1,0 +1,107 @@
+/**
+ * Cookie parsing utilities for GTM context enrichment
+ */
+
+export function getCookie(name: string): string | undefined {
+  if (typeof document === 'undefined') return undefined;
+  const match = document.cookie.match(new RegExp(`(^| )${name}=([^;]+)`));
+  return match ? decodeURIComponent(match[2]) : undefined;
+}
+
+export function setCookie(
+  name: string,
+  value: string,
+  options: { domain?: string; maxAge?: number; path?: string } = {}
+): void {
+  if (typeof document === 'undefined') return;
+
+  const { domain, maxAge = 31536000, path = '/' } = options; // Default 1 year
+  let cookie = `${name}=${encodeURIComponent(value)}; path=${path}; max-age=${maxAge}`;
+
+  if (domain) {
+    cookie += `; domain=${domain}`;
+  }
+
+  document.cookie = cookie;
+}
+
+export function getMarketingCookies(): Record<string, string> {
+  const cookieNames = [
+    '_fbp',           // Facebook Pixel
+    '_fbc',           // Facebook Click ID
+    '_uetsid',        // Bing UET Session ID
+    '_uetvid',        // Bing UET Visitor ID
+    '_ga',            // Google Analytics
+    '_ttp',           // TikTok Pixel
+    '_kx',            // Klaviyo
+    'market_id',      // Market ID
+  ];
+
+  const cookies: Record<string, string> = {};
+
+  for (const name of cookieNames) {
+    const value = getCookie(name);
+    if (value) {
+      cookies[name] = value;
+    }
+  }
+
+  // Dynamically find GA4 property-specific cookies (_ga_XXXXXX)
+  if (typeof document !== 'undefined') {
+    const allCookies = document.cookie.split(';');
+    for (const cookie of allCookies) {
+      const [name] = cookie.trim().split('=');
+      if (name.startsWith('_ga_') && !cookies[name]) {
+        const value = getCookie(name);
+        if (value) {
+          cookies[name] = value;
+        }
+      }
+    }
+  }
+
+  return cookies;
+}
+
+export function getClickIds(): Record<string, string> {
+  const params = new URLSearchParams(window.location.search);
+  const clickIds: Record<string, string> = {};
+
+  // Google Ads Click ID - formatted as "gclid:..."
+  const gclid = params.get('gclid') || getCookie('_gcl_aw');
+  if (gclid) {
+    clickIds.google_ads_click_id = `gclid:${gclid}`;
+  }
+
+  // Impact Radius - check URL param and cookie
+  const irclickid = params.get('irclickid') || getCookie('irclickid');
+  if (irclickid) {
+    clickIds.irclickid = irclickid;
+  }
+
+  // Facebook Click ID
+  const fbclid = params.get('fbclid');
+  if (fbclid) {
+    clickIds.fbclid = fbclid;
+  }
+
+  // TikTok Click ID
+  const ttclid = params.get('ttclid');
+  if (ttclid) {
+    clickIds.ttclid = ttclid;
+  }
+
+  // Microsoft/Bing Click ID
+  const msclkid = params.get('msclkid');
+  if (msclkid) {
+    clickIds.msclkid = msclkid;
+  }
+
+  // Market ID from URL param
+  const marketId = params.get('market_id');
+  if (marketId) {
+    clickIds.market_id = marketId;
+  }
+
+  return clickIds;
+}

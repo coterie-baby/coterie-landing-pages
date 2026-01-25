@@ -1,5 +1,3 @@
-'use client';
-
 interface AnnouncementBarProps {
   announcement?: string;
 }
@@ -7,8 +5,6 @@ interface AnnouncementBarProps {
 export default function AnnouncementBar({
   announcement = '10% off every Auto Renew order. Free shipping when you bundle.',
 }: AnnouncementBarProps) {
-  // Duplicate the announcement multiple times for seamless scrolling
-  // We duplicate it enough times to ensure smooth scrolling on large screens
   const announcements = Array(10).fill(announcement);
 
   return (

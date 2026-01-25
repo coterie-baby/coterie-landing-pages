@@ -1,5 +1,8 @@
 'use client';
 import { useState, memo } from 'react';
+import amplitude from '@/amplitude';
+import { track } from '@vercel/analytics';
+import { sendGTMEvent } from '@next/third-parties/google';
 import { StarRating } from './reviews/star-rating';
 
 interface Testimonial {
@@ -8,7 +11,11 @@ interface Testimonial {
   author: string;
 }
 
-const TestimonialCard = memo(function TestimonialCard({ testimonial }: { testimonial: Testimonial }) {
+const TestimonialCard = memo(function TestimonialCard({
+  testimonial,
+}: {
+  testimonial: Testimonial;
+}) {
   return (
     <div className="bg-[#f5f5f5] rounded-lg p-4 flex flex-col gap-3">
       <StarRating rating={5} />
@@ -22,77 +29,100 @@ const TestimonialCard = memo(function TestimonialCard({ testimonial }: { testimo
 
 const reviewTestimonials = [
   {
-    category: 'Comfort',
-    text: "10/10 would recommend. The comfort and fit are amazing! My baby sleeps through the night without any leaks. Plus the soft material doesn't irritate sensitive skin - absolutely excellent!",
-    author: 'Sarah M.',
+    category: 'Sleep',
+    text: 'So soft! Any my 5 week old went from sleeping 4 hours at night to 7 hours!',
+    author: 'Sari',
   },
   {
-    category: 'Comfort',
-    text: 'These diapers are so soft and comfortable. My baby never seems bothered by them, even during long car rides. The perfect fit means no leaks and no complaints!',
-    author: 'Jessica L.',
+    category: 'Sleep',
+    text: 'The only diaper that our little one will sleep thru the night with',
+    author: 'Mackenzie',
   },
   {
-    category: 'Value',
-    text: 'Worth every penny! The quality is outstanding and the subscription saves us money. We used to buy premium diapers at the store for more, and these are even better quality.',
-    author: 'Michael R.',
+    category: 'Skin',
+    text: 'We are so happy with Coterie diapers! My granddaughter’s diaper rash is GONE!',
+    author: 'Susan',
   },
   {
-    category: 'Value',
-    text: 'The subscription model is a game changer. We save money and never run out. The convenience plus the savings makes this the best value we&apos;ve found.',
-    author: 'Emily T.',
-  },
-  {
-    category: 'vs. Others',
-    text: 'We tried every brand before finding Coterie. These are hands down the best. No leaks, no rashes, and the clean ingredients give us peace of mind. Nothing else compares.',
-    author: 'David K.',
+    category: 'Skin',
+    text: 'Amazing quality, my daughter’s skin is soft now and completely free of rash!',
+    author: 'Dina',
   },
   {
     category: 'vs. Others',
-    text: 'Switched from a major brand and will never go back. These diapers are superior in every way - better absorbency, softer material, and cleaner ingredients.',
-    author: 'Lisa P.',
+    text: "We absolutely love these diapers. We tried several brands and this one has by far been the best. We were a little hesitant to try at first, but I'm so glad that we did. Our little guy seems to like them too!",
+    author: 'Drew',
+  },
+  {
+    category: 'vs. Others',
+    text: 'I turned to Coterie because my baby HATES a wet diaper. He will cry the minute he feels it, even waking him from sleep. We tried multiple brands but online research said that Coterie was the most absorbent on the market. I was hesitant because of the price but I have to say that he lasts longer while wearing them and is able to stay asleep!',
+    author: 'Michelle',
   },
   {
     category: 'Benefits',
-    text: 'The fast wicking technology is incredible. My baby stays dry all night, which means better sleep for everyone. The clean ingredients are a huge bonus too.',
-    author: 'Rachel S.',
+    text: 'We love these diapers. Everything about them. They are soft, absorbent, and protect against rash. We’ve used NB-size 2 and wipes. We will continue!',
+    author: 'Danielle',
   },
   {
     category: 'Benefits',
-    text: 'Love that these are hypoallergenic and dermatologist tested. My baby has sensitive skin and these are the only diapers that don&apos;t cause irritation.',
-    author: 'Mark D.',
+    text: 'Great quality and absorbency. My baby has yet to get any diaper rash or skin irritations as well. Love these diapers!',
+    author: 'Jesse',
   },
   {
     category: 'Ingredients',
-    text: 'Finally, a diaper brand that cares about what goes on my baby&apos;s skin. Clean ingredients, no harmful chemicals, and no fragrances. Exactly what we were looking for.',
-    author: 'Amanda W.',
+    text: 'Soft, durable, clean ingredients and my baby’s bum loves it. Other diapers have her a rash but not these! These diapers are the Tesla of diapers hands down!',
+    author: 'Anna',
   },
   {
     category: 'Ingredients',
-    text: 'The peace of mind knowing these are made with clean ingredients is priceless. No chlorine, no latex, no parabens - just safe, quality materials.',
-    author: 'Chris B.',
+    text: 'So thankful for coterie and their ingredients! I feel safe using them on my baby! The auto shipping is so convenient!',
+    author: 'Jamie',
   },
   {
-    category: 'Convenience',
-    text: 'The auto-renewal subscription is so convenient. Never run out of diapers again, and the quality is amazing. Highly recommend!',
-    author: 'Jennifer H.',
+    category: 'Value',
+    text: 'I hate to say it but this diaper is worth the price. I tried every single diaper with my first son and eventually tried these once he was in size 4 and I needed something great for overnight. I was sold night one when I touched the inside of the diaper in the morning and it was so dry!!',
+    author: 'Kara',
   },
   {
-    category: 'Convenience',
-    text: 'Set it and forget it! The subscription service means we never have to remember to buy diapers. They just arrive when we need them. Game changer!',
-    author: 'Tom M.',
+    category: 'Value',
+    text: 'I was very hesitant to spend so much on diapers, and with my first, I didn’t. But I decided to try a pack of Coterie when my second was 9 months old and I can’t go back. Before, we constantly had blowouts and some pretty gnarly diaper rashes. My son has eczema and I know these diapers have helped to relieve that some. I highly recommend them for any baby with sensitive skin',
+    author: 'Chelsea',
   },
 ];
 export function ReviewsToggleSection() {
-  const [selectedFilter, setSelectedFilter] = useState<string>('Comfort');
+  const [selectedFilter, setSelectedFilter] = useState<string>('Sleep');
 
   const filters = [
-    'Comfort',
-    'Value',
+    'Sleep',
+    'Skin',
     'vs. Others',
     'Benefits',
     'Ingredients',
-    'Convenience',
+    'Value',
   ];
+
+  const handleFilterClick = (filter: string) => {
+    setSelectedFilter(filter);
+
+    amplitude.track('reviews_filter_clicked', {
+      filter_name: filter,
+    });
+
+    track('reviews_filter_clicked', {
+      filter_name: filter,
+    });
+
+    sendGTMEvent({
+      event: 'ui_custom_event',
+      customEventPayload: {
+        name: 'reviews_filter_clicked',
+        value: {
+          cta_text: filter,
+          location: 'Reviews Toggle',
+        },
+      },
+    });
+  };
 
   // Filter testimonials based on selected filter
   const filteredTestimonials = reviewTestimonials.filter(
@@ -104,7 +134,7 @@ export function ReviewsToggleSection() {
       <div className="">
         {/* Main Headline */}
         <h3 className="text-3xl md:text-4xl font-bold text-center mb-8 text-[#0000C9]">
-          Some Really Really Good Copy Here!
+          The Internet&apos;s Favorite Diaper
         </h3>
 
         {/* Filter Buttons */}
@@ -112,7 +142,7 @@ export function ReviewsToggleSection() {
           {filters.map((filter) => (
             <button
               key={filter}
-              onClick={() => setSelectedFilter(filter)}
+              onClick={() => handleFilterClick(filter)}
               className={`cursor-pointer px-4 py-2 rounded-full text-sm text-[#0000C9] font-medium transition-all ${
                 selectedFilter === filter
                   ? 'bg-[#D1E3FB]'
@@ -127,7 +157,10 @@ export function ReviewsToggleSection() {
         {/* Testimonials */}
         <div className="space-y-6">
           {filteredTestimonials.map((testimonial, i) => (
-            <TestimonialCard key={`${testimonial.category}-${i}`} testimonial={testimonial} />
+            <TestimonialCard
+              key={`${testimonial.category}-${i}`}
+              testimonial={testimonial}
+            />
           ))}
         </div>
       </div>

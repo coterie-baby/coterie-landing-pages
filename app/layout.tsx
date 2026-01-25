@@ -1,10 +1,11 @@
 import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import { GoogleTagManager } from '@next/third-parties/google';
-import { draftMode } from 'next/headers';
-import { VisualEditing } from 'next-sanity';
-import { DisableDraftMode } from '@/components/disable-draft-mode';
 import { VercelToolbar } from '@vercel/toolbar/next';
+import { Amplitude } from '@/amplitude';
+import { Analytics } from '@vercel/analytics/next';
+import { SpeedInsights } from '@vercel/speed-insights/next';
+import { GTMTracking } from '@/lib/gtm';
 
 export const viewport: Viewport = {
   themeColor: '#FFFFFF',
@@ -27,6 +28,20 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <head>
+        {/* DNS prefetch and preconnect for external domains */}
+        <link
+          rel="preconnect"
+          href="https://cdn.sanity.io"
+          crossOrigin="anonymous"
+        />
+        <link rel="dns-prefetch" href="https://cdn.sanity.io" />
+        <link
+          rel="preconnect"
+          href="https://player.vimeo.com"
+          crossOrigin="anonymous"
+        />
+        <link rel="dns-prefetch" href="https://player.vimeo.com" />
+
         {/* Preload critical fonts for faster text rendering */}
         <link
           rel="preload"
@@ -44,15 +59,13 @@ export default async function RootLayout({
         />
       </head>
       <GoogleTagManager gtmId="GTM-N9NL6XQ" />
+      <Amplitude />
       <body className="antialiased bg-white">
+        <GTMTracking />
         {children}
-        {(await draftMode()).isEnabled && (
-          <>
-            <VisualEditing />
-            <DisableDraftMode />
-          </>
-        )}
         {shouldInjectToolbar && <VercelToolbar />}
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );

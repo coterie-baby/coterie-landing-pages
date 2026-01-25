@@ -3,7 +3,13 @@
 import { useState, useRef, useEffect } from 'react';
 import { SpeakerWaveIcon, SpeakerXMarkIcon } from '@heroicons/react/24/outline';
 
-export default function UGCVideo() {
+interface UGCVideoProps {
+  posterUrl?: string;
+}
+
+export default function UGCVideo({
+  posterUrl = '/images/ugc-poster.jpg'
+}: UGCVideoProps) {
   const [isMuted, setIsMuted] = useState(true);
   const [shouldWiggle, setShouldWiggle] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -51,9 +57,13 @@ export default function UGCVideo() {
         muted={isMuted}
         loop
         playsInline
+        poster={posterUrl}
+        preload="auto"
+        disablePictureInPicture
+        controlsList="nofullscreen nodownload noremoteplayback"
         src="https://player.vimeo.com/progressive_redirect/playback/1119579050/rendition/720p/file.mp4?loc=external&signature=728907c52d41dbb7fc5ffc32281168626d765f5ced762706f737c378cb7ed311"
-        className="w-full h-full object-cover relative z-10"
-      ></video>
+        className="w-full h-full object-cover object-top relative z-10"
+      />
       <div className="absolute inset-0 w-full h-full bg-black opacity-20 pointer-events-none" />
 
       {/* Floating Mute/Unmute Button */}

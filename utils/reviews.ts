@@ -21,7 +21,7 @@ export async function getReviews({ productId, page = 1, customFilters = {} }: Re
     });
 
     return reviews;
-  } catch (error) {
+  } catch {
     // Silently fail - caller handles error state
   }
 }

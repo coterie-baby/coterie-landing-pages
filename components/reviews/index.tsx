@@ -220,12 +220,13 @@ export default function Reviews({
               return review;
             })
           );
-        }
+
+          }
       } catch {
         // Vote failed silently
       }
     },
-    []
+    [productName]
   );
 
   const displayTotalReviews =
