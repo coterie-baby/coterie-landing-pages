@@ -3,10 +3,15 @@ export {
   ProductOrderProvider,
   useProductOrder,
   PLAN_CONFIGS,
+  SIZE_CONFIGS,
+  SIZE_ORDER,
+  DISPLAY_SIZES,
   type DiaperSize,
   type PlanType,
   type OrderType,
   type PlanConfig,
+  type SizeConfig,
+  type SizeOption,
   type ProductOrderState,
 } from './context';
 

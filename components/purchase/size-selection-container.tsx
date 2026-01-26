@@ -2,22 +2,16 @@
 
 import { useState } from 'react';
 import PianoKey from './piano-key';
-import { SizeOption } from '../pdp-hero';
 import { Button } from '../ui/button';
-import { useProductOrder, DiaperSize, SIZE_CONFIGS } from './context';
+import {
+  useProductOrder,
+  DiaperSize,
+  SIZE_CONFIGS,
+  DISPLAY_SIZES,
+  SizeOption,
+} from './context';
 import { trackSelectProductVariant } from '@/lib/gtm/ecommerce';
 import SizeFitGuideDrawer from './size-fit-guide-drawer';
-
-const sizes: SizeOption[] = [
-  { id: 'n-or-n1', label: 'N or N+1', weightRange: 'Under 10 lbs' },
-  { id: '1', label: '1', weightRange: '8-12 lbs' },
-  { id: '2', label: '2', weightRange: '10-16 lbs' },
-  { id: '3', label: '3', weightRange: '14-24 lbs' },
-  { id: '4', label: '4', weightRange: '20-32 lbs' },
-  { id: '5', label: '5', weightRange: '27+ lbs' },
-  { id: '6', label: '6', weightRange: '35+ lbs' },
-  { id: '7', label: '7', weightRange: '41+ lbs' },
-];
 
 interface NewbornModalProps {
   isOpen: boolean;
@@ -182,7 +176,7 @@ export default function SizeSelectionContainer() {
   // Build sizes array with dynamic first key label
   const displaySizes: SizeOption[] = [
     { id: 'n-or-n1', label: getFirstKeyLabel(), weightRange: 'Under 10 lbs' },
-    ...sizes.slice(1),
+    ...DISPLAY_SIZES.slice(1),
   ];
 
   return (

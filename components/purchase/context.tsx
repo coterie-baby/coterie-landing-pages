@@ -8,6 +8,7 @@ import {
   useMemo,
   ReactNode,
 } from 'react';
+import { DIAPER_VARIANT_IDS } from '@/lib/shopify/product-mapping';
 
 // Types
 export type DiaperSize = 'n' | 'n+1' | '1' | '2' | '3' | '4' | '5' | '6' | '7';
@@ -91,6 +92,26 @@ export const SIZE_CONFIGS: Record<DiaperSize, SizeConfig> = {
   },
 };
 
+// Size option for display in UI selectors
+export interface SizeOption {
+  id: string;
+  label: string;
+  weightRange: string;
+}
+
+// Ordered list of sizes for iteration
+export const SIZE_ORDER: DiaperSize[] = ['n', 'n+1', '1', '2', '3', '4', '5', '6', '7'];
+
+// Generate display sizes from SIZE_CONFIGS (excludes n+1 since it's handled via modal)
+export const DISPLAY_SIZES: SizeOption[] = [
+  { id: 'n-or-n1', label: 'N or N+1', weightRange: 'Under 10 lbs' },
+  ...SIZE_ORDER.filter((size) => size !== 'n' && size !== 'n+1').map((size) => ({
+    id: size,
+    label: SIZE_CONFIGS[size].label,
+    weightRange: SIZE_CONFIGS[size].weightRange,
+  })),
+];
+
 export interface PlanConfig {
   id: PlanType;
   name: string;
@@ -100,7 +121,6 @@ export interface PlanConfig {
   subscriptionPrice: number;
   subscriptionDiscount: number;
   isPopular?: boolean;
-  variantIdMap: Record<DiaperSize, string>; // Maps size to Shopify variant ID
 }
 
 export interface ProductOrderState {
@@ -127,17 +147,6 @@ export const PLAN_CONFIGS: PlanConfig[] = [
     basePrice: 105.5,
     subscriptionPrice: 95,
     subscriptionDiscount: 10,
-    variantIdMap: {
-      n: 'gid://shopify/ProductVariant/diaper-n',
-      'n+1': 'gid://shopify/ProductVariant/diaper-n1',
-      '1': 'gid://shopify/ProductVariant/diaper-1',
-      '2': 'gid://shopify/ProductVariant/diaper-2',
-      '3': 'gid://shopify/ProductVariant/diaper-3',
-      '4': 'gid://shopify/ProductVariant/diaper-4',
-      '5': 'gid://shopify/ProductVariant/diaper-5',
-      '6': 'gid://shopify/ProductVariant/diaper-6',
-      '7': 'gid://shopify/ProductVariant/diaper-7',
-    },
   },
   {
     id: 'diaper-wipe-bundle',
@@ -148,17 +157,6 @@ export const PLAN_CONFIGS: PlanConfig[] = [
     subscriptionPrice: 123,
     subscriptionDiscount: 10,
     isPopular: true,
-    variantIdMap: {
-      n: 'gid://shopify/ProductVariant/bundle-n',
-      'n+1': 'gid://shopify/ProductVariant/bundle-n1',
-      '1': 'gid://shopify/ProductVariant/bundle-1',
-      '2': 'gid://shopify/ProductVariant/bundle-2',
-      '3': 'gid://shopify/ProductVariant/bundle-3',
-      '4': 'gid://shopify/ProductVariant/bundle-4',
-      '5': 'gid://shopify/ProductVariant/bundle-5',
-      '6': 'gid://shopify/ProductVariant/bundle-6',
-      '7': 'gid://shopify/ProductVariant/bundle-7',
-    },
   },
   {
     id: 'deluxe',
@@ -168,17 +166,6 @@ export const PLAN_CONFIGS: PlanConfig[] = [
     basePrice: 171.5,
     subscriptionPrice: 151.0,
     subscriptionDiscount: 10,
-    variantIdMap: {
-      n: 'gid://shopify/ProductVariant/deluxe-n',
-      'n+1': 'gid://shopify/ProductVariant/deluxe-n1',
-      '1': 'gid://shopify/ProductVariant/deluxe-1',
-      '2': 'gid://shopify/ProductVariant/deluxe-2',
-      '3': 'gid://shopify/ProductVariant/deluxe-3',
-      '4': 'gid://shopify/ProductVariant/deluxe-4',
-      '5': 'gid://shopify/ProductVariant/deluxe-5',
-      '6': 'gid://shopify/ProductVariant/deluxe-6',
-      '7': 'gid://shopify/ProductVariant/deluxe-7',
-    },
   },
 ];
 
@@ -316,9 +303,9 @@ export function ProductOrderProvider({
   }, [selectedPlanConfig]);
 
   const variantId = useMemo(() => {
-    if (!state.selectedSize || !selectedPlanConfig) return null;
-    return selectedPlanConfig.variantIdMap[state.selectedSize] ?? null;
-  }, [state.selectedSize, selectedPlanConfig]);
+    if (!state.selectedSize) return null;
+    return DIAPER_VARIANT_IDS[state.selectedSize] ?? null;
+  }, [state.selectedSize]);
 
   const isValid = useMemo(() => {
     return state.selectedSize !== null && variantId !== null;

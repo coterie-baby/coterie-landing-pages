@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import PianoKey from './purchase/piano-key';
+import { SizeOption, DISPLAY_SIZES } from './purchase/context';
 
 interface Thumbnail {
   src: string;
@@ -17,12 +18,6 @@ interface AwardBadge {
   mainText: string;
   bottomText?: string;
   icon?: 'heart' | 'star';
-}
-
-export interface SizeOption {
-  id: string;
-  label: string;
-  weightRange: string;
 }
 
 interface FeatureQuestion {
@@ -92,17 +87,6 @@ const defaultAwards: AwardBadge[] = [
   },
 ];
 
-const defaultSizes: SizeOption[] = [
-  { id: 'n', label: 'N or N+1', weightRange: 'Under 10 lbs' },
-  { id: '1', label: '1', weightRange: '8-12 lbs' },
-  { id: '2', label: '2', weightRange: '10-16 lbs' },
-  { id: '3', label: '3', weightRange: '14-24 lbs' },
-  { id: '4', label: '4', weightRange: '20-32 lbs' },
-  { id: '5', label: '5', weightRange: '27+ lbs' },
-  { id: '6', label: '6', weightRange: '35+ lbs' },
-  { id: '7', label: '7', weightRange: '41+ lbs' },
-];
-
 export default function PDPHero({
   mainImage,
   mainImageAlt,
@@ -113,7 +97,7 @@ export default function PDPHero({
   description = 'A fast wicking, highly absorbent diaper with clean ingredients',
   price = '$95/month',
   awards = defaultAwards,
-  sizes = defaultSizes,
+  sizes = DISPLAY_SIZES,
   sizeGuideHref = '#',
   subscriptionNote = 'A shipment typically lasts one month',
 }: PDPHeroProps) {

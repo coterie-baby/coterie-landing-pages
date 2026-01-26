@@ -2,14 +2,12 @@
 
 import { useEffect } from 'react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { SIZE_CONFIGS, DiaperSize } from './context';
+import { SIZE_CONFIGS, SIZE_ORDER } from './context';
 
 interface SizeFitGuideDrawerProps {
   isOpen: boolean;
   onClose: () => void;
 }
-
-const sizeOrder: DiaperSize[] = ['n', 'n+1', '1', '2', '3', '4', '5', '6', '7'];
 
 export default function SizeFitGuideDrawer({
   isOpen,
@@ -132,7 +130,7 @@ export default function SizeFitGuideDrawer({
                     </tr>
                   </thead>
                   <tbody>
-                    {sizeOrder.map((sizeKey) => {
+                    {SIZE_ORDER.map((sizeKey) => {
                       const config = SIZE_CONFIGS[sizeKey];
                       return (
                         <tr
