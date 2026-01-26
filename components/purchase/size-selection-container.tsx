@@ -4,7 +4,7 @@ import { useState } from 'react';
 import PianoKey from './piano-key';
 import { SizeOption } from '../pdp-hero';
 import { Button } from '../ui/button';
-import { useProductOrder, DiaperSize } from './context';
+import { useProductOrder, DiaperSize, SIZE_CONFIGS } from './context';
 import { trackSelectProductVariant } from '@/lib/gtm/ecommerce';
 import SizeFitGuideDrawer from './size-fit-guide-drawer';
 
@@ -149,12 +149,6 @@ export default function SizeSelectionContainer() {
   const isNewbornSize =
     state.selectedSize === 'n' || state.selectedSize === 'n+1';
 
-  const getDisplaySize = (size: string): string => {
-    if (size === 'n') return 'N';
-    if (size === 'n+1') return 'N+1';
-    return size;
-  };
-
   const handleSizeClick = (sizeId: string) => {
     if (sizeId === 'n-or-n1') {
       setIsModalOpen(true);
@@ -162,8 +156,8 @@ export default function SizeSelectionContainer() {
       setSize(sizeId as DiaperSize);
       trackSelectProductVariant({
         itemName: 'The Diaper',
-        itemVariant: getDisplaySize(sizeId),
-        location: 'purchase_page',
+        itemVariant: SIZE_CONFIGS[sizeId as DiaperSize].variantName,
+        location: 'LP Purchase Component',
       });
     }
   };
@@ -173,8 +167,8 @@ export default function SizeSelectionContainer() {
     setIsModalOpen(false);
     trackSelectProductVariant({
       itemName: 'The Diaper',
-      itemVariant: getDisplaySize(option),
-      location: 'purchase_page',
+      itemVariant: SIZE_CONFIGS[option].variantName,
+      location: 'LP Purchase Component',
     });
   };
 

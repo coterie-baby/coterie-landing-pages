@@ -18,6 +18,7 @@ export type OrderType = 'subscription' | 'one-time';
 
 export interface SizeConfig {
   label: string;
+  variantName: string;
   count: number;
   weightRange: string;
   changesPerDay: number;
@@ -25,20 +26,69 @@ export interface SizeConfig {
 
 // Size configurations with diaper counts per box
 export const SIZE_CONFIGS: Record<DiaperSize, SizeConfig> = {
-  n: { label: 'N', count: 186, weightRange: 'Under 6 lbs', changesPerDay: 7 },
+  n: {
+    label: 'N',
+    variantName: 'NB / 6 packs',
+    count: 186,
+    weightRange: 'Under 6 lbs',
+    changesPerDay: 7,
+  },
   'n+1': {
     label: 'N+1',
+    variantName: 'NB / 3 packs, 01 / 3 packs',
     count: 192,
     weightRange: 'Under 10 lbs',
     changesPerDay: 7,
   },
-  '1': { label: '1', count: 198, weightRange: '8-12 lbs', changesPerDay: 7 },
-  '2': { label: '2', count: 186, weightRange: '10-16 lbs', changesPerDay: 6 },
-  '3': { label: '3', count: 168, weightRange: '14-24 lbs', changesPerDay: 6 },
-  '4': { label: '4', count: 150, weightRange: '20-32 lbs', changesPerDay: 5 },
-  '5': { label: '5', count: 132, weightRange: '27+ lbs', changesPerDay: 5 },
-  '6': { label: '6', count: 108, weightRange: '35+ lbs', changesPerDay: 4 },
-  '7': { label: '7', count: 96, weightRange: '41+ lbs', changesPerDay: 4 },
+  '1': {
+    label: '1',
+    variantName: '1 / 6 packs',
+    count: 198,
+    weightRange: '8-12 lbs',
+    changesPerDay: 7,
+  },
+  '2': {
+    label: '2',
+    variantName: '2 / 6 packs',
+    count: 186,
+    weightRange: '10-16 lbs',
+    changesPerDay: 6,
+  },
+  '3': {
+    label: '3',
+    variantName: '3 / 6 packs',
+    count: 168,
+    weightRange: '14-24 lbs',
+    changesPerDay: 6,
+  },
+  '4': {
+    label: '4',
+    variantName: '4 / 6 packs',
+    count: 150,
+    weightRange: '20-32 lbs',
+    changesPerDay: 5,
+  },
+  '5': {
+    label: '5',
+    variantName: '5 / 6 packs',
+    count: 132,
+    weightRange: '27+ lbs',
+    changesPerDay: 5,
+  },
+  '6': {
+    label: '6',
+    variantName: '6 / 6 packs',
+    count: 108,
+    weightRange: '35+ lbs',
+    changesPerDay: 4,
+  },
+  '7': {
+    label: '7',
+    variantName: '7 / 6 packs',
+    count: 96,
+    weightRange: '41+ lbs',
+    changesPerDay: 4,
+  },
 };
 
 export interface PlanConfig {

@@ -17,7 +17,7 @@ interface AddToCartButtonProps {
 export default function AddToCartButton({
   className = '',
 }: AddToCartButtonProps) {
-  const { state, isValid, currentPrice } = useProductOrder();
+  const { state, isValid, currentPrice, variantId } = useProductOrder();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -58,10 +58,10 @@ export default function AddToCartButton({
 
       // Track begin_checkout before redirect
       trackBeginCheckout({
-        planType: state.selectedPlan,
         size: state.selectedSize,
         orderType: state.orderType,
         price: currentPrice,
+        variantId: variantId!,
         quantity: state.quantity,
       });
 

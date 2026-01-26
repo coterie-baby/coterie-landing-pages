@@ -2,6 +2,7 @@
 
 import { sendGTMEvent } from '@next/third-parties/google';
 import type { DiaperSize, PlanType, OrderType } from '@/components/purchase/context';
+import { SIZE_CONFIGS } from '@/components/purchase/context';
 
 function pushToDataLayer(data: Record<string, unknown>) {
   if (typeof window === 'undefined') return;
@@ -68,42 +69,73 @@ export function trackAddToCart(data: AddToCartEventData): void {
 }
 
 export interface BeginCheckoutEventData {
-  planType: PlanType;
   size: DiaperSize;
   orderType: OrderType;
   price: number;
+  variantId: string;
   quantity?: number;
   currency?: string;
+  productId?: number;
+  imageUrl?: string;
+  location?: string;
+}
+
+// Default product constants
+const DEFAULT_PRODUCT_ID = 4471557914690;
+const DEFAULT_IMAGE_URL = 'https://cdn.shopify.com/s/files/1/0254/8118/3298/products/TheDiaper.jpg?v=1682295124';
+
+/**
+ * Extract numeric variant ID from Shopify GID
+ */
+function extractVariantId(gid: string): number | undefined {
+  const match = gid.match(/ProductVariant\/(\d+)/);
+  return match ? parseInt(match[1], 10) : undefined;
 }
 
 /**
  * Track begin_checkout event when user is redirected to Shopify checkout
  */
 export function trackBeginCheckout(data: BeginCheckoutEventData): void {
-  const { planType, size, orderType, price, quantity = 1, currency = 'USD' } = data;
+  const {
+    size,
+    orderType,
+    price,
+    variantId,
+    quantity = 1,
+    currency = 'USD',
+    productId = DEFAULT_PRODUCT_ID,
+    imageUrl = DEFAULT_IMAGE_URL,
+    location,
+  } = data;
+
+  const purchaseType = orderType === 'subscription' ? 'Auto Renew' : 'One-Time';
+  const numericVariantId = extractVariantId(variantId);
 
   pushToDataLayer({ ecommerce: null });
 
   pushToDataLayer({
     event: 'begin_checkout',
     ecommerce: {
+      actionField: { step: 1 },
       currency,
       value: price * quantity,
       items: [
         {
-          item_id: `${planType}-${size}`,
-          item_name: PLAN_NAMES[planType],
-          item_category: 'Subscription',
-          item_category2: orderType === 'subscription' ? 'Auto-Renew' : 'One-Time',
-          item_variant: getDisplaySize(size),
+          item_brand: 'Coterie',
+          item_category: 'Diapers',
+          item_image_url: imageUrl,
+          item_name: 'The Diaper',
+          item_product_id: productId,
+          item_variant: SIZE_CONFIGS[size].variantName,
+          item_variant_id: numericVariantId,
+          location,
           price,
+          purchase_type: purchaseType,
           quantity,
         },
       ],
+      purchase_type: purchaseType,
     },
-    plan_type: planType,
-    diaper_size: size,
-    order_type: orderType,
   });
 }
 

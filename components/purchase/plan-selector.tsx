@@ -103,7 +103,7 @@ export default function PlanSelector() {
     setPlan(planId);
     setOrderType('subscription');
     trackSelectPlanType({
-      location: 'purchase_page',
+      location: 'LP Purchase Component',
       planType: planId,
     });
   };
@@ -112,7 +112,7 @@ export default function PlanSelector() {
     setPlan('diaper-only');
     setOrderType('one-time');
     trackSelectPlanType({
-      location: 'purchase_page',
+      location: 'LP Purchase Component',
       planType: 'one-time',
     });
   };
