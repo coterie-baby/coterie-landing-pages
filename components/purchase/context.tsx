@@ -8,7 +8,7 @@ import {
   useMemo,
   ReactNode,
 } from 'react';
-import { DIAPER_VARIANT_IDS } from '@/lib/shopify/product-mapping';
+import { getDiaperVariantIds } from '@/lib/config/products';
 
 // Types
 export type DiaperSize = 'n' | 'n+1' | '1' | '2' | '3' | '4' | '5' | '6' | '7';
@@ -304,7 +304,7 @@ export function ProductOrderProvider({
 
   const variantId = useMemo(() => {
     if (!state.selectedSize) return null;
-    return DIAPER_VARIANT_IDS[state.selectedSize] ?? null;
+    return getDiaperVariantIds()[state.selectedSize] ?? null;
   }, [state.selectedSize]);
 
   const isValid = useMemo(() => {

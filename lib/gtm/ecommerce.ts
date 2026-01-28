@@ -1,13 +1,25 @@
 // GTM E-commerce Event Tracking (GA4 Schema)
 
 import { sendGTMEvent } from '@next/third-parties/google';
+import amplitude from '@/amplitude';
 import type { DiaperSize, PlanType, OrderType } from '@/components/purchase/context';
 import { SIZE_CONFIGS } from '@/components/purchase/context';
 import {
-  DIAPER_VARIANT_IDS,
-  WIPES_4_PACK_VARIANT_ID,
-  WIPES_8_PACK_VARIANT_ID,
-} from '@/lib/shopify/product-mapping';
+  getDiaperVariantIds,
+  getDiaperProductId,
+  getDiaperImageUrl,
+  getDiaperBasePrice,
+  getDiaperSubscriptionPrice,
+  getWipes4PackVariantId,
+  getWipes8PackVariantId,
+  getWipesProductId,
+  getWipesImageUrl,
+  getWipes4PackPrice,
+  getWipes4PackSubscriptionPrice,
+  getWipes8PackPrice,
+  getWipes8PackSubscriptionPrice,
+  extractVariantId,
+} from '@/lib/config/products';
 
 function pushToDataLayer(data: Record<string, unknown>) {
   if (typeof window === 'undefined') return;
@@ -31,30 +43,42 @@ export interface AddToCartEventData {
   price: number;
   quantity?: number;
   currency?: string;
+  location?: string;
 }
 
 /**
  * Track add_to_cart event with GA4 e-commerce schema
  * Uses the same item structure as begin_checkout for consistency
+ * Non-blocking - fires asynchronously via dataLayer push and Amplitude
  */
 export function trackAddToCart(data: AddToCartEventData): void {
-  const { planType, size, orderType, price, quantity = 1, currency = 'USD' } = data;
+  const { planType, size, orderType, price, quantity = 1, currency = 'USD', location } = data;
 
   const purchaseType = orderType === 'subscription' ? 'Auto Renew' : 'One-Time';
-  const items = buildCheckoutItems(size, planType, purchaseType, quantity);
+  const items = buildCheckoutItems(size, planType, purchaseType, quantity, location);
 
   // Clear previous ecommerce data
   pushToDataLayer({ ecommerce: null });
 
+  const eventData = {
+    currency,
+    location: location || '',
+    value: price * quantity,
+    items,
+  };
+
+  // Send to GTM
   pushToDataLayer({
     event: 'add_to_cart',
-    ecommerce: {
-      currency,
-      value: price * quantity,
-      items,
-      purchase_type: purchaseType,
+    user_properties: {
+      session_id: '',
+      session_count: '',
     },
+    ecommerce: eventData,
   });
+
+  // Send to Amplitude
+  amplitude.track('add_to_cart', eventData);
 }
 
 export interface BeginCheckoutEventData {
@@ -65,28 +89,6 @@ export interface BeginCheckoutEventData {
   quantity?: number;
   currency?: string;
   location?: string;
-}
-
-// Default product constants for diapers
-const DIAPER_PRODUCT_ID = 4471557914690;
-const DIAPER_IMAGE_URL = 'https://cdn.shopify.com/s/files/1/0254/8118/3298/products/TheDiaper.jpg?v=1682295124';
-
-// Default product constants for wipes
-// TODO: Replace with actual wipes product info from environment variables
-const WIPES_PRODUCT_ID = 4471557914691; // Placeholder - update with real ID
-const WIPES_IMAGE_URL = 'https://cdn.shopify.com/s/files/1/0254/8118/3298/products/TheWipe.jpg'; // Placeholder
-
-// Price breakdown for tracking (approximate - total prices are in PLAN_CONFIGS)
-const DIAPER_BASE_PRICE = 105.5;
-const WIPES_4_PACK_PRICE = 33; // 138.5 - 105.5
-const WIPES_8_PACK_PRICE = 66; // 171.5 - 105.5
-
-/**
- * Extract numeric variant ID from Shopify GID
- */
-function extractVariantId(gid: string): number | undefined {
-  const match = gid.match(/ProductVariant\/(\d+)/);
-  return match ? parseInt(match[1], 10) : undefined;
 }
 
 /**
@@ -100,51 +102,55 @@ function buildCheckoutItems(
   location?: string
 ): Record<string, unknown>[] {
   const items: Record<string, unknown>[] = [];
+  const isSubscription = purchaseType === 'Auto Renew';
 
   // Always add diapers
-  const diaperVariantId = DIAPER_VARIANT_IDS[size];
+  const diaperVariantId = getDiaperVariantIds()[size];
+  const diaperPrice = isSubscription ? getDiaperSubscriptionPrice() : getDiaperBasePrice();
   items.push({
     item_brand: 'Coterie',
     item_category: 'Diapers',
-    item_image_url: DIAPER_IMAGE_URL,
+    item_image_url: getDiaperImageUrl(),
     item_name: 'The Diaper',
-    item_product_id: DIAPER_PRODUCT_ID,
+    item_product_id: getDiaperProductId(),
     item_variant: SIZE_CONFIGS[size].variantName,
     item_variant_id: extractVariantId(diaperVariantId),
     location,
-    price: DIAPER_BASE_PRICE,
+    price: diaperPrice,
     purchase_type: purchaseType,
     quantity,
   });
 
   // Add wipes for bundle plans
   if (planType === 'diaper-wipe-bundle') {
+    const wipes4Price = isSubscription ? getWipes4PackSubscriptionPrice() : getWipes4PackPrice();
     items.push({
       item_brand: 'Coterie',
       item_category: 'Wipes',
-      item_image_url: WIPES_IMAGE_URL,
+      item_image_url: getWipesImageUrl(),
       item_name: 'The Wipe',
-      item_product_id: WIPES_PRODUCT_ID,
+      item_product_id: getWipesProductId(),
       item_variant: '4 packs (224 wipes)',
-      item_variant_id: extractVariantId(WIPES_4_PACK_VARIANT_ID),
+      item_variant_id: extractVariantId(getWipes4PackVariantId()),
       location,
-      price: WIPES_4_PACK_PRICE,
+      price: wipes4Price,
       purchase_type: purchaseType,
       quantity,
     });
   }
 
   if (planType === 'deluxe') {
+    const wipes8Price = isSubscription ? getWipes8PackSubscriptionPrice() : getWipes8PackPrice();
     items.push({
       item_brand: 'Coterie',
       item_category: 'Wipes',
-      item_image_url: WIPES_IMAGE_URL,
+      item_image_url: getWipesImageUrl(),
       item_name: 'The Wipe',
-      item_product_id: WIPES_PRODUCT_ID,
+      item_product_id: getWipesProductId(),
       item_variant: '8 packs (448 wipes)',
-      item_variant_id: extractVariantId(WIPES_8_PACK_VARIANT_ID),
+      item_variant_id: extractVariantId(getWipes8PackVariantId()),
       location,
-      price: WIPES_8_PACK_PRICE,
+      price: wipes8Price,
       purchase_type: purchaseType,
       quantity,
     });
@@ -172,27 +178,45 @@ export function trackBeginCheckout(data: BeginCheckoutEventData): void {
 
   pushToDataLayer({ ecommerce: null });
 
+  const eventData = {
+    actionField: { step: 1 },
+    currency,
+    location: location || '',
+    value: price * quantity,
+    items,
+  };
+
+  // Send to GTM
   pushToDataLayer({
     event: 'begin_checkout',
-    ecommerce: {
-      actionField: { step: 1 },
-      currency,
-      value: price * quantity,
-      items,
-      purchase_type: purchaseType,
+    user_properties: {
+      session_id: '',
+      session_count: '',
     },
+    ecommerce: eventData,
   });
+
+  // Send to Amplitude
+  amplitude.track('begin_checkout', eventData);
 }
 
 /**
  * Track checkout error for debugging/monitoring
  */
 export function trackCheckoutError(error: string, context?: Record<string, unknown>): void {
-  pushToDataLayer({
-    event: 'checkout_error',
+  const eventData = {
     error_message: error,
     ...context,
+  };
+
+  // Send to GTM
+  pushToDataLayer({
+    event: 'checkout_error',
+    ...eventData,
   });
+
+  // Send to Amplitude
+  amplitude.track('checkout_error', eventData);
 }
 
 export interface SelectProductVariantEventData {
@@ -205,17 +229,23 @@ export interface SelectProductVariantEventData {
  * Track product variant selection (e.g., size selection)
  */
 export function trackSelectProductVariant(data: SelectProductVariantEventData): void {
+  const eventData = {
+    item_name: data.itemName,
+    item_variant: data.itemVariant,
+    location: data.location,
+  };
+
+  // Send to GTM
   sendGTMEvent({
     event: 'ui_custom_event',
     customEventPayload: {
       name: 'select_product_variant',
-      value: {
-        item_name: data.itemName,
-        item_variant: data.itemVariant,
-        location: data.location,
-      },
+      value: eventData,
     },
   });
+
+  // Send to Amplitude
+  amplitude.track('select_product_variant', eventData);
 }
 
 export interface SelectPlanTypeEventData {
@@ -232,16 +262,22 @@ export function trackSelectPlanType(data: SelectPlanTypeEventData): void {
       ? 'One-Time Purchase'
       : PLAN_NAMES[data.planType];
 
+  const eventData = {
+    location: data.location,
+    version,
+  };
+
+  // Send to GTM
   sendGTMEvent({
     event: 'ui_custom_event',
     customEventPayload: {
       name: 'select_plan_type',
-      value: {
-        location: data.location,
-        version,
-      },
+      value: eventData,
     },
   });
+
+  // Send to Amplitude
+  amplitude.track('select_plan_type', eventData);
 }
 
 /**
@@ -270,14 +306,20 @@ export interface ClickCarouselThumbnailEventData {
  * Track carousel thumbnail click
  */
 export function trackClickCarouselThumbnail(data: ClickCarouselThumbnailEventData): void {
+  const eventData = {
+    image: getImageIdentifier(data.imageSrc),
+    location: data.location,
+  };
+
+  // Send to GTM
   sendGTMEvent({
     event: 'ui_custom_event',
     customEventPayload: {
       name: 'click_carousel_thumbnail',
-      value: {
-        image: getImageIdentifier(data.imageSrc),
-        location: data.location,
-      },
+      value: eventData,
     },
   });
+
+  // Send to Amplitude
+  amplitude.track('click_carousel_thumbnail', eventData);
 }

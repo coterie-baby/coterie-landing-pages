@@ -28,13 +28,14 @@ export default function AddToCartButton({
     setError(null);
 
     try {
-      // Track add_to_cart event
+      // Track add_to_cart event (non-blocking)
       trackAddToCart({
         planType: state.selectedPlan,
         size: state.selectedSize,
         orderType: state.orderType,
         price: currentPrice,
         quantity: state.quantity,
+        location: 'LP Purchase Component',
       });
 
       // Create Shopify cart
@@ -63,6 +64,7 @@ export default function AddToCartButton({
         orderType: state.orderType,
         price: currentPrice,
         quantity: state.quantity,
+        location: 'LP Purchase Component',
       });
 
       // Redirect to Shopify checkout
