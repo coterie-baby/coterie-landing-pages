@@ -2,21 +2,16 @@
 
 import { useState } from 'react';
 import PianoKey from './piano-key';
-import { SizeOption } from '../pdp-hero';
 import { Button } from '../ui/button';
-import { useProductOrder, DiaperSize } from './context';
+import {
+  useProductOrder,
+  DiaperSize,
+  SIZE_CONFIGS,
+  DISPLAY_SIZES,
+  SizeOption,
+} from './context';
 import { trackSelectProductVariant } from '@/lib/gtm/ecommerce';
-
-const sizes: SizeOption[] = [
-  { id: 'n-or-n1', label: 'N or N+1', weightRange: 'Under 10 lbs' },
-  { id: '1', label: '1', weightRange: '8-12 lbs' },
-  { id: '2', label: '2', weightRange: '10-16 lbs' },
-  { id: '3', label: '3', weightRange: '14-24 lbs' },
-  { id: '4', label: '4', weightRange: '20-32 lbs' },
-  { id: '5', label: '5', weightRange: '27+ lbs' },
-  { id: '6', label: '6', weightRange: '35+ lbs' },
-  { id: '7', label: '7', weightRange: '41+ lbs' },
-];
+import SizeFitGuideDrawer from './size-fit-guide-drawer';
 
 interface NewbornModalProps {
   isOpen: boolean;
@@ -139,25 +134,14 @@ function NewbornModal({ isOpen, onClose, onConfirm }: NewbornModalProps) {
   );
 }
 
-interface SizeSelectionContainerProps {
-  sizeGuideHref?: string;
-}
-
-export default function SizeSelectionContainer({
-  sizeGuideHref = '#',
-}: SizeSelectionContainerProps) {
+export default function SizeSelectionContainer() {
   const { state, setSize } = useProductOrder();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   // Track if newborn option was selected (n or n+1)
   const isNewbornSize =
     state.selectedSize === 'n' || state.selectedSize === 'n+1';
-
-  const getDisplaySize = (size: string): string => {
-    if (size === 'n') return 'N';
-    if (size === 'n+1') return 'N+1';
-    return size;
-  };
 
   const handleSizeClick = (sizeId: string) => {
     if (sizeId === 'n-or-n1') {
@@ -166,8 +150,8 @@ export default function SizeSelectionContainer({
       setSize(sizeId as DiaperSize);
       trackSelectProductVariant({
         itemName: 'The Diaper',
-        itemVariant: getDisplaySize(sizeId),
-        location: 'purchase_page',
+        itemVariant: SIZE_CONFIGS[sizeId as DiaperSize].variantName,
+        location: 'LP Purchase Component',
       });
     }
   };
@@ -177,8 +161,8 @@ export default function SizeSelectionContainer({
     setIsModalOpen(false);
     trackSelectProductVariant({
       itemName: 'The Diaper',
-      itemVariant: getDisplaySize(option),
-      location: 'purchase_page',
+      itemVariant: SIZE_CONFIGS[option].variantName,
+      location: 'LP Purchase Component',
     });
   };
 
@@ -192,7 +176,7 @@ export default function SizeSelectionContainer({
   // Build sizes array with dynamic first key label
   const displaySizes: SizeOption[] = [
     { id: 'n-or-n1', label: getFirstKeyLabel(), weightRange: 'Under 10 lbs' },
-    ...sizes.slice(1),
+    ...DISPLAY_SIZES.slice(1),
   ];
 
   return (
@@ -202,12 +186,12 @@ export default function SizeSelectionContainer({
         <div className="flex items-center justify-between">
           <p className="text-sm">Pick your size</p>
         </div>
-        <a
-          href={sizeGuideHref}
+        <button
+          onClick={() => setIsDrawerOpen(true)}
           className="text-xs text-[#0000C9] font-semibold underline underline-offset-2 hover:text-[#0000A0]"
         >
           Size + Fit Guide
-        </a>
+        </button>
       </div>
 
       {/* Size Grid */}
@@ -231,6 +215,12 @@ export default function SizeSelectionContainer({
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onConfirm={handleNewbornConfirm}
+      />
+
+      {/* Size + Fit Guide Drawer */}
+      <SizeFitGuideDrawer
+        isOpen={isDrawerOpen}
+        onClose={() => setIsDrawerOpen(false)}
       />
     </div>
   );

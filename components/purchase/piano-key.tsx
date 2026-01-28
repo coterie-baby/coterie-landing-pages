@@ -1,4 +1,4 @@
-import { SizeOption } from '../pdp-hero';
+import { SizeOption } from './context';
 
 interface PianoKeyProps {
   size: SizeOption;

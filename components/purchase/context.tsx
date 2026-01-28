@@ -8,6 +8,7 @@ import {
   useMemo,
   ReactNode,
 } from 'react';
+import { getDiaperVariantIds } from '@/lib/config/products';
 
 // Types
 export type DiaperSize = 'n' | 'n+1' | '1' | '2' | '3' | '4' | '5' | '6' | '7';
@@ -18,6 +19,7 @@ export type OrderType = 'subscription' | 'one-time';
 
 export interface SizeConfig {
   label: string;
+  variantName: string;
   count: number;
   weightRange: string;
   changesPerDay: number;
@@ -25,21 +27,90 @@ export interface SizeConfig {
 
 // Size configurations with diaper counts per box
 export const SIZE_CONFIGS: Record<DiaperSize, SizeConfig> = {
-  n: { label: 'N', count: 186, weightRange: 'Under 6 lbs', changesPerDay: 7 },
+  n: {
+    label: 'N',
+    variantName: 'NB / 6 packs',
+    count: 186,
+    weightRange: 'Under 6 lbs',
+    changesPerDay: 7,
+  },
   'n+1': {
     label: 'N+1',
+    variantName: 'NB / 3 packs, 01 / 3 packs',
     count: 192,
     weightRange: 'Under 10 lbs',
     changesPerDay: 7,
   },
-  '1': { label: '1', count: 198, weightRange: '8-12 lbs', changesPerDay: 7 },
-  '2': { label: '2', count: 186, weightRange: '10-16 lbs', changesPerDay: 6 },
-  '3': { label: '3', count: 168, weightRange: '14-24 lbs', changesPerDay: 6 },
-  '4': { label: '4', count: 150, weightRange: '20-32 lbs', changesPerDay: 5 },
-  '5': { label: '5', count: 132, weightRange: '27+ lbs', changesPerDay: 5 },
-  '6': { label: '6', count: 108, weightRange: '35+ lbs', changesPerDay: 4 },
-  '7': { label: '7', count: 96, weightRange: '41+ lbs', changesPerDay: 4 },
+  '1': {
+    label: '1',
+    variantName: '1 / 6 packs',
+    count: 198,
+    weightRange: '8-12 lbs',
+    changesPerDay: 7,
+  },
+  '2': {
+    label: '2',
+    variantName: '2 / 6 packs',
+    count: 186,
+    weightRange: '10-16 lbs',
+    changesPerDay: 6,
+  },
+  '3': {
+    label: '3',
+    variantName: '3 / 6 packs',
+    count: 168,
+    weightRange: '14-24 lbs',
+    changesPerDay: 6,
+  },
+  '4': {
+    label: '4',
+    variantName: '4 / 6 packs',
+    count: 150,
+    weightRange: '20-32 lbs',
+    changesPerDay: 5,
+  },
+  '5': {
+    label: '5',
+    variantName: '5 / 6 packs',
+    count: 132,
+    weightRange: '27+ lbs',
+    changesPerDay: 5,
+  },
+  '6': {
+    label: '6',
+    variantName: '6 / 6 packs',
+    count: 108,
+    weightRange: '35+ lbs',
+    changesPerDay: 4,
+  },
+  '7': {
+    label: '7',
+    variantName: '7 / 6 packs',
+    count: 96,
+    weightRange: '41+ lbs',
+    changesPerDay: 4,
+  },
 };
+
+// Size option for display in UI selectors
+export interface SizeOption {
+  id: string;
+  label: string;
+  weightRange: string;
+}
+
+// Ordered list of sizes for iteration
+export const SIZE_ORDER: DiaperSize[] = ['n', 'n+1', '1', '2', '3', '4', '5', '6', '7'];
+
+// Generate display sizes from SIZE_CONFIGS (excludes n+1 since it's handled via modal)
+export const DISPLAY_SIZES: SizeOption[] = [
+  { id: 'n-or-n1', label: 'N or N+1', weightRange: 'Under 10 lbs' },
+  ...SIZE_ORDER.filter((size) => size !== 'n' && size !== 'n+1').map((size) => ({
+    id: size,
+    label: SIZE_CONFIGS[size].label,
+    weightRange: SIZE_CONFIGS[size].weightRange,
+  })),
+];
 
 export interface PlanConfig {
   id: PlanType;
@@ -50,7 +121,6 @@ export interface PlanConfig {
   subscriptionPrice: number;
   subscriptionDiscount: number;
   isPopular?: boolean;
-  variantIdMap: Record<DiaperSize, string>; // Maps size to Shopify variant ID
 }
 
 export interface ProductOrderState {
@@ -77,17 +147,6 @@ export const PLAN_CONFIGS: PlanConfig[] = [
     basePrice: 105.5,
     subscriptionPrice: 95,
     subscriptionDiscount: 10,
-    variantIdMap: {
-      n: 'gid://shopify/ProductVariant/diaper-n',
-      'n+1': 'gid://shopify/ProductVariant/diaper-n1',
-      '1': 'gid://shopify/ProductVariant/diaper-1',
-      '2': 'gid://shopify/ProductVariant/diaper-2',
-      '3': 'gid://shopify/ProductVariant/diaper-3',
-      '4': 'gid://shopify/ProductVariant/diaper-4',
-      '5': 'gid://shopify/ProductVariant/diaper-5',
-      '6': 'gid://shopify/ProductVariant/diaper-6',
-      '7': 'gid://shopify/ProductVariant/diaper-7',
-    },
   },
   {
     id: 'diaper-wipe-bundle',
@@ -98,17 +157,6 @@ export const PLAN_CONFIGS: PlanConfig[] = [
     subscriptionPrice: 123,
     subscriptionDiscount: 10,
     isPopular: true,
-    variantIdMap: {
-      n: 'gid://shopify/ProductVariant/bundle-n',
-      'n+1': 'gid://shopify/ProductVariant/bundle-n1',
-      '1': 'gid://shopify/ProductVariant/bundle-1',
-      '2': 'gid://shopify/ProductVariant/bundle-2',
-      '3': 'gid://shopify/ProductVariant/bundle-3',
-      '4': 'gid://shopify/ProductVariant/bundle-4',
-      '5': 'gid://shopify/ProductVariant/bundle-5',
-      '6': 'gid://shopify/ProductVariant/bundle-6',
-      '7': 'gid://shopify/ProductVariant/bundle-7',
-    },
   },
   {
     id: 'deluxe',
@@ -118,17 +166,6 @@ export const PLAN_CONFIGS: PlanConfig[] = [
     basePrice: 171.5,
     subscriptionPrice: 151.0,
     subscriptionDiscount: 10,
-    variantIdMap: {
-      n: 'gid://shopify/ProductVariant/deluxe-n',
-      'n+1': 'gid://shopify/ProductVariant/deluxe-n1',
-      '1': 'gid://shopify/ProductVariant/deluxe-1',
-      '2': 'gid://shopify/ProductVariant/deluxe-2',
-      '3': 'gid://shopify/ProductVariant/deluxe-3',
-      '4': 'gid://shopify/ProductVariant/deluxe-4',
-      '5': 'gid://shopify/ProductVariant/deluxe-5',
-      '6': 'gid://shopify/ProductVariant/deluxe-6',
-      '7': 'gid://shopify/ProductVariant/deluxe-7',
-    },
   },
 ];
 
@@ -266,9 +303,9 @@ export function ProductOrderProvider({
   }, [selectedPlanConfig]);
 
   const variantId = useMemo(() => {
-    if (!state.selectedSize || !selectedPlanConfig) return null;
-    return selectedPlanConfig.variantIdMap[state.selectedSize] ?? null;
-  }, [state.selectedSize, selectedPlanConfig]);
+    if (!state.selectedSize) return null;
+    return getDiaperVariantIds()[state.selectedSize] ?? null;
+  }, [state.selectedSize]);
 
   const isValid = useMemo(() => {
     return state.selectedSize !== null && variantId !== null;

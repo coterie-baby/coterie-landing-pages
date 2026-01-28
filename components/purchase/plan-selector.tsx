@@ -1,7 +1,7 @@
 'use client';
 
 import { useProductOrder, PLAN_CONFIGS, PlanType } from './context';
-import { trackSelectPlanType } from '@/lib/gtm/ecommerce';
+import { trackSelectPurchaseType, trackSelectSubOnlyPlanType } from '@/lib/gtm/ecommerce';
 
 function CheckIcon() {
   return (
@@ -102,8 +102,12 @@ export default function PlanSelector() {
   const handlePlanSelect = (planId: PlanType) => {
     setPlan(planId);
     setOrderType('subscription');
-    trackSelectPlanType({
-      location: 'purchase_page',
+    trackSelectPurchaseType({
+      location: 'LP Purchase Component',
+      isSubscription: true,
+    });
+    trackSelectSubOnlyPlanType({
+      location: 'LP Purchase Component',
       planType: planId,
     });
   };
@@ -111,9 +115,9 @@ export default function PlanSelector() {
   const handleOneTimePurchase = () => {
     setPlan('diaper-only');
     setOrderType('one-time');
-    trackSelectPlanType({
-      location: 'purchase_page',
-      planType: 'one-time',
+    trackSelectPurchaseType({
+      location: 'LP Purchase Component',
+      isSubscription: false,
     });
   };
 

@@ -2,9 +2,11 @@
 
 import * as amplitude from '@amplitude/unified';
 
+const AMPLITUDE_API_KEY = process.env.NEXT_PUBLIC_AMPLITUDE_API_KEY;
+
 function initAmplitude() {
-  if (typeof window !== 'undefined') {
-    amplitude.initAll('8848180bd91ada67c191ca782c3bab8c', {
+  if (typeof window !== 'undefined' && AMPLITUDE_API_KEY) {
+    amplitude.initAll(AMPLITUDE_API_KEY, {
       analytics: { autocapture: true, defaultTracking: true },
       sessionReplay: { sampleRate: 1 },
     });
