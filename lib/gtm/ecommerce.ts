@@ -248,36 +248,60 @@ export function trackSelectProductVariant(data: SelectProductVariantEventData): 
   amplitude.track('select_product_variant', eventData);
 }
 
-export interface SelectPlanTypeEventData {
+export interface SelectPurchaseTypeEventData {
   location: string;
-  planType: PlanType | 'one-time';
+  isSubscription: boolean;
 }
 
 /**
- * Track plan type selection
+ * Track purchase type selection (Auto Renew vs One Time)
+ * Fires for all plan selections
  */
-export function trackSelectPlanType(data: SelectPlanTypeEventData): void {
-  const version =
-    data.planType === 'one-time'
-      ? 'One-Time Purchase'
-      : PLAN_NAMES[data.planType];
-
+export function trackSelectPurchaseType(data: SelectPurchaseTypeEventData): void {
   const eventData = {
     location: data.location,
-    version,
+    version: data.isSubscription ? 'Auto Renew' : 'One Time',
   };
 
   // Send to GTM
   sendGTMEvent({
     event: 'ui_custom_event',
     customEventPayload: {
-      name: 'select_plan_type',
+      name: 'select_purchase_type',
       value: eventData,
     },
   });
 
   // Send to Amplitude
-  amplitude.track('select_plan_type', eventData);
+  amplitude.track('select_purchase_type', eventData);
+}
+
+export interface SelectSubOnlyPlanTypeEventData {
+  location: string;
+  planType: PlanType;
+}
+
+/**
+ * Track subscription plan type selection
+ * Only fires when user selects an Auto Renew option
+ */
+export function trackSelectSubOnlyPlanType(data: SelectSubOnlyPlanTypeEventData): void {
+  const eventData = {
+    location: data.location,
+    version: PLAN_NAMES[data.planType],
+  };
+
+  // Send to GTM
+  sendGTMEvent({
+    event: 'ui_custom_event',
+    customEventPayload: {
+      name: 'select_sub_only_plan_type',
+      value: eventData,
+    },
+  });
+
+  // Send to Amplitude
+  amplitude.track('select_sub_only_plan_type', eventData);
 }
 
 /**
