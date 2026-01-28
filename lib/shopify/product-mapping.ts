@@ -10,7 +10,6 @@ import {
   getWipes4PackVariantId,
   getWipes8PackVariantId,
   getWipesSellingPlanId,
-  validateProductConfig,
 } from '@/lib/config/products';
 
 // Re-export for other modules
