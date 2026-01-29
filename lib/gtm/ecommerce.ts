@@ -347,3 +347,24 @@ export function trackClickCarouselThumbnail(data: ClickCarouselThumbnailEventDat
   // Send to Amplitude
   amplitude.track('click_carousel_thumbnail', eventData);
 }
+
+/**
+ * Track view popup event (e.g., Size + Fit Guide)
+ */
+export function trackViewPopup(popupName: string): void {
+  const eventData = {
+    popup_name: popupName,
+  };
+
+  // Send to GTM
+  sendGTMEvent({
+    event: 'ui_custom_event',
+    customEventPayload: {
+      name: 'view_popup',
+      value: eventData,
+    },
+  });
+
+  // Send to Amplitude
+  amplitude.track('view_popup', eventData);
+}

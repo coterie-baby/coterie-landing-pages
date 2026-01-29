@@ -10,7 +10,7 @@ import {
   DISPLAY_SIZES,
   SizeOption,
 } from './context';
-import { trackSelectProductVariant } from '@/lib/gtm/ecommerce';
+import { trackSelectProductVariant, trackViewPopup } from '@/lib/gtm/ecommerce';
 import SizeFitGuideDrawer from './size-fit-guide-drawer';
 
 interface NewbornModalProps {
@@ -187,7 +187,10 @@ export default function SizeSelectionContainer() {
           <p className="text-sm">Pick your size</p>
         </div>
         <button
-          onClick={() => setIsDrawerOpen(true)}
+          onClick={() => {
+            trackViewPopup('The Diaper Size + Fit Guide');
+            setIsDrawerOpen(true);
+          }}
           className="text-xs text-[#0000C9] font-semibold underline underline-offset-2 hover:text-[#0000A0]"
         >
           Size + Fit Guide
