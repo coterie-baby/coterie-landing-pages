@@ -95,7 +95,7 @@ export default function AddToCartButton({
       <Button
         onClick={handleAddToCart}
         disabled={!isValid || isLoading}
-        className={`w-full bg-[#0000C9] text-white py-3 rounded-full font-medium text-sm hover:bg-[#0000AA] transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed ${className}`}
+        className={`w-full bg-[#0000C9] text-white py-3 rounded-full font-medium text-sm hover:bg-[#0000AA] transition-colors disabled:bg-[#e7e7e7] disabled:text-[#515151] disabled:opacity-100 disabled:cursor-not-allowed ${className}`}
       >
         {/* {getButtonText()} */}
         Continue to Checkout

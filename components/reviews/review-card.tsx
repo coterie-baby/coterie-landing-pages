@@ -1,18 +1,22 @@
 import { StarRating } from './star-rating';
 import { Review } from '.';
 
+function decodeHtmlEntities(text: string): string {
+  const textarea = document.createElement('textarea');
+  textarea.innerHTML = text;
+  return textarea.value;
+}
+
 export function ReviewCard({
   review,
-  productName,
   onVote,
 }: {
   review: Review;
-  productName: string;
   onVote: (reviewId: number, voteType: 'up' | 'down') => void;
 }) {
-  const sizeField = Object.values(review.custom_fields || {}).find(
-    (field) => field.title === 'Size'
-  );
+  // const sizeField = Object.values(review.custom_fields || {}).find(
+  //   (field) => field.title === 'Size'
+  // );
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -22,7 +26,6 @@ export function ReviewCard({
       day: 'numeric',
     });
   };
-
   return (
     <div className="bg-white flex flex-col gap-6 py-6 border-b border-[#E0E0E0]">
       <div className="flex flex-col gap-1">
@@ -31,17 +34,17 @@ export function ReviewCard({
         <div className="text-sm text-[#525252]">
           {formatDate(review.created_at)}
         </div>
-        <div className="text-sm text-[#525252]">
-          Size {sizeField?.value || 'N/A'} OR {productName}
-        </div>
+        {/* {sizeField?.value && (
+          <div className="text-sm text-[#525252]">Size {sizeField.value}</div>
+        )} */}
       </div>
 
-      <p className="text-sm">{review.content}</p>
+      <p className="text-sm">{decodeHtmlEntities(review.content)}</p>
 
       <div className="flex items-center justify-between text-sm">
         <span>Was this review helpful?</span>
         <div className="flex items-center gap-4 text-[#525252]">
-          <button 
+          <button
             className="flex items-center gap-1 hover:text-green-600 transition-colors"
             onClick={() => onVote(review.id, 'up')}
           >
@@ -59,7 +62,7 @@ export function ReviewCard({
             </svg>
             {review.votes_up}
           </button>
-          <button 
+          <button
             className="flex items-center gap-1 hover:text-red-600 transition-colors"
             onClick={() => onVote(review.id, 'down')}
           >

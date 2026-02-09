@@ -6,6 +6,8 @@ import { ProductOrderProvider } from './purchase/context';
 import SizeSelectionContainer from './purchase/size-selection-container';
 import PlanSelector from './purchase/plan-selector';
 import AddToCartButton from './purchase/add-to-cart-button';
+import ProductFeatures from './purchase/product-features';
+import ProductAccordion from './purchase/product-accordion';
 import { trackClickCarouselThumbnail } from '@/lib/gtm/ecommerce';
 
 interface Thumbnail {
@@ -137,6 +139,12 @@ export default function ProductOrderForm({
 
               {/* Add to Cart */}
               <AddToCartButton />
+
+              {/* Product Features Grid */}
+              <ProductFeatures />
+
+              {/* Product Info Accordion */}
+              <ProductAccordion />
             </div>
           </div>
         </div>

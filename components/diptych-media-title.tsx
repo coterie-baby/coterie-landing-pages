@@ -48,7 +48,7 @@ export default function DiptychMediaTitle({
           }`}
         >
           {/* Image */}
-          <div className="w-full lg:w-1/2">
+          <div className="w-full lg:w-1/2 md:h-full">
             {/* Mobile: Square with fill */}
             <div className="relative aspect-square w-full lg:hidden">
               <Image

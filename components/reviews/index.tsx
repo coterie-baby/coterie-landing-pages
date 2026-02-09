@@ -32,6 +32,10 @@ interface ApiResponse {
     per_page: number;
     total: number;
   };
+  bottomline: {
+    average_score: number;
+    total_review: number;
+  };
   products: Array<{
     name: string;
   }>;
@@ -151,7 +155,7 @@ export default function Reviews({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [apiTotalReviews, setApiTotalReviews] = useState<number | null>(null);
-  const [productName, setProductName] = useState<string>('');
+  const [apiAverageRating, setApiAverageRating] = useState<number | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [pagination, setPagination] = useState<{
     page: number;
@@ -160,7 +164,7 @@ export default function Reviews({
   } | null>(null);
 
   const fetchReviews = useCallback(
-    async (page: number = 1) => {
+    async (page: number = 1, rating?: string, size?: string) => {
       if (!productId) {
         return;
       }
@@ -169,19 +173,36 @@ export default function Reviews({
       setError(null);
 
       try {
+        const customFilters: Record<string, string | number> = {};
+
+        // Add rating filter (extract number from "5 stars" format)
+        let scores: number[] | undefined;
+        if (rating) {
+          const score = parseInt(rating.split(' ')[0], 10);
+          if (!isNaN(score)) {
+            scores = [score];
+          }
+        }
+
+        // Add size filter
+        if (size) {
+          customFilters.Size = size;
+        }
+
         const response = await getReviews({
           productId,
           page,
-          customFilters: {},
+          scores,
+          customFilters,
         });
 
         if (response && response.ok) {
           const data: ApiResponse = await response.json();
 
           setFetchedReviews(data.reviews);
-          setApiTotalReviews(data.pagination.total);
+          setApiTotalReviews(data.bottomline?.total_review ?? data.pagination.total);
+          setApiAverageRating(data.bottomline?.average_score ?? null);
           setPagination(data.pagination);
-          setProductName(data.products?.[0]?.name || 'Product');
           setCurrentPage(page);
         }
       } catch {
@@ -194,8 +215,8 @@ export default function Reviews({
   );
 
   useEffect(() => {
-    fetchReviews(1);
-  }, [fetchReviews]);
+    fetchReviews(1, ratingFilter, sizeFilter);
+  }, [fetchReviews, ratingFilter, sizeFilter]);
 
   const handleVote = useCallback(
     async (reviewId: number, voteType: 'up' | 'down') => {
@@ -226,17 +247,13 @@ export default function Reviews({
         // Vote failed silently
       }
     },
-    [productName]
+    []
   );
 
   const displayTotalReviews =
     apiTotalReviews !== null ? apiTotalReviews : totalReviews;
 
-  const displayAverageRating =
-    fetchedReviews.length > 0
-      ? fetchedReviews.reduce((sum, review) => sum + review.score, 0) /
-        fetchedReviews.length
-      : averageRating;
+  const displayAverageRating = apiAverageRating ?? averageRating;
 
   if (loading) {
     return (
@@ -286,7 +303,7 @@ export default function Reviews({
             />
             <FilterDropdown
               label="Size"
-              options={['Small', 'Medium', 'Large', 'X-Large']}
+              options={['N', '1', '2', '3', '4', '5', '6', '7']}
               value={sizeFilter}
               onChange={setSizeFilter}
             />
@@ -295,11 +312,7 @@ export default function Reviews({
             {fetchedReviews.length > 0 &&
               fetchedReviews.map((review) => (
                 <div key={review.id}>
-                  <ReviewCard
-                    review={review}
-                    productName={productName}
-                    onVote={handleVote}
-                  />
+                  <ReviewCard review={review} onVote={handleVote} />
                 </div>
               ))}
           </div>
@@ -308,7 +321,7 @@ export default function Reviews({
             totalPages={
               pagination ? Math.ceil(pagination.total / pagination.per_page) : 1
             }
-            onPageChange={fetchReviews}
+            onPageChange={(page) => fetchReviews(page, ratingFilter, sizeFilter)}
           />
         </div>
       </div>

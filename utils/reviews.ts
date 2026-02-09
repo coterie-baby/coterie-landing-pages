@@ -1,16 +1,21 @@
 interface ReviewsParams {
   productId?: string;
   page?: number;
+  scores?: number[];
   customFilters?: Record<string, string | number | boolean>;
 }
 
-export async function getReviews({ productId, page = 1, customFilters = {} }: ReviewsParams) {
+export async function getReviews({ productId, page = 1, scores, customFilters = {} }: ReviewsParams) {
   try {
     const url = `https://www.coterie.com/api/yotpo/${productId}/search-reviews`;
-    const payload = {
+    const payload: Record<string, unknown> = {
       page,
       customFilters,
     };
+
+    if (scores && scores.length > 0) {
+      payload.scores = scores;
+    }
 
     const reviews = await fetch(url, {
       method: 'POST',
