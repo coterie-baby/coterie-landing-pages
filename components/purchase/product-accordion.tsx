@@ -8,7 +8,7 @@ interface AccordionItem {
 }
 
 interface ProductAccordionProps {
-  items: AccordionItem[];
+  items?: AccordionItem[];
 }
 
 const defaultItems: AccordionItem[] = [
