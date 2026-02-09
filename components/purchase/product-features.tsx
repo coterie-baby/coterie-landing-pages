@@ -6,7 +6,7 @@ interface Feature {
 }
 
 interface ProductFeaturesProps {
-  features: Feature[];
+  features?: Feature[];
 }
 
 const defaultFeatures: Feature[] = [
