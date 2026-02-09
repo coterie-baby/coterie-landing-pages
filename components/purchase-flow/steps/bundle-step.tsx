@@ -35,7 +35,6 @@ export default function BundleStep() {
     setOrderType,
     nextStep,
     prevStep,
-    selectedSizeConfig,
     diaperCount,
     totalPrice,
     originalTotalPrice,
