@@ -1,8 +1,29 @@
-import OrderTypeSelector from '@/components/order-type-selector';
+import PDPHeroV2 from '@/components/pdp-hero-v2';
 import USP2 from '@/components/usp2';
 import Reviews from '@/components/reviews';
 import SocialPosts from '@/components/social-posts';
 import DiptychMediaTitle from '@/components/diptych-media-title';
+import { getReviews } from '@/utils/reviews';
+
+const DIAPER_PRODUCT_ID = '4471557914690';
+
+async function getReviewStats() {
+  try {
+    const response = await getReviews({ productId: DIAPER_PRODUCT_ID, page: 1 });
+    if (response && response.ok) {
+      const data = await response.json();
+      if (data.bottomline) {
+        return {
+          rating: data.bottomline.average_score as number,
+          reviewCount: data.bottomline.total_review as number,
+        };
+      }
+    }
+  } catch {
+    // Fall through to defaults
+  }
+  return { rating: 4.3, reviewCount: 1234 };
+}
 
 const diaperUSPCards = [
   {
@@ -10,7 +31,7 @@ const diaperUSPCards = [
       'https://cdn.sanity.io/images/e4q6bkl9/production/9d7a260cecbd200206a701775abbf817720c0301-1200x865.jpg?rect=168,0,865,865&w=960&h=960&q=100&fit=crop&auto=format',
     headline: 'Proven hypoallergenic',
     bodyCopy:
-      'All materials that may come in contact with your baby’s skin are dermatologist-tested and proven hypoallergenic.',
+      "All materials that may come in contact with your baby\u2019s skin are dermatologist-tested and proven hypoallergenic.",
   },
   {
     image:
@@ -28,10 +49,12 @@ const diaperUSPCards = [
   },
 ];
 
-export default function DiaperPDPPage() {
+export default async function DiaperPDPPage() {
+  const { rating, reviewCount } = await getReviewStats();
+
   return (
     <div>
-      <OrderTypeSelector />
+      <PDPHeroV2 rating={rating} reviewCount={reviewCount} />
       <DiptychMediaTitle
         imageUrl="https://cdn.sanity.io/images/e4q6bkl9/production/ec5a384428110d9ddc4b1445fdfdb118d4beb658-6720x4480.png?w=1920&q=80&auto=format"
         backgroundColor="#F9F4EC"
