@@ -5,7 +5,7 @@ import Image from 'next/image';
 import {
   ProductOrderProvider,
   useProductOrder,
-  SIZE_CONFIGS,
+  // SIZE_CONFIGS,
   PLAN_CONFIGS,
 } from './purchase/context';
 import SizeSelectionContainer from './purchase/size-selection-container';
@@ -24,26 +24,21 @@ function StarIcon({ fillPercent = 0 }: { fillPercent?: number }) {
   const isPartial = fillPercent > 0 && fillPercent < 100;
 
   return (
-    <svg
-      width="14"
-      height="14"
-      viewBox="0 0 13 13"
-      aria-hidden="true"
-    >
+    <svg width="14" height="14" viewBox="0 0 13 13" aria-hidden="true">
       {isPartial && (
         <defs>
           <clipPath id={id}>
-            <rect x="0" y="0" width={`${(fillPercent / 100) * 13}`} height="13" />
+            <rect
+              x="0"
+              y="0"
+              width={`${(fillPercent / 100) * 13}`}
+              height="13"
+            />
           </clipPath>
         </defs>
       )}
       {/* Empty star background */}
-      <path
-        d={STAR_PATH}
-        fill="none"
-        stroke="#D1D5DB"
-        strokeWidth="1"
-      />
+      <path d={STAR_PATH} fill="none" stroke="#D1D5DB" strokeWidth="1" />
       {/* Filled portion */}
       {fillPercent > 0 && (
         <path
@@ -286,19 +281,19 @@ function PDPHeroV2Content({
   productTitle,
   images,
 }: PDPHeroV2ContentProps) {
-  const { state } = useProductOrder();
+  // const { state } = useProductOrder();
 
   // Dynamic title with selected size
-  const sizeLabel = state.selectedSize
-    ? state.selectedSize === 'n'
-      ? 'N'
-      : state.selectedSize === 'n+1'
-        ? 'N+1'
-        : SIZE_CONFIGS[state.selectedSize].label
-    : null;
-  const titleDisplay = sizeLabel
-    ? `${productTitle} (Size ${sizeLabel})`
-    : productTitle;
+  // const sizeLabel = state.selectedSize
+  //   ? state.selectedSize === 'n'
+  //     ? 'N'
+  //     : state.selectedSize === 'n+1'
+  //       ? 'N+1'
+  //       : SIZE_CONFIGS[state.selectedSize].label
+  //   : null;
+  // const titleDisplay = sizeLabel
+  //   ? `${productTitle} (Size ${sizeLabel})`
+  //   : productTitle;
 
   return (
     <div className="bg-white">
@@ -306,7 +301,7 @@ function PDPHeroV2Content({
       <div className="flex flex-col gap-2 px-4 py-4">
         <HeroStarRating rating={rating} reviewCount={reviewCount} />
         <h4 className="text-[26px] font-medium text-black mt-1 leading-tight">
-          {titleDisplay}
+          {productTitle}
         </h4>
       </div>
 
