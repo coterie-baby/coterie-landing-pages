@@ -8,21 +8,31 @@ import { getReviews } from '@/utils/reviews';
 const DIAPER_PRODUCT_ID = '4471557914690';
 
 async function getReviewStats() {
-  try {
-    const response = await getReviews({ productId: DIAPER_PRODUCT_ID, page: 1 });
-    if (response && response.ok) {
-      const data = await response.json();
-      if (data.bottomline) {
-        return {
-          rating: data.bottomline.average_score as number,
-          reviewCount: data.bottomline.total_review as number,
-        };
-      }
-    }
-  } catch {
-    // Fall through to defaults
+  const response = await getReviews({ productId: DIAPER_PRODUCT_ID, page: 1 });
+  if (!response || !response.ok) {
+    throw new Error(`Failed to fetch review stats for product ${DIAPER_PRODUCT_ID}: ${response?.status ?? 'no response'}`);
   }
-  return { rating: 4.3, reviewCount: 1234 };
+  const data = await response.json();
+
+  // The API returns bottomline in some responses, and pagination.total + per-review scores in others
+  if (data.bottomline) {
+    return {
+      rating: data.bottomline.average_score as number,
+      reviewCount: data.bottomline.total_review as number,
+    };
+  }
+
+  if (data.pagination?.total != null && Array.isArray(data.reviews)) {
+    const reviewCount = data.pagination.total as number;
+    // Compute average from the returned page of reviews as an approximation
+    const scores = data.reviews.map((r: { score: number }) => r.score);
+    const rating = scores.length > 0
+      ? Math.round((scores.reduce((a: number, b: number) => a + b, 0) / scores.length) * 10) / 10
+      : 0;
+    return { rating, reviewCount };
+  }
+
+  throw new Error(`Review stats response missing expected data for product ${DIAPER_PRODUCT_ID}`);
 }
 
 const diaperUSPCards = [

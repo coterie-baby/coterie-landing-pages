@@ -16,18 +16,42 @@ import ProductAccordion from './purchase/product-accordion';
 
 // ─── Star Rating ──────────────────────────────────────────────
 
-function StarIcon({ filled }: { filled: boolean }) {
+const STAR_PATH =
+  'M6.5 0L8.02 4.68H13L8.99 7.57L10.51 12.25L6.5 9.36L2.49 12.25L4.01 7.57L0 4.68H4.98L6.5 0Z';
+
+function StarIcon({ fillPercent = 0 }: { fillPercent?: number }) {
+  const id = `star-clip-${fillPercent}`;
+  const isPartial = fillPercent > 0 && fillPercent < 100;
+
   return (
     <svg
       width="14"
       height="14"
       viewBox="0 0 13 13"
-      fill={filled ? 'currentColor' : 'none'}
-      stroke="currentColor"
-      strokeWidth={filled ? '0' : '1'}
       aria-hidden="true"
     >
-      <path d="M6.5 0L8.02 4.68H13L8.99 7.57L10.51 12.25L6.5 9.36L2.49 12.25L4.01 7.57L0 4.68H4.98L6.5 0Z" />
+      {isPartial && (
+        <defs>
+          <clipPath id={id}>
+            <rect x="0" y="0" width={`${(fillPercent / 100) * 13}`} height="13" />
+          </clipPath>
+        </defs>
+      )}
+      {/* Empty star background */}
+      <path
+        d={STAR_PATH}
+        fill="none"
+        stroke="#D1D5DB"
+        strokeWidth="1"
+      />
+      {/* Filled portion */}
+      {fillPercent > 0 && (
+        <path
+          d={STAR_PATH}
+          fill="#0000C9"
+          clipPath={isPartial ? `url(#${id})` : undefined}
+        />
+      )}
     </svg>
   );
 }
@@ -42,16 +66,10 @@ function HeroStarRating({
   return (
     <div className="flex items-center gap-1.5">
       <div className="flex items-center gap-0.5">
-        {[1, 2, 3, 4, 5].map((star) => (
-          <span
-            key={star}
-            className={
-              star <= Math.round(rating) ? 'text-[#0000C9]' : 'text-gray-300'
-            }
-          >
-            <StarIcon filled={star <= Math.round(rating)} />
-          </span>
-        ))}
+        {[1, 2, 3, 4, 5].map((star) => {
+          const fill = Math.min(100, Math.max(0, (rating - (star - 1)) * 100));
+          return <StarIcon key={star} fillPercent={fill} />;
+        })}
       </div>
       <span className="text-xs text-gray-600">
         {rating}/5 ({reviewCount.toLocaleString()} reviews)
