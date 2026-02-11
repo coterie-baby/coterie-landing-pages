@@ -13,6 +13,7 @@ import AddToCartButton from './purchase/add-to-cart-button';
 import { trackSelectPurchaseType } from '@/lib/gtm/ecommerce';
 import ProductFeatures from './purchase/product-features';
 import ProductAccordion from './purchase/product-accordion';
+import Link from 'next/link';
 
 // ─── Star Rating ──────────────────────────────────────────────
 
@@ -66,9 +67,9 @@ function HeroStarRating({
           return <StarIcon key={star} fillPercent={fill} />;
         })}
       </div>
-      <span className="text-xs text-gray-600">
+      <Link className="text-xs text-gray-600 underline" href="#reviews">
         {rating}/5 ({reviewCount.toLocaleString()} reviews)
-      </span>
+      </Link>
     </div>
   );
 }

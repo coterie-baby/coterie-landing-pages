@@ -117,7 +117,9 @@ function Pagination({
       ))}
 
       {totalPages > 5 && currentPage < totalPages - 2 && (
-        <span className="text-[#272727B2] px-2 text-sm md:text-[12px]">...</span>
+        <span className="text-[#272727B2] px-2 text-sm md:text-[12px]">
+          ...
+        </span>
       )}
 
       <button
@@ -148,7 +150,6 @@ export default function Reviews({
   averageRating = 4.3,
   productId,
 }: ReviewsProps) {
-
   const [ratingFilter, setRatingFilter] = useState('');
   const [sizeFilter, setSizeFilter] = useState('');
   const [fetchedReviews, setFetchedReviews] = useState<Review[]>([]);
@@ -200,7 +201,9 @@ export default function Reviews({
           const data: ApiResponse = await response.json();
 
           setFetchedReviews(data.reviews);
-          setApiTotalReviews(data.bottomline?.total_review ?? data.pagination.total);
+          setApiTotalReviews(
+            data.bottomline?.total_review ?? data.pagination.total
+          );
           setApiAverageRating(data.bottomline?.average_score ?? null);
           setPagination(data.pagination);
           setCurrentPage(page);
@@ -241,8 +244,7 @@ export default function Reviews({
               return review;
             })
           );
-
-          }
+        }
       } catch {
         // Vote failed silently
       }
@@ -276,7 +278,7 @@ export default function Reviews({
   }
 
   return (
-    <div className="px-4 py-10 md:px-10 md:pt-20 md:pb-16">
+    <div className="px-4 py-10 md:px-10 md:pt-20 md:pb-16" id="reviews">
       <div className="flex flex-col md:flex-row md:justify-between">
         <div className="flex flex-col gap-6 mb-10 md:items-start">
           <h3 className="text-2xl font-normal mb-4 md:w-[225px] md:text-[42px] md:tracking-[-0.84px]">
@@ -321,7 +323,9 @@ export default function Reviews({
             totalPages={
               pagination ? Math.ceil(pagination.total / pagination.per_page) : 1
             }
-            onPageChange={(page) => fetchReviews(page, ratingFilter, sizeFilter)}
+            onPageChange={(page) =>
+              fetchReviews(page, ratingFilter, sizeFilter)
+            }
           />
         </div>
       </div>
