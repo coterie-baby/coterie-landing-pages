@@ -201,7 +201,17 @@ export async function middleware(request: NextRequest) {
 
       let response: NextResponse;
       if (result.type === 'redirect') {
-        response = NextResponse.redirect(result.url);
+        // Forward UTM params + split identifier to the destination URL
+        const dest = new URL(result.url);
+        const UTM_PARAMS = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content'];
+        for (const param of UTM_PARAMS) {
+          const value = request.nextUrl.searchParams.get(param);
+          if (value && !dest.searchParams.has(param)) {
+            dest.searchParams.set(param, value);
+          }
+        }
+        dest.searchParams.set('_frt', matchedFunnel.sourcePath);
+        response = NextResponse.redirect(dest.toString());
       } else {
         const url = request.nextUrl.clone();
         url.pathname = `/${result.slug}`;
