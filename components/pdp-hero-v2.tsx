@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useCallback, useMemo, useEffect } from 'react';
+import { useState, useRef, useCallback, useMemo, useEffect, Suspense } from 'react';
 import Image from 'next/image';
 import {
   ProductOrderProvider,
@@ -409,7 +409,7 @@ function parseSizeParam(raw: string | null): DiaperSize | undefined {
   return undefined;
 }
 
-export default function PDPHeroV2({
+function PDPHeroV2Inner({
   rating = 0,
   reviewCount = 0,
   productTitle = 'The Diaper',
@@ -431,5 +431,13 @@ export default function PDPHeroV2({
         orderTypeConfig={orderTypeConfig}
       />
     </ProductOrderProvider>
+  );
+}
+
+export default function PDPHeroV2(props: PDPHeroV2Props) {
+  return (
+    <Suspense>
+      <PDPHeroV2Inner {...props} />
+    </Suspense>
   );
 }
