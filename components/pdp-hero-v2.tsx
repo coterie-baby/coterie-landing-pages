@@ -71,7 +71,7 @@ function HeroStarRating({
         })}
       </div>
       <Link className="text-xs text-gray-600 underline" href="#reviews">
-        {rating}/5 ({reviewCount.toLocaleString()} reviews)
+        {rating ?? 0}/5 ({(reviewCount ?? 0).toLocaleString()} reviews)
       </Link>
     </div>
   );
