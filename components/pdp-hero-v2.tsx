@@ -1,18 +1,21 @@
 'use client';
 
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useMemo, useEffect } from 'react';
 import Image from 'next/image';
 import {
   ProductOrderProvider,
   useProductOrder,
   // SIZE_CONFIGS,
   PLAN_CONFIGS,
+  SIZE_ORDER,
+  type DiaperSize,
 } from './purchase/context';
+import { useSearchParams } from 'next/navigation';
 import SizeSelectionContainer from './purchase/size-selection-container';
 import AddToCartButton from './purchase/add-to-cart-button';
 import { trackSelectPurchaseType } from '@/lib/gtm/ecommerce';
 import ProductFeatures from './purchase/product-features';
-import ProductAccordion from './purchase/product-accordion';
+import { ProductAccordion } from './purchase';
 import Link from 'next/link';
 
 // ─── Star Rating ──────────────────────────────────────────────
@@ -106,6 +109,13 @@ function ImageCarousel({ images }: { images: { src: string; alt: string }[] }) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
 
+  // Reset to first slide when images change (e.g. size selection swaps featured image)
+  const firstSrc = images[0]?.src;
+  useEffect(() => {
+    setCurrentIndex(0);
+    setIsAnimating(false);
+  }, [firstSrc]);
+
   const slideCount = images.length;
 
   const goTo = useCallback(
@@ -176,14 +186,47 @@ function ImageCarousel({ images }: { images: { src: string; alt: string }[] }) {
   );
 }
 
+// ─── Order Type Config ────────────────────────────────────────
+
+export interface OrderTypeConfig {
+  autoRenew?: {
+    badgeText?: string;
+    title?: string;
+    benefits?: string[];
+  };
+  oneTimePurchase?: {
+    title?: string;
+    benefits?: string[];
+  };
+}
+
+const defaultOrderTypeConfig: OrderTypeConfig = {
+  autoRenew: {
+    badgeText: 'Recommended for new customers',
+    title: 'Auto-Renew + Next Size Trial',
+    benefits: [
+      "A month's supply of superior diapers",
+      'First box includes next size trial',
+      'Skip or cancel anytime',
+    ],
+  },
+  oneTimePurchase: {
+    title: 'One-time Purchase',
+    benefits: ["A month's supply of superior diapers"],
+  },
+};
+
 // ─── Order Type Selector (new design) ─────────────────────────
 
-function OrderTypeSelector() {
+function OrderTypeSelector({ config }: { config: OrderTypeConfig }) {
   const { state, setOrderType } = useProductOrder();
 
   const diaperOnlyPlan = PLAN_CONFIGS.find((p) => p.id === 'diaper-only');
   const subscriptionPrice = diaperOnlyPlan?.subscriptionPrice ?? 95;
   const basePrice = diaperOnlyPlan?.basePrice ?? 105.5;
+
+  const autoRenew = config.autoRenew ?? defaultOrderTypeConfig.autoRenew!;
+  const otp = config.oneTimePurchase ?? defaultOrderTypeConfig.oneTimePurchase!;
 
   return (
     <div className="space-y-3">
@@ -205,12 +248,14 @@ function OrderTypeSelector() {
         }`}
       >
         {/* Recommended badge */}
-        <div className="bg-[#0000C9] text-white text-[10px] font-bold tracking-wider uppercase px-2 py-1.5">
-          Recommended for new customers
-        </div>
+        {autoRenew.badgeText && (
+          <div className="bg-[#0000C9] text-white text-[10px] font-bold tracking-wider uppercase px-2 py-1.5">
+            {autoRenew.badgeText}
+          </div>
+        )}
         <div className="p-2">
           <div className="flex items-start justify-between mb-2 text-[14.5px]">
-            <span className="font-semibold">Auto-Renew + Next Size Trial</span>
+            <span className="font-semibold">{autoRenew.title}</span>
             <div className="text-right flex-shrink-0 ml-3">
               <span className="text-[#0000C9]">
                 ${subscriptionPrice.toFixed(2)}
@@ -220,20 +265,16 @@ function OrderTypeSelector() {
               </span>
             </div>
           </div>
-          <div className="space-y-1">
-            <div className="flex items-center gap-2 text-xs text-[#515151]">
-              <CheckIcon className="text-[#0000C9]" />
-              <span>A month&apos;s supply of superior diapers</span>
+          {autoRenew.benefits && autoRenew.benefits.length > 0 && (
+            <div className="space-y-1">
+              {autoRenew.benefits.map((benefit, i) => (
+                <div key={i} className="flex items-center gap-2 text-xs text-[#515151]">
+                  <CheckIcon className="text-[#0000C9]" />
+                  <span>{benefit}</span>
+                </div>
+              ))}
             </div>
-            <div className="flex items-center gap-2 text-xs text-[#515151]">
-              <CheckIcon className="text-[#0000C9]" />
-              <span>First box includes next size trial</span>
-            </div>
-            <div className="flex items-center gap-2 text-xs text-[#515151]">
-              <CheckIcon className="text-[#0000C9]" />
-              <span>Skip or cancel anytime</span>
-            </div>
-          </div>
+          )}
         </div>
       </button>
 
@@ -253,15 +294,21 @@ function OrderTypeSelector() {
         }`}
       >
         <div className="flex items-start justify-between mb-2 text-[14.5px]">
-          <span className="font-semibold">One-time Purchase</span>
+          <span className="font-semibold">{otp.title}</span>
           <span className="text-[#515151] flex-shrink-0 ml-3">
             ${basePrice.toFixed(2)}
           </span>
         </div>
-        <div className="flex items-center gap-2 text-xs text-[#515151]">
-          <CheckIcon className="text-[#0000C9]" />
-          <span>A month&apos;s supply of superior diapers</span>
-        </div>
+        {otp.benefits && otp.benefits.length > 0 && (
+          <div className="space-y-1">
+            {otp.benefits.map((benefit, i) => (
+              <div key={i} className="flex items-center gap-2 text-xs text-[#515151]">
+                <CheckIcon className="text-[#0000C9]" />
+                <span>{benefit}</span>
+              </div>
+            ))}
+          </div>
+        )}
       </button>
     </div>
   );
@@ -274,6 +321,8 @@ interface PDPHeroV2ContentProps {
   reviewCount: number;
   productTitle: string;
   images: { src: string; alt: string }[];
+  sizeImages?: Record<string, string>;
+  orderTypeConfig: OrderTypeConfig;
 }
 
 function PDPHeroV2Content({
@@ -281,20 +330,20 @@ function PDPHeroV2Content({
   reviewCount,
   productTitle,
   images,
+  sizeImages,
+  orderTypeConfig,
 }: PDPHeroV2ContentProps) {
-  // const { state } = useProductOrder();
+  const { state } = useProductOrder();
 
-  // Dynamic title with selected size
-  // const sizeLabel = state.selectedSize
-  //   ? state.selectedSize === 'n'
-  //     ? 'N'
-  //     : state.selectedSize === 'n+1'
-  //       ? 'N+1'
-  //       : SIZE_CONFIGS[state.selectedSize].label
-  //   : null;
-  // const titleDisplay = sizeLabel
-  //   ? `${productTitle} (Size ${sizeLabel})`
-  //   : productTitle;
+  // Build carousel images: if the selected size has a featured image, use it as the first slide
+  const carouselImages = useMemo(() => {
+    if (!state.selectedSize || !sizeImages?.[state.selectedSize]) {
+      return images;
+    }
+    const sizeImageUrl = sizeImages[state.selectedSize];
+    const sizeSlide = { src: sizeImageUrl, alt: `${productTitle} Size ${state.selectedSize}` };
+    return [sizeSlide, ...images.slice(1)];
+  }, [state.selectedSize, sizeImages, images, productTitle]);
 
   return (
     <div className="bg-white">
@@ -307,7 +356,7 @@ function PDPHeroV2Content({
       </div>
 
       {/* Image Carousel */}
-      <ImageCarousel images={images} />
+      <ImageCarousel images={carouselImages} />
 
       {/* Form Content */}
       <div className="px-4 pt-6 pb-6 space-y-6">
@@ -315,7 +364,7 @@ function PDPHeroV2Content({
         <SizeSelectionContainer />
 
         {/* Order Type */}
-        <OrderTypeSelector />
+        <OrderTypeSelector config={orderTypeConfig} />
 
         {/* Add to Cart */}
         <AddToCartButton />
@@ -331,10 +380,12 @@ function PDPHeroV2Content({
 // ─── Main Export ──────────────────────────────────────────────
 
 interface PDPHeroV2Props {
-  rating: number;
-  reviewCount: number;
+  rating?: number;
+  reviewCount?: number;
   productTitle?: string;
   images?: { src: string; alt: string }[];
+  sizeImages?: Record<string, string>;
+  orderTypeConfig?: OrderTypeConfig;
 }
 
 const defaultImages = [
@@ -348,19 +399,36 @@ const defaultImages = [
   },
 ];
 
+function parseSizeParam(raw: string | null): DiaperSize | undefined {
+  if (!raw) return undefined;
+  // URL-decode turns "+" into " ", so normalize "n 1" back to "n+1"
+  const normalized = raw.replace(/\s/g, '+').toLowerCase();
+  if ((SIZE_ORDER as string[]).includes(normalized)) {
+    return normalized as DiaperSize;
+  }
+  return undefined;
+}
+
 export default function PDPHeroV2({
-  rating,
-  reviewCount,
+  rating = 0,
+  reviewCount = 0,
   productTitle = 'The Diaper',
   images = defaultImages,
+  sizeImages,
+  orderTypeConfig = defaultOrderTypeConfig,
 }: PDPHeroV2Props) {
+  const searchParams = useSearchParams();
+  const sizeFromUrl = parseSizeParam(searchParams.get('size'));
+
   return (
-    <ProductOrderProvider initialSize="1">
+    <ProductOrderProvider initialSize={sizeFromUrl ?? '1'}>
       <PDPHeroV2Content
         rating={rating}
         reviewCount={reviewCount}
         productTitle={productTitle}
         images={images}
+        sizeImages={sizeImages}
+        orderTypeConfig={orderTypeConfig}
       />
     </ProductOrderProvider>
   );

@@ -3,12 +3,17 @@ import Image from 'next/image';
 interface PressStatement {
   id: string;
   outlet: string;
+  logo?: string;
   quote?: string;
   showStars?: boolean;
   starText?: string;
 }
 
-const pressStatements: PressStatement[] = [
+interface PressStatementsProps {
+  statements?: PressStatement[];
+}
+
+const defaultStatements: PressStatement[] = [
   {
     id: 'today',
     outlet: 'TODAY',
@@ -51,18 +56,25 @@ function StarIcon() {
   );
 }
 
-export default function PressStatements() {
+export default function PressStatements({
+  statements = defaultStatements,
+}: PressStatementsProps) {
   return (
     <div className="bg-[#FAFAFA] py-16 sm:py-24">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-5">
-          {pressStatements.map((statement) => (
+          {statements.map((statement) => (
             <div
               key={statement.id}
               className="flex flex-col items-center text-center"
             >
               {/* Logo/Outlet Name */}
               <div className="mb-4">
+                {statement.logo ? (
+                  <div className="h-8 flex items-center justify-center">
+                    <Image src={statement.logo} alt={statement.outlet} width={120} height={32} className="h-8 w-auto object-contain" />
+                  </div>
+                ) : (
                 <h3 className="text-xl font-semibold text-gray-800 tracking-tight">
                   {statement.outlet === 'TODAY' && (
                     <span className="relative inline-block">
@@ -140,6 +152,7 @@ export default function PressStatements() {
                     'CBS NEWS',
                   ].includes(statement.outlet) && statement.outlet}
                 </h3>
+                )}
               </div>
 
               {/* Stars for Google */}

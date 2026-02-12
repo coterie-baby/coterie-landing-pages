@@ -6,6 +6,8 @@ import { Amplitude } from '@/amplitude';
 import { Analytics } from '@vercel/analytics/next';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { GTMTracking } from '@/lib/gtm';
+import { draftMode } from 'next/headers';
+import SanityVisualEditing from '@/components/sanity-visual-editing';
 
 export const viewport: Viewport = {
   themeColor: '#FFFFFF',
@@ -24,6 +26,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const shouldInjectToolbar = process.env.NODE_ENV === 'development';
+  const { isEnabled: isDraftMode } = await draftMode();
 
   return (
     <html lang="en">
@@ -64,6 +67,7 @@ export default async function RootLayout({
         <GTMTracking />
         {children}
         {shouldInjectToolbar && <VercelToolbar />}
+        {isDraftMode && <SanityVisualEditing />}
         <Analytics />
         <SpeedInsights />
       </body>

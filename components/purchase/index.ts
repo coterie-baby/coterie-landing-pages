@@ -21,3 +21,4 @@ export { default as PlanSelector } from './plan-selector';
 export { default as AddToCartButton } from './add-to-cart-button';
 export { default as PianoKey } from './piano-key';
 export { default as SizeFitGuideDrawer } from './size-fit-guide-drawer';
+export { default as ProductAccordion } from './product-accordion';
