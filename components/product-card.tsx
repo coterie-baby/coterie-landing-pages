@@ -31,14 +31,16 @@ export function ProductCard({ card, priority = false }: { card: ProductCard; pri
     >
       <div className="flex gap-3 md:flex-col">
         <div className="relative w-[80px] h-[80px] md:w-full md:h-auto md:aspect-square flex-shrink-0">
-          <Image
-            className="object-cover rounded-md md:rounded-lg"
-            src={card.thumbnail.src}
-            alt={card.thumbnail.altText}
-            fill
-            sizes="(max-width: 768px) 80px, (max-width: 1024px) 256px, 300px"
-            priority={priority}
-          />
+          {card.thumbnail.src && (
+            <Image
+              className="object-cover rounded-md md:rounded-lg"
+              src={card.thumbnail.src}
+              alt={card.thumbnail.altText}
+              fill
+              sizes="(max-width: 768px) 80px, (max-width: 1024px) 256px, 300px"
+              priority={priority}
+            />
+          )}
           {card.badge && (
             <div className="hidden bg-white py-0.5 px-1 border border-[#E0E0E0] rounded-[2px] md:block absolute top-2 right-2">
               <span className="text-sm text-[#0000C9] font-[600]">

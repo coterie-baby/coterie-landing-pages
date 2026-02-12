@@ -297,3 +297,26 @@ export const pageBySlugQuery = groq`
 export const allPageSlugsQuery = groq`
   *[_type == "page" && defined(slug.current)].slug.current
 `;
+
+export const siteSettingsQuery = groq`
+  *[_type == "siteSettings" && _id == "siteSettings"][0] {
+    desktopRedirect {
+      enabled,
+      destinationUrl,
+      requireUtmParams
+    }
+  }
+`;
+
+export const funnelRulesQuery = groq`
+  *[_type == "funnel" && enabled == true]{
+    sourcePath,
+    "targetSlug": landingPage->slug.current,
+    utmSource,
+    utmMedium,
+    utmCampaign,
+    utmTerm,
+    utmContent,
+    routes[]{ _key, name, weight, destinationType, "targetSlug": landingPage->slug.current, targetUrl }
+  }
+`;

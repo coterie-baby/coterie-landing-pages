@@ -434,6 +434,34 @@ export type SanityComponent =
   | SanityThreeColumnTable
   | SanityPdpHeroV2;
 
+export interface FunnelRoute {
+  _key: string;
+  name: string;
+  destinationType?: 'page' | 'url';
+  targetSlug?: string;
+  targetUrl?: string;
+  weight: number;
+}
+
+export interface Funnel {
+  sourcePath: string;
+  targetSlug: string;
+  utmSource?: string;
+  utmMedium?: string;
+  utmCampaign?: string;
+  utmTerm?: string;
+  utmContent?: string;
+  routes?: FunnelRoute[];
+}
+
+export interface SiteSettings {
+  desktopRedirect?: {
+    enabled?: boolean;
+    destinationUrl?: string;
+    requireUtmParams?: boolean;
+  };
+}
+
 export interface SanityPage {
   _id: string;
   _type: 'page';
