@@ -1,6 +1,6 @@
 'use client';
 
-const FREE_SHIPPING_THRESHOLD = 75;
+const FREE_SHIPPING_THRESHOLD = 110;
 
 interface CartShippingBarProps {
   subtotal: number;
@@ -21,9 +21,9 @@ export default function CartShippingBar({
           Congratulations! You&apos;re getting free shipping!
         </p>
       ) : (
-        <p className="text-xs text-center text-gray-600">
-          Add <span className="font-medium">${remaining.toFixed(2)}</span> more
-          for free shipping
+        <p className="text-xs text-[#0000C9]">
+          You are <span className="font-medium">${remaining.toFixed(2)}</span>{' '}
+          away from free shipping
         </p>
       )}
       <div className="mt-1.5 h-0.5 bg-gray-200 rounded-full overflow-hidden">

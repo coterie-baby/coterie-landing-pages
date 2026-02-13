@@ -16,7 +16,10 @@ import {
   updateCartLineQuantity,
   removeCartLine,
 } from '@/lib/shopify/cart';
-import { buildCartLines, buildBundleCartLines } from '@/lib/shopify/product-mapping';
+import {
+  buildCartLines,
+  buildBundleCartLines,
+} from '@/lib/shopify/product-mapping';
 import type {
   DiaperSize,
   PlanType,
@@ -63,8 +66,14 @@ interface CartState {
 type CartAction =
   | { type: 'SET_LOADING'; payload: boolean }
   | { type: 'SET_ERROR'; payload: string | null }
-  | { type: 'SET_CART'; payload: { cartId: string; checkoutUrl: string; items: CartItem[] } }
-  | { type: 'HYDRATE_CART'; payload: { cartId: string; checkoutUrl: string; items: CartItem[] } }
+  | {
+      type: 'SET_CART';
+      payload: { cartId: string; checkoutUrl: string; items: CartItem[] };
+    }
+  | {
+      type: 'HYDRATE_CART';
+      payload: { cartId: string; checkoutUrl: string; items: CartItem[] };
+    }
   | { type: 'UPDATE_ITEMS'; payload: CartItem[] }
   | { type: 'OPEN_CART' }
   | { type: 'CLOSE_CART' };
@@ -149,9 +158,12 @@ const CartContext = createContext<CartContextValue | null>(null);
 
 // ─── Provider ────────────────────────────────────────────────────────────────
 
-const FREE_SHIPPING_THRESHOLD = 75;
+const FREE_SHIPPING_THRESHOLD = 110;
 
-type CartDisplayData = Omit<CartItem, 'lineId' | 'companionLineIds' | 'merchandiseId' | 'quantity'>;
+type CartDisplayData = Omit<
+  CartItem,
+  'lineId' | 'companionLineIds' | 'merchandiseId' | 'quantity'
+>;
 
 /** Build a single CartItem from a group of Shopify lines (primary + companions). */
 function buildCartItemFromEdges(
@@ -230,7 +242,12 @@ export function CartProvider({ children }: { children: ReactNode }) {
             bundleItems: options.bundleItems,
           });
 
-          if (!result.success || !result.checkoutUrl || !result.cartId || !result.cart) {
+          if (
+            !result.success ||
+            !result.checkoutUrl ||
+            !result.cartId ||
+            !result.cart
+          ) {
             const errorMsg = result.error || 'Failed to create cart';
             dispatch({ type: 'SET_ERROR', payload: errorMsg });
             throw new Error(errorMsg);
@@ -261,7 +278,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
           });
 
           if (options.bundleItems && options.bundleItems.length > 0) {
-            lines.push(...buildBundleCartLines(options.bundleItems, options.orderType));
+            lines.push(
+              ...buildBundleCartLines(options.bundleItems, options.orderType)
+            );
           }
 
           // Collect all known Shopify line IDs (primary + companions)
@@ -278,7 +297,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
           // Build a lookup of Shopify line quantities to detect merges
           const shopifyQuantities = new Map(
-            result.cart.lines.edges.map((edge) => [edge.node.id, edge.node.quantity])
+            result.cart.lines.edges.map((edge) => [
+              edge.node.id,
+              edge.node.quantity,
+            ])
           );
 
           // Update existing items whose quantities changed (Shopify merged lines)
@@ -296,9 +318,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
           );
 
           // Group new lines into a single CartItem (primary + companions)
-          const newItems: CartItem[] = newEdges.length > 0
-            ? [buildCartItemFromEdges(newEdges, displayData)]
-            : [];
+          const newItems: CartItem[] =
+            newEdges.length > 0
+              ? [buildCartItemFromEdges(newEdges, displayData)]
+              : [];
 
           dispatch({
             type: 'SET_CART',
@@ -312,7 +335,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
       } catch (err) {
         dispatch({
           type: 'SET_ERROR',
-          payload: err instanceof Error ? err.message : 'An unexpected error occurred',
+          payload:
+            err instanceof Error ? err.message : 'An unexpected error occurred',
         });
       }
     },
@@ -325,14 +349,19 @@ export function CartProvider({ children }: { children: ReactNode }) {
       dispatch({ type: 'SET_LOADING', payload: true });
 
       const item = state.items.find((i) => i.lineId === lineId);
-      const allLineIds = item
-        ? [lineId, ...item.companionLineIds]
-        : [lineId];
+      const allLineIds = item ? [lineId, ...item.companionLineIds] : [lineId];
 
-      const result = await updateCartLineQuantity(state.cartId, allLineIds, quantity);
+      const result = await updateCartLineQuantity(
+        state.cartId,
+        allLineIds,
+        quantity
+      );
 
       if (!result.success) {
-        dispatch({ type: 'SET_ERROR', payload: result.error || 'Failed to update quantity' });
+        dispatch({
+          type: 'SET_ERROR',
+          payload: result.error || 'Failed to update quantity',
+        });
         return;
       }
 
@@ -350,14 +379,15 @@ export function CartProvider({ children }: { children: ReactNode }) {
       dispatch({ type: 'SET_LOADING', payload: true });
 
       const item = state.items.find((i) => i.lineId === lineId);
-      const allLineIds = item
-        ? [lineId, ...item.companionLineIds]
-        : [lineId];
+      const allLineIds = item ? [lineId, ...item.companionLineIds] : [lineId];
 
       const result = await removeCartLine(state.cartId, allLineIds);
 
       if (!result.success) {
-        dispatch({ type: 'SET_ERROR', payload: result.error || 'Failed to remove item' });
+        dispatch({
+          type: 'SET_ERROR',
+          payload: result.error || 'Failed to remove item',
+        });
         return;
       }
 
@@ -377,16 +407,27 @@ export function CartProvider({ children }: { children: ReactNode }) {
   );
 
   const subtotal = useMemo(
-    () => state.items.reduce((sum, item) => sum + item.currentPrice * item.quantity, 0),
+    () =>
+      state.items.reduce(
+        (sum, item) => sum + item.currentPrice * item.quantity,
+        0
+      ),
     [state.items]
   );
 
   const totalSavings = useMemo(
-    () => state.items.reduce((sum, item) => sum + item.savingsAmount * item.quantity, 0),
+    () =>
+      state.items.reduce(
+        (sum, item) => sum + item.savingsAmount * item.quantity,
+        0
+      ),
     [state.items]
   );
 
-  const yearlySavingsProjection = useMemo(() => totalSavings * 12, [totalSavings]);
+  const yearlySavingsProjection = useMemo(
+    () => totalSavings * 12,
+    [totalSavings]
+  );
 
   const hasFreeShipping = useMemo(
     () => subtotal >= FREE_SHIPPING_THRESHOLD,
