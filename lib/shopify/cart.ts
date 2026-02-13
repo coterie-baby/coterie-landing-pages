@@ -1,10 +1,11 @@
 // Shopify Cart Creation
 
 import { shopifyFetch } from './client';
-import { CART_CREATE_MUTATION } from './mutations';
-import { buildCartLines } from './product-mapping';
+import { CART_CREATE_MUTATION, CART_LINES_ADD_MUTATION, CART_LINES_UPDATE_MUTATION, CART_LINES_REMOVE_MUTATION } from './mutations';
+import { buildCartLines, buildBundleCartLines } from './product-mapping';
 import type { DiaperSize, PlanType, OrderType } from '@/components/purchase/context';
-import type { CartCreateResponse, ShopifyCartLine } from './types';
+import type { BundleItem } from '@/lib/sanity/types';
+import type { CartCreateResponse, CartLinesAddResponse, CartLinesUpdateResponse, CartLinesRemoveResponse, ShopifyCartLine, ShopifyCart } from './types';
 
 export interface CreateCartOptions {
   size: DiaperSize;
@@ -12,12 +13,14 @@ export interface CreateCartOptions {
   orderType: OrderType;
   quantity?: number;
   attributes?: { key: string; value: string }[];
+  bundleItems?: BundleItem[];
 }
 
 export interface CreateCartResult {
   success: boolean;
   checkoutUrl?: string;
   cartId?: string;
+  cart?: ShopifyCart;
   error?: string;
 }
 
@@ -27,7 +30,7 @@ export interface CreateCartResult {
 export async function createCart(
   options: CreateCartOptions
 ): Promise<CreateCartResult> {
-  const { size, planType, orderType, quantity = 1, attributes = [] } = options;
+  const { size, planType, orderType, quantity = 1, attributes = [], bundleItems } = options;
 
   try {
     // Build cart lines based on plan configuration
@@ -37,6 +40,11 @@ export async function createCart(
       orderType,
       quantity,
     });
+
+    // Append bundle items to cart
+    if (bundleItems && bundleItems.length > 0) {
+      lines.push(...buildBundleCartLines(bundleItems, orderType));
+    }
 
     // Add order type attribute for Recurly/analytics
     const cartAttributes = [
@@ -84,12 +92,128 @@ export async function createCart(
       success: true,
       checkoutUrl: cart.checkoutUrl,
       cartId: cart.id,
+      cart,
     };
   } catch (error) {
     console.error('Failed to create Shopify cart:', error);
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Failed to create cart',
+    };
+  }
+}
+
+export interface CartMutationResult {
+  success: boolean;
+  cart?: ShopifyCart;
+  error?: string;
+}
+
+/**
+ * Add lines to an existing Shopify cart
+ */
+export async function addCartLines(
+  cartId: string,
+  lines: ShopifyCartLine[]
+): Promise<CartMutationResult> {
+  try {
+    const response = await shopifyFetch<CartLinesAddResponse>(
+      CART_LINES_ADD_MUTATION,
+      { cartId, lines }
+    );
+
+    if (response.errors?.length) {
+      return { success: false, error: response.errors.map((e) => e.message).join(', ') };
+    }
+
+    const { cart, userErrors } = response.data?.cartLinesAdd || {};
+    if (userErrors?.length) {
+      return { success: false, error: userErrors.map((e) => e.message).join(', ') };
+    }
+
+    if (!cart) {
+      return { success: false, error: 'No cart returned from Shopify' };
+    }
+
+    return { success: true, cart };
+  } catch (error) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Failed to add cart lines',
+    };
+  }
+}
+
+/**
+ * Update the quantity of one or more cart lines
+ */
+export async function updateCartLineQuantity(
+  cartId: string,
+  lineIds: string | string[],
+  quantity: number
+): Promise<CartMutationResult> {
+  try {
+    const ids = Array.isArray(lineIds) ? lineIds : [lineIds];
+    const lines = ids.map((id) => ({ id, quantity }));
+    const response = await shopifyFetch<CartLinesUpdateResponse>(
+      CART_LINES_UPDATE_MUTATION,
+      { cartId, lines }
+    );
+
+    if (response.errors?.length) {
+      return { success: false, error: response.errors.map((e) => e.message).join(', ') };
+    }
+
+    const { cart, userErrors } = response.data?.cartLinesUpdate || {};
+    if (userErrors?.length) {
+      return { success: false, error: userErrors.map((e) => e.message).join(', ') };
+    }
+
+    if (!cart) {
+      return { success: false, error: 'No cart returned from Shopify' };
+    }
+
+    return { success: true, cart };
+  } catch (error) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Failed to update cart line',
+    };
+  }
+}
+
+/**
+ * Remove one or more lines from the cart
+ */
+export async function removeCartLine(
+  cartId: string,
+  lineIds: string | string[]
+): Promise<CartMutationResult> {
+  try {
+    const ids = Array.isArray(lineIds) ? lineIds : [lineIds];
+    const response = await shopifyFetch<CartLinesRemoveResponse>(
+      CART_LINES_REMOVE_MUTATION,
+      { cartId, lineIds: ids }
+    );
+
+    if (response.errors?.length) {
+      return { success: false, error: response.errors.map((e) => e.message).join(', ') };
+    }
+
+    const { cart, userErrors } = response.data?.cartLinesRemove || {};
+    if (userErrors?.length) {
+      return { success: false, error: userErrors.map((e) => e.message).join(', ') };
+    }
+
+    if (!cart) {
+      return { success: false, error: 'No cart returned from Shopify' };
+    }
+
+    return { success: true, cart };
+  } catch (error) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Failed to remove cart line',
     };
   }
 }

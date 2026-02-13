@@ -17,6 +17,20 @@ export function extractVariantId(gid: string): number | undefined {
   return match ? parseInt(match[1], 10) : undefined;
 }
 
+/**
+ * Build a Shopify ProductVariant GID from a numeric ID
+ */
+export function toVariantGid(numericId: string | number): string {
+  return `gid://shopify/ProductVariant/${numericId}`;
+}
+
+/**
+ * Build a Shopify SellingPlan GID from a numeric ID
+ */
+export function toSellingPlanGid(numericId: string | number): string {
+  return `gid://shopify/SellingPlan/${numericId}`;
+}
+
 // =============================================================================
 // DIAPER PRODUCT CONFIG
 // =============================================================================

@@ -1,12 +1,13 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useCallback } from 'react';
 import Image from 'next/image';
 import { ProductOrderProvider } from './purchase/context';
 import SizeSelectionContainer from './purchase/size-selection-container';
 import PlanSelector from './purchase/plan-selector';
 import AddToCartButton from './purchase/add-to-cart-button';
-import { trackClickCarouselThumbnail } from '@/lib/gtm/ecommerce';
+import ProductFeatures from './purchase/product-features';
+import ProductAccordion from './purchase/product-accordion';
 
 interface Thumbnail {
   src: string;
@@ -58,85 +59,197 @@ export default function ProductOrderForm({
   productImage = 'https://m.media-amazon.com/images/I/815Q-eQIQkL._AC_SX679_.jpg',
   productTitle = 'The Diaper',
   productDescription = 'A fast wicking, highly absorbent diaper with clean ingredients',
-  showPlanSelector = true,
+  showPlanSelector = false,
   thumbnails = defaultThumbnails,
 }: ProductOrderFormProps) {
-  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  const slides =
+    thumbnails.length > 0
+      ? thumbnails
+      : [{ src: productImage, alt: productTitle }];
 
-  const currentImage = thumbnails[selectedImageIndex] || {
-    src: productImage,
-    alt: productTitle,
-  };
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [animDirection, setAnimDirection] = useState<'none' | 'next' | 'prev'>(
+    'none'
+  );
+  const [isAnimating, setIsAnimating] = useState(false);
+  const [hasAdvanced, setHasAdvanced] = useState(false);
+  const touchStartX = useRef(0);
+  const touchDeltaX = useRef(0);
+  const isSwiping = useRef(false);
 
-  const handleThumbnailClick = (index: number, thumbnail: Thumbnail) => {
-    setSelectedImageIndex(index);
-    trackClickCarouselThumbnail({
-      imageSrc: thumbnail.src,
-      location: `PDP Hero | ${productTitle}`,
+  const wrapIndex = useCallback(
+    (i: number) => ((i % slides.length) + slides.length) % slides.length,
+    [slides.length]
+  );
+
+  const goNext = useCallback(() => {
+    if (isAnimating) return;
+    setHasAdvanced(true);
+    setAnimDirection('next');
+    setIsAnimating(true);
+  }, [isAnimating]);
+
+  const goPrev = useCallback(() => {
+    if (isAnimating) return;
+    setAnimDirection('prev');
+    setIsAnimating(true);
+  }, [isAnimating]);
+
+  const handleTransitionEnd = useCallback(() => {
+    setCurrentIndex((prev) => {
+      if (animDirection === 'next') return wrapIndex(prev + 1);
+      if (animDirection === 'prev') return wrapIndex(prev - 1);
+      return prev;
     });
-  };
+    setAnimDirection('none');
+    setIsAnimating(false);
+  }, [animDirection, wrapIndex]);
+
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+    touchDeltaX.current = 0;
+    isSwiping.current = true;
+  }, []);
+
+  const handleTouchMove = useCallback((e: React.TouchEvent) => {
+    if (!isSwiping.current) return;
+    touchDeltaX.current = e.touches[0].clientX - touchStartX.current;
+  }, []);
+
+  const handleTouchEnd = useCallback(() => {
+    if (!isSwiping.current) return;
+    isSwiping.current = false;
+    const threshold = 50;
+    if (touchDeltaX.current < -threshold) {
+      goNext();
+    } else if (touchDeltaX.current > threshold) {
+      goPrev();
+    }
+  }, [goNext, goPrev]);
+
+  const prevIndex = wrapIndex(currentIndex - 1);
+  const nextIndex = wrapIndex(currentIndex + 1);
+  const animShift =
+    animDirection === 'next' ? -100 : animDirection === 'prev' ? 100 : 0;
+
+  const visibleSlides = [
+    { slideIndex: prevIndex, basePos: -100, key: `prev-${prevIndex}` },
+    { slideIndex: currentIndex, basePos: 0, key: `curr-${currentIndex}` },
+    { slideIndex: nextIndex, basePos: 100, key: `next-${nextIndex}` },
+  ];
 
   return (
     <ProductOrderProvider>
-      <div className="py-6 px-4" id="purchase">
-        <div className="flex flex-col gap-4 max-w-2xl mx-auto">
-          {/* Product Image */}
-          <div className="relative w-full aspect-square">
-            <Image
-              fill
-              src={currentImage.src}
-              alt={currentImage.alt}
-              className="object-cover rounded-md"
-            />
-          </div>
-
-          {/* Thumbnail Gallery */}
-          {thumbnails.length > 0 && (
-            <div className="flex gap-2 justify-center">
-              {thumbnails.slice(0, 6).map((thumbnail, index) => (
-                <button
-                  key={index}
-                  onClick={() => handleThumbnailClick(index, thumbnail)}
-                  className={`relative w-[41.6px] h-[41.6px] rounded-md overflow-hidden transition-all flex-shrink-0 ${
-                    selectedImageIndex === index
-                      ? 'border border-[#0000C9]'
-                      : ''
-                  }`}
-                >
-                  <Image
-                    src={thumbnail.src}
-                    alt={thumbnail.alt}
-                    fill
-                    className="object-cover"
-                    sizes="48px"
-                  />
-                </button>
-              ))}
+      <div id="purchase">
+        {/* Image Slider */}
+        <div
+          className="relative w-full aspect-square overflow-hidden"
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+        >
+          {visibleSlides.map(({ slideIndex, basePos, key }) => (
+            <div
+              key={key}
+              className="absolute inset-0"
+              style={{
+                transform: `translateX(${basePos + animShift}%)`,
+                transition: isAnimating ? 'transform 300ms ease-out' : 'none',
+              }}
+              onTransitionEnd={basePos === 0 ? handleTransitionEnd : undefined}
+            >
+              <Image
+                fill
+                src={slides[slideIndex].src}
+                alt={slides[slideIndex].alt}
+                className="object-cover"
+                priority={basePos === 0}
+              />
             </div>
+          ))}
+
+          {/* Back Arrow - visible after first advance */}
+          {slides.length > 1 && hasAdvanced && (
+            <button
+              onClick={goPrev}
+              aria-label="Previous slide"
+              className="absolute left-3 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center rounded-full bg-white/80 text-gray-800 shadow-sm"
+            >
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 16 16"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M10 3L5 8L10 13"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </button>
           )}
 
-          {/* Product Info & Form */}
-          <div>
-            <div className="flex flex-col gap-2 text-center mb-2">
-              <h4 className="text-2xl font-bold">{productTitle}</h4>
-              <p className="text-sm text-[#525252] leading-[140%]">
-                {productDescription}
-              </p>
-            </div>
+          {/* Forward Arrow */}
+          {slides.length > 1 && (
+            <button
+              onClick={goNext}
+              aria-label="Next slide"
+              className="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center rounded-full bg-white/80 text-gray-800 shadow-sm"
+            >
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 16 16"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M6 3L11 8L6 13"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </button>
+          )}
+        </div>
 
-            <div className="w-full text-center text-sm font-semibold mb-2">
-              <span>Starting at $95/month.</span>
-            </div>
+        {/* Product Info & Form - padded and constrained */}
+        <div className="py-6 px-4">
+          <div className="flex flex-col gap-4 max-w-2xl mx-auto">
+            <div>
+              <div className="flex flex-col gap-2 text-center mb-2">
+                <h4 className="text-2xl font-bold">{productTitle}</h4>
+                <p className="text-sm text-[#525252] leading-[140%]">
+                  {productDescription}
+                </p>
+              </div>
 
-            <div className="flex flex-col gap-6">
-              {/* Size Selection */}
-              <SizeSelectionContainer />
+              <div className="w-full text-center text-sm font-semibold mb-2">
+                <span>Starting at $95/month.</span>
+              </div>
 
-              {/* Plan/Bundle Selection or Order Type */}
-              {showPlanSelector ? <PlanSelector /> : <OrderTypeSelection />}
+              <div className="flex flex-col gap-6">
+                {/* Size Selection */}
+                <SizeSelectionContainer />
 
-              {/* Add to Cart */}
-              <AddToCartButton />
+                {/* Plan/Bundle Selection or Order Type */}
+                {showPlanSelector ? <PlanSelector /> : <OrderTypeSelection />}
+
+                {/* Add to Cart */}
+                <AddToCartButton />
+
+                {/* Product Features Grid */}
+                <ProductFeatures />
+
+                {/* Product Info Accordion */}
+                <ProductAccordion />
+              </div>
             </div>
           </div>
         </div>

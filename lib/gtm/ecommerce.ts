@@ -2,6 +2,7 @@
 
 import { sendGTMEvent } from '@next/third-parties/google';
 import amplitude from '@/amplitude';
+import { trackConversion } from '@/lib/umami';
 import type { DiaperSize, PlanType, OrderType } from '@/components/purchase/context';
 import { SIZE_CONFIGS } from '@/components/purchase/context';
 import {
@@ -79,6 +80,9 @@ export function trackAddToCart(data: AddToCartEventData): void {
 
   // Send to Amplitude
   amplitude.track('add_to_cart', eventData);
+
+  // Send to Umami (conversion event for funnel dashboard)
+  trackConversion('add_to_cart');
 }
 
 export interface BeginCheckoutEventData {

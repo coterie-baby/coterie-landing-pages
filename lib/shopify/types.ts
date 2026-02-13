@@ -51,6 +51,39 @@ export interface CartCreateResponse {
   };
 }
 
+export interface CartLinesAddResponse {
+  cartLinesAdd: {
+    cart: ShopifyCart | null;
+    userErrors: {
+      field: string[];
+      message: string;
+      code?: string;
+    }[];
+  };
+}
+
+export interface CartLinesUpdateResponse {
+  cartLinesUpdate: {
+    cart: ShopifyCart | null;
+    userErrors: {
+      field: string[];
+      message: string;
+      code?: string;
+    }[];
+  };
+}
+
+export interface CartLinesRemoveResponse {
+  cartLinesRemove: {
+    cart: ShopifyCart | null;
+    userErrors: {
+      field: string[];
+      message: string;
+      code?: string;
+    }[];
+  };
+}
+
 export interface ShopifyError {
   message: string;
   locations?: { line: number; column: number }[];

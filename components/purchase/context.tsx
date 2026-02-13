@@ -9,6 +9,7 @@ import {
   ReactNode,
 } from 'react';
 import { getDiaperVariantIds } from '@/lib/config/products';
+import type { BundleItem } from '@/lib/sanity/types';
 
 // Types
 export type DiaperSize = 'n' | 'n+1' | '1' | '2' | '3' | '4' | '5' | '6' | '7';
@@ -172,7 +173,7 @@ export const PLAN_CONFIGS: PlanConfig[] = [
 // Initial state
 const initialState: ProductOrderState = {
   selectedSize: null,
-  selectedPlan: 'diaper-wipe-bundle', // Default to most popular
+  selectedPlan: 'diaper-only',
   orderType: 'subscription',
   quantity: 1,
 };
@@ -218,6 +219,7 @@ interface ProductOrderContextValue {
   isValid: boolean;
   displaySize: string;
   diaperCount: number;
+  bundleItems?: BundleItem[];
 }
 
 const ProductOrderContext = createContext<ProductOrderContextValue | null>(
@@ -230,6 +232,7 @@ interface ProductOrderProviderProps {
   initialSize?: DiaperSize;
   initialPlan?: PlanType;
   initialOrderType?: OrderType;
+  bundleItems?: BundleItem[];
 }
 
 export function ProductOrderProvider({
@@ -237,6 +240,7 @@ export function ProductOrderProvider({
   initialSize,
   initialPlan,
   initialOrderType,
+  bundleItems,
 }: ProductOrderProviderProps) {
   const [state, dispatch] = useReducer(productOrderReducer, {
     ...initialState,
@@ -335,6 +339,7 @@ export function ProductOrderProvider({
     isValid,
     displaySize,
     diaperCount,
+    bundleItems,
   };
 
   return (

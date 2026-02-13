@@ -25,8 +25,9 @@
 │                      Vercel Edge Network                        │
 │  ┌─────────────────────────────────────────────────────────┐   │
 │  │                    Middleware                            │   │
+│  │  • Funnel matching (path + UTM specificity)             │   │
+│  │  • Traffic splitting (weighted, cookie-sticky)          │   │
 │  │  • Mobile detection                                      │   │
-│  │  • UTM parameter checking                               │   │
 │  │  • Desktop redirect to main store                       │   │
 │  └─────────────────────────────────────────────────────────┘   │
 └─────────────────────────────────┬───────────────────────────────┘
@@ -193,31 +194,30 @@ const gtmContext = buildGTMContext({
 
 ## Middleware Logic
 
-The edge middleware (`middleware.ts`) handles traffic routing:
+The edge middleware (`middleware.ts`) handles two concerns in order:
 
-```typescript
-export function middleware(request: NextRequest) {
-  const isMobile = MOBILE_REGEX.test(userAgent);
-  const hasUtmParams = searchParams.has('utm_source') || ...;
+### 1. Funnel rewrites & traffic splitting (all devices)
 
-  // Desktop traffic with UTM params → redirect to main store
-  if (!isMobile && hasUtmParams) {
-    return NextResponse.redirect('https://www.coterie.com/products/the-diaper');
-  }
+Funnel rules are fetched from Sanity (cached 60s). The middleware matches the request path + UTM params against enabled funnels using specificity-based priority (more UTM conditions = higher priority). When a funnel matches:
 
-  // All other traffic → serve landing pages
-  return NextResponse.next();
-}
-```
+- **No routes:** rewrites to the funnel's default landing page (original URL preserved).
+- **With routes:** uses cookie-based sticky assignment to split traffic across the default page and variant routes. Routes can target local pages (rewrite) or external URLs (redirect with UTM passthrough).
+
+See [Traffic Splitting](./traffic-splitting.md) for full details.
+
+### 2. Desktop redirect (mobile users skip)
+
+Desktop visitors with UTM params are redirected to the main store (configurable via Sanity site settings). Mobile visitors always see landing pages.
 
 **Routing Logic:**
 
-| Device | UTM Params | Result |
-|--------|------------|--------|
-| Mobile | Yes | Landing Pages |
+| Device | Funnel Match | Result |
+|--------|-------------|--------|
+| Any | Yes (page route) | Rewrite to matched page (+ traffic split) |
+| Any | Yes (URL route) | Redirect to URL (+ UTM passthrough) |
 | Mobile | No | Landing Pages |
-| Desktop | Yes | Redirect to Store |
-| Desktop | No | Landing Pages |
+| Desktop | No + UTM params | Redirect to Store |
+| Desktop | No + no UTM | Landing Pages |
 
 ## Data Flow
 

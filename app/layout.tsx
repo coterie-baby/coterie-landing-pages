@@ -6,6 +6,8 @@ import { Amplitude } from '@/amplitude';
 import { Analytics } from '@vercel/analytics/next';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { GTMTracking } from '@/lib/gtm';
+import { draftMode } from 'next/headers';
+import SanityVisualEditing from '@/components/sanity-visual-editing';
 
 export const viewport: Viewport = {
   themeColor: '#FFFFFF',
@@ -24,6 +26,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const shouldInjectToolbar = process.env.NODE_ENV === 'development';
+  const { isEnabled: isDraftMode } = await draftMode();
 
   return (
     <html lang="en">
@@ -57,6 +60,15 @@ export default async function RootLayout({
           type="font/woff2"
           crossOrigin="anonymous"
         />
+
+        {/* Umami Analytics — self-hosted, privacy-focused pageview tracking */}
+        {process.env.NEXT_PUBLIC_UMAMI_URL && process.env.NEXT_PUBLIC_UMAMI_WEBSITE_ID && (
+          <script
+            defer
+            src={`${process.env.NEXT_PUBLIC_UMAMI_URL}/script.js`}
+            data-website-id={process.env.NEXT_PUBLIC_UMAMI_WEBSITE_ID}
+          />
+        )}
       </head>
       <GoogleTagManager gtmId="GTM-N9NL6XQ" />
       <Amplitude />
@@ -64,6 +76,7 @@ export default async function RootLayout({
         <GTMTracking />
         {children}
         {shouldInjectToolbar && <VercelToolbar />}
+        {isDraftMode && <SanityVisualEditing />}
         <Analytics />
         <SpeedInsights />
       </body>

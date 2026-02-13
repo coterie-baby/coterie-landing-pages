@@ -1,4 +1,19 @@
-const testimonials = [
+interface Testimonial {
+  body: string;
+  author: {
+    name: string;
+    handle: string;
+    imageUrl: string;
+  };
+}
+
+interface TestimonialGridProps {
+  eyebrow?: string;
+  headline?: string;
+  testimonials?: Testimonial[];
+}
+
+const defaultTestimonials: Testimonial[] = [
   {
     body: 'Laborum quis quam. Dolorum et ut quod quia. Voluptas numquam delectus nihil. Aut enim doloremque et ipsam.',
     author: {
@@ -82,16 +97,20 @@ const testimonials = [
   },
 ];
 
-export default function TestimonialGrid() {
+export default function TestimonialGrid({
+  eyebrow = 'Testimonials',
+  headline = 'We have worked with thousands of amazing people',
+  testimonials = defaultTestimonials,
+}: TestimonialGridProps) {
   return (
     <div className="bg-white py-24 sm:py-32 dark:bg-gray-900">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <div className="mx-auto max-w-2xl text-center">
           <h2 className="text-base/7 font-semibold text-indigo-600 dark:text-indigo-400">
-            Testimonials
+            {eyebrow}
           </h2>
           <p className="mt-2 text-4xl font-semibold tracking-tight text-balance text-gray-900 sm:text-5xl dark:text-white">
-            We have worked with thousands of amazing people
+            {headline}
           </p>
         </div>
         <div className="mx-auto mt-16 flow-root max-w-2xl sm:mt-20 lg:mx-0 lg:max-w-none">

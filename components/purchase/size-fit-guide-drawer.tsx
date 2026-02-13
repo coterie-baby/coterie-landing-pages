@@ -184,19 +184,6 @@ export default function SizeFitGuideDrawer({
         </div>
       </div>
 
-      <style jsx>{`
-        @keyframes slide-in-right {
-          from {
-            transform: translateX(100%);
-          }
-          to {
-            transform: translateX(0);
-          }
-        }
-        .animate-slide-in-right {
-          animation: slide-in-right 0.3s ease-out forwards;
-        }
-      `}</style>
     </div>
   );
 }
