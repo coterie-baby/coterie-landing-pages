@@ -92,3 +92,35 @@ export const CART_LINES_ADD_MUTATION = `
   }
   ${CART_FRAGMENT}
 `;
+
+export const CART_LINES_UPDATE_MUTATION = `
+  mutation cartLinesUpdate($cartId: ID!, $lines: [CartLineUpdateInput!]!) {
+    cartLinesUpdate(cartId: $cartId, lines: $lines) {
+      cart {
+        ...CartFragment
+      }
+      userErrors {
+        field
+        message
+        code
+      }
+    }
+  }
+  ${CART_FRAGMENT}
+`;
+
+export const CART_LINES_REMOVE_MUTATION = `
+  mutation cartLinesRemove($cartId: ID!, $lineIds: [ID!]!) {
+    cartLinesRemove(cartId: $cartId, lineIds: $lineIds) {
+      cart {
+        ...CartFragment
+      }
+      userErrors {
+        field
+        message
+        code
+      }
+    }
+  }
+  ${CART_FRAGMENT}
+`;

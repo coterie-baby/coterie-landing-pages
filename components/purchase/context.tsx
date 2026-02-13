@@ -173,7 +173,7 @@ export const PLAN_CONFIGS: PlanConfig[] = [
 // Initial state
 const initialState: ProductOrderState = {
   selectedSize: null,
-  selectedPlan: 'diaper-wipe-bundle', // Default to most popular
+  selectedPlan: 'diaper-only',
   orderType: 'subscription',
   quantity: 1,
 };
