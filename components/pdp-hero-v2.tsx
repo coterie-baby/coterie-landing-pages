@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useCallback, useMemo, useEffect, Suspense } from 'react';
+import { useRef, useMemo, useEffect, Suspense } from 'react';
 import Image from 'next/image';
 import {
   ProductOrderProvider,
@@ -102,88 +102,39 @@ function CheckIcon({ className = '' }: { className?: string }) {
 // ─── Image Carousel ───────────────────────────────────────────
 
 const SLIDE_GAP = 8; // px gap between slides
+const SLIDE_PEEK = 32; // px visible of next slide
 
 function ImageCarousel({ images }: { images: { src: string; alt: string }[] }) {
-  const trackRef = useRef<HTMLDivElement>(null);
-  const touchStartX = useRef(0);
-  const touchDeltaX = useRef(0);
-  const isSwiping = useRef(false);
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [isAnimating, setIsAnimating] = useState(false);
+  const scrollRef = useRef<HTMLDivElement>(null);
 
   // Reset to first slide when images change (e.g. size selection swaps featured image)
   const firstSrc = images[0]?.src;
   useEffect(() => {
-    setCurrentIndex(0);
-    setIsAnimating(false);
+    scrollRef.current?.scrollTo({ left: 0, behavior: 'instant' as ScrollBehavior });
   }, [firstSrc]);
 
-  const slideCount = images.length;
-
-  const goTo = useCallback(
-    (index: number) => {
-      if (isAnimating || index < 0 || index >= slideCount) return;
-      setIsAnimating(true);
-      setCurrentIndex(index);
-    },
-    [isAnimating, slideCount]
-  );
-
-  const handleTouchStart = useCallback((e: React.TouchEvent) => {
-    touchStartX.current = e.touches[0].clientX;
-    touchDeltaX.current = 0;
-    isSwiping.current = true;
-  }, []);
-
-  const handleTouchMove = useCallback((e: React.TouchEvent) => {
-    if (!isSwiping.current) return;
-    touchDeltaX.current = e.touches[0].clientX - touchStartX.current;
-  }, []);
-
-  const handleTouchEnd = useCallback(() => {
-    if (!isSwiping.current) return;
-    isSwiping.current = false;
-    const threshold = 50;
-    if (touchDeltaX.current < -threshold && currentIndex < slideCount - 1) {
-      goTo(currentIndex + 1);
-    } else if (touchDeltaX.current > threshold && currentIndex > 0) {
-      goTo(currentIndex - 1);
-    }
-  }, [currentIndex, slideCount, goTo]);
-
   return (
-    <div className="relative w-full overflow-hidden">
-      {/* Slide track – each slide is calc(100% - peek - gap) wide */}
-      <div
-        ref={trackRef}
-        className="flex min-h-[294px]"
-        style={{
-          gap: `${SLIDE_GAP}px`,
-          transform: `translateX(calc(-${currentIndex} * (100% - 32px + ${SLIDE_GAP}px)))`,
-          transition: isAnimating ? 'transform 300ms ease-out' : 'none',
-        }}
-        onTransitionEnd={() => setIsAnimating(false)}
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
-      >
-        {images.map((image, index) => (
-          <div
-            key={index}
-            className="relative aspect-square min-h-[294px] max-w-[320px] flex-shrink-0"
-            style={{ width: 'calc(100% - 32px)' }}
-          >
-            <Image
-              src={image.src}
-              alt={image.alt}
-              fill
-              className="object-cover"
-              sizes="(max-width: 1024px) 90vw, 50vw"
-              priority={index === 0}
-            />
-          </div>
-        ))}
-      </div>
+    <div
+      ref={scrollRef}
+      className="flex snap-x snap-mandatory overflow-x-auto min-h-[294px]"
+      style={{ gap: `${SLIDE_GAP}px`, scrollbarWidth: 'none' }}
+    >
+      {images.map((image, index) => (
+        <div
+          key={index}
+          className="relative aspect-square min-h-[294px] max-w-[320px] flex-shrink-0 snap-start"
+          style={{ width: `calc(100% - ${SLIDE_PEEK}px)` }}
+        >
+          <Image
+            src={image.src}
+            alt={image.alt}
+            fill
+            className="object-cover"
+            sizes="(max-width: 1024px) 90vw, 50vw"
+            priority={index === 0}
+          />
+        </div>
+      ))}
     </div>
   );
 }
