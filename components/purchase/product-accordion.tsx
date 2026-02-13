@@ -1,14 +1,63 @@
 'use client';
 
 import { useState } from 'react';
+import { PortableText } from '@portabletext/react';
+import type { PortableTextBlock } from '@portabletext/types';
 
 interface AccordionItem {
   title: string;
-  content: React.ReactNode;
+  content?: React.ReactNode | PortableTextBlock[];
 }
 
 interface ProductAccordionProps {
   items?: AccordionItem[];
+}
+
+const portableTextComponents = {
+  block: {
+    normal: ({ children }: { children?: React.ReactNode }) => (
+      <p className="text-sm text-[#525252] leading-[160%]">{children}</p>
+    ),
+  },
+  list: {
+    bullet: ({ children }: { children?: React.ReactNode }) => (
+      <ul className="list-disc pl-5 text-sm text-[#525252] leading-[160%]">
+        {children}
+      </ul>
+    ),
+    number: ({ children }: { children?: React.ReactNode }) => (
+      <ol className="list-decimal pl-5 text-sm text-[#525252] leading-[160%]">
+        {children}
+      </ol>
+    ),
+  },
+};
+
+function isPortableText(
+  content: React.ReactNode | PortableTextBlock[]
+): content is PortableTextBlock[] {
+  return (
+    Array.isArray(content) &&
+    content.length > 0 &&
+    typeof content[0] === 'object' &&
+    content[0] !== null &&
+    '_type' in content[0]
+  );
+}
+
+function AccordionContent({
+  content,
+}: {
+  content: React.ReactNode | PortableTextBlock[];
+}) {
+  if (isPortableText(content)) {
+    return (
+      <div className="flex flex-col gap-2">
+        <PortableText value={content} components={portableTextComponents} />
+      </div>
+    );
+  }
+  return <>{content}</>;
 }
 
 const defaultItems: AccordionItem[] = [
@@ -69,7 +118,7 @@ const defaultItems: AccordionItem[] = [
         </ul>
         <p className="text-sm text-[#525252] leading-[160%]">
           <em>
-            *Certified to OEKO-TEX® STANDARD 100, #25.HUS.21538 Hohenstein
+            *Certified to OEKO-TEX® STANDARD 100, #25.HUS.21438 Hohenstein
           </em>
         </p>
       </div>
@@ -148,7 +197,11 @@ export default function ProductAccordion({
               </svg>
             </span>
           </button>
-          {openIndex === index && <div className="pb-5">{item.content}</div>}
+          {openIndex === index && (
+            <div className="pb-5">
+              <AccordionContent content={item.content} />
+            </div>
+          )}
         </div>
       ))}
     </div>

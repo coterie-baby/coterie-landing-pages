@@ -449,7 +449,10 @@ function transformThreeColumnTable(data: SanityThreeColumnTable) {
 
 function transformPdpHeroV2(data: SanityPdpHeroV2) {
   const product = data.product;
-  const images = (product?.images || [])
+
+  // Override images take priority over product images
+  const imageSource = data.images?.length ? data.images : product?.images;
+  const images = (imageSource || [])
     .map((img) => ({
       src: resolveImageUrl(img.image) || '',
       alt: img.alt || product?.title || 'Product image',
@@ -468,7 +471,7 @@ function transformPdpHeroV2(data: SanityPdpHeroV2) {
   return {
     rating: data.rating,
     reviewCount: data.reviewCount,
-    productTitle: product?.title,
+    productTitle: data.titleOverride || product?.title,
     images: images.length > 0 ? images : undefined,
     sizeImages: Object.keys(sizeImages).length > 0 ? sizeImages : undefined,
     orderTypeConfig: product?.orderTypes
@@ -477,6 +480,16 @@ function transformPdpHeroV2(data: SanityPdpHeroV2) {
           oneTimePurchase: product.orderTypes.oneTimePurchase,
         }
       : undefined,
+    hideSizeSelector: data.hideSizeSelector,
+    preselectedSize: data.preselectedSize,
+    bundleItems: data.bundleItems,
+    features: data.features?.length
+      ? data.features.map((f) => ({
+          icon: resolveImageUrl(f.icon) || '',
+          label: f.label,
+        }))
+      : undefined,
+    accordionItems: data.accordionItems?.length ? data.accordionItems : undefined,
   };
 }
 

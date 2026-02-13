@@ -273,7 +273,21 @@ export const pageBySlugQuery = groq`
           }
         },
         rating,
-        reviewCount
+        reviewCount,
+        titleOverride,
+        images[] { image, alt },
+        hideSizeSelector,
+        preselectedSize,
+        bundleItems[] {
+          _key,
+          quantity,
+          "productTitle": product->title,
+          "sizeLabel": product->sizes[sizeKey == ^.sizeKey][0].label,
+          "shopifyVariantId": product->sizes[sizeKey == ^.sizeKey][0].shopifyVariantId,
+          "shopifySellingPlanId": product->shopifySellingPlanId
+        },
+        features[] { icon, label },
+        accordionItems[] { title, content }
       },
       _type == "threeColumnTable" => {
         headline,

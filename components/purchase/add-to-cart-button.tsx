@@ -17,7 +17,7 @@ interface AddToCartButtonProps {
 export default function AddToCartButton({
   className = '',
 }: AddToCartButtonProps) {
-  const { state, isValid, currentPrice } = useProductOrder();
+  const { state, isValid, currentPrice, bundleItems } = useProductOrder();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -44,6 +44,7 @@ export default function AddToCartButton({
         planType: state.selectedPlan,
         orderType: state.orderType,
         quantity: state.quantity,
+        bundleItems,
       });
 
       if (!result.success || !result.checkoutUrl) {

@@ -2,8 +2,9 @@
 
 import { shopifyFetch } from './client';
 import { CART_CREATE_MUTATION } from './mutations';
-import { buildCartLines } from './product-mapping';
+import { buildCartLines, buildBundleCartLines } from './product-mapping';
 import type { DiaperSize, PlanType, OrderType } from '@/components/purchase/context';
+import type { BundleItem } from '@/lib/sanity/types';
 import type { CartCreateResponse, ShopifyCartLine } from './types';
 
 export interface CreateCartOptions {
@@ -12,6 +13,7 @@ export interface CreateCartOptions {
   orderType: OrderType;
   quantity?: number;
   attributes?: { key: string; value: string }[];
+  bundleItems?: BundleItem[];
 }
 
 export interface CreateCartResult {
@@ -27,7 +29,7 @@ export interface CreateCartResult {
 export async function createCart(
   options: CreateCartOptions
 ): Promise<CreateCartResult> {
-  const { size, planType, orderType, quantity = 1, attributes = [] } = options;
+  const { size, planType, orderType, quantity = 1, attributes = [], bundleItems } = options;
 
   try {
     // Build cart lines based on plan configuration
@@ -37,6 +39,11 @@ export async function createCart(
       orderType,
       quantity,
     });
+
+    // Append bundle items to cart
+    if (bundleItems && bundleItems.length > 0) {
+      lines.push(...buildBundleCartLines(bundleItems, orderType));
+    }
 
     // Add order type attribute for Recurly/analytics
     const cartAttributes = [

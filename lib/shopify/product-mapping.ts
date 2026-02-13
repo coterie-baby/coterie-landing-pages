@@ -2,6 +2,7 @@
 // Re-exports from centralized config and provides cart line builders
 
 import type { DiaperSize, PlanType } from '@/components/purchase/context';
+import type { BundleItem } from '@/lib/sanity/types';
 import type { ShopifyCartLine } from './types';
 
 import {
@@ -10,6 +11,8 @@ import {
   getWipes4PackVariantId,
   getWipes8PackVariantId,
   getWipesSellingPlanId,
+  toVariantGid,
+  toSellingPlanGid,
 } from '@/lib/config/products';
 
 // Re-export for other modules
@@ -74,4 +77,26 @@ export function buildCartLines(options: CartLineOptions): ShopifyCartLine[] {
   }
 
   return lines;
+}
+
+/**
+ * Build cart lines for bundle items (additional products included in a bundle).
+ * Filters out items without a resolved shopifyVariantId.
+ */
+export function buildBundleCartLines(
+  items: BundleItem[],
+  orderType: 'subscription' | 'one-time'
+): ShopifyCartLine[] {
+  return items
+    .filter((item) => item.shopifyVariantId)
+    .map((item) => {
+      const line: ShopifyCartLine = {
+        merchandiseId: toVariantGid(item.shopifyVariantId!),
+        quantity: item.quantity,
+      };
+      if (orderType === 'subscription' && item.shopifySellingPlanId) {
+        line.sellingPlanId = toSellingPlanGid(item.shopifySellingPlanId);
+      }
+      return line;
+    });
 }

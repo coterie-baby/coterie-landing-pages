@@ -1,3 +1,5 @@
+import type { PortableTextBlock } from '@portabletext/types';
+
 export interface SanityImage {
   _type: 'image';
   asset: {
@@ -374,6 +376,15 @@ export interface SanityThreeColumnTable {
   }[];
 }
 
+export interface BundleItem {
+  _key: string;
+  productTitle: string;
+  sizeLabel?: string;
+  shopifyVariantId?: string;
+  shopifySellingPlanId?: string;
+  quantity: number;
+}
+
 export interface SanityPdpHeroV2 {
   _type: 'pdpHeroV2';
   _key: string;
@@ -402,6 +413,22 @@ export interface SanityPdpHeroV2 {
   };
   rating?: number;
   reviewCount?: number;
+  titleOverride?: string;
+  images?: {
+    image?: SanityImage;
+    alt?: string;
+  }[];
+  hideSizeSelector?: boolean;
+  preselectedSize?: string;
+  bundleItems?: BundleItem[];
+  features?: {
+    icon?: SanityImage;
+    label: string;
+  }[];
+  accordionItems?: {
+    title: string;
+    content?: PortableTextBlock[];
+  }[];
 }
 
 export type SanityComponent =

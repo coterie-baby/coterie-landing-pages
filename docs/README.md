@@ -9,6 +9,7 @@ Welcome to the Coterie Landing Pages product documentation. This documentation i
 | [Product Overview](./product-overview.md)                    | All         | High-level product summary, features, and business purpose |
 | [Technical Architecture](./technical-architecture.md)        | Engineering | System design, tech stack, and infrastructure              |
 | [Analytics & Tracking](./integrations/analytics-tracking.md) | All         | GTM, GA4, Amplitude, and attribution tracking              |
+| [Traffic Splitting](./traffic-splitting.md)                   | All         | A/B testing with weighted funnel traffic splits            |
 | [Developer Guide](./developer-guide.md)                      | Engineering | Setup, development workflow, and deployment                |
 
 ## Quick Links

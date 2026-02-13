@@ -10,6 +10,8 @@ import {
   SIZE_ORDER,
   type DiaperSize,
 } from './purchase/context';
+import type { BundleItem } from '@/lib/sanity/types';
+import type { PortableTextBlock } from '@portabletext/types';
 import { useSearchParams } from 'next/navigation';
 import SizeSelectionContainer from './purchase/size-selection-container';
 import AddToCartButton from './purchase/add-to-cart-button';
@@ -323,6 +325,9 @@ interface PDPHeroV2ContentProps {
   images: { src: string; alt: string }[];
   sizeImages?: Record<string, string>;
   orderTypeConfig: OrderTypeConfig;
+  hideSizeSelector?: boolean;
+  features?: { icon: string; label: string }[];
+  accordionItems?: { title: string; content?: PortableTextBlock[] }[];
 }
 
 function PDPHeroV2Content({
@@ -332,6 +337,9 @@ function PDPHeroV2Content({
   images,
   sizeImages,
   orderTypeConfig,
+  hideSizeSelector,
+  features,
+  accordionItems,
 }: PDPHeroV2ContentProps) {
   const { state } = useProductOrder();
 
@@ -360,8 +368,8 @@ function PDPHeroV2Content({
 
       {/* Form Content */}
       <div className="px-4 pt-6 pb-6 space-y-6">
-        {/* Size Selection */}
-        <SizeSelectionContainer />
+        {/* Size Selection — hidden in bundle mode when size is pre-selected */}
+        {!hideSizeSelector && <SizeSelectionContainer />}
 
         {/* Order Type */}
         <OrderTypeSelector config={orderTypeConfig} />
@@ -370,8 +378,8 @@ function PDPHeroV2Content({
         <AddToCartButton />
       </div>
       <div className="px-4 py-2 space-y-6">
-        <ProductFeatures />
-        <ProductAccordion />
+        <ProductFeatures features={features} />
+        <ProductAccordion items={accordionItems} />
       </div>
     </div>
   );
@@ -386,6 +394,11 @@ interface PDPHeroV2Props {
   images?: { src: string; alt: string }[];
   sizeImages?: Record<string, string>;
   orderTypeConfig?: OrderTypeConfig;
+  hideSizeSelector?: boolean;
+  preselectedSize?: string;
+  bundleItems?: BundleItem[];
+  features?: { icon: string; label: string }[];
+  accordionItems?: { title: string; content?: PortableTextBlock[] }[];
 }
 
 const defaultImages = [
@@ -416,12 +429,20 @@ function PDPHeroV2Inner({
   images = defaultImages,
   sizeImages,
   orderTypeConfig = defaultOrderTypeConfig,
+  hideSizeSelector,
+  preselectedSize,
+  bundleItems,
+  features,
+  accordionItems,
 }: PDPHeroV2Props) {
   const searchParams = useSearchParams();
   const sizeFromUrl = parseSizeParam(searchParams.get('size'));
 
   return (
-    <ProductOrderProvider initialSize={sizeFromUrl ?? '1'}>
+    <ProductOrderProvider
+      initialSize={(preselectedSize as DiaperSize) ?? sizeFromUrl ?? '1'}
+      bundleItems={bundleItems}
+    >
       <PDPHeroV2Content
         rating={rating}
         reviewCount={reviewCount}
@@ -429,6 +450,9 @@ function PDPHeroV2Inner({
         images={images}
         sizeImages={sizeImages}
         orderTypeConfig={orderTypeConfig}
+        hideSizeSelector={hideSizeSelector}
+        features={features}
+        accordionItems={accordionItems}
       />
     </ProductOrderProvider>
   );

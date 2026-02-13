@@ -181,8 +181,9 @@ AMPLITUDE_SECRET_KEY
 
 The middleware (`middleware.ts`) runs on the edge and handles traffic routing:
 
+- Matches funnel rules from Sanity (path + UTM specificity-based priority)
+- Splits traffic across variants using weighted cookie-based assignment (see [Traffic Splitting](./traffic-splitting.md))
 - Detects mobile vs desktop via User-Agent
-- Checks for UTM parameters
 - Redirects desktop traffic with UTM params to main store
 
 To modify routing logic, edit `middleware.ts`.
