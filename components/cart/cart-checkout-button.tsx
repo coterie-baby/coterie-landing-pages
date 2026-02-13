@@ -37,9 +37,9 @@ export default function CartCheckoutButton({
     window.location.href = checkoutUrl;
   };
 
-  const variantIds = items.flatMap((item) =>
-    Array.from({ length: item.quantity }, () => item.merchandiseId)
-  );
+  // const variantIds = items.flatMap((item) =>
+  //   Array.from({ length: item.quantity }, () => item.merchandiseId)
+  // );
 
   return (
     <div className="px-4 pb-4">
