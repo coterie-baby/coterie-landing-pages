@@ -26,6 +26,7 @@ import SimpleStats from '@/components/simple-stats';
 import SteppedStats from '@/components/stepped-stats';
 import ThreeColumnTable from '@/components/three-column-table';
 import PDPHeroV2 from '@/components/pdp-hero-v2';
+import Reviews from '@/components/reviews';
 import { urlFor } from './image';
 import type {
   SanityComponent,
@@ -57,6 +58,7 @@ import type {
   SanitySteppedStats,
   SanityThreeColumnTable,
   SanityPdpHeroV2,
+  SanityReviews,
   SanityImage,
   SanityColor,
 } from './types';
@@ -447,6 +449,12 @@ function transformThreeColumnTable(data: SanityThreeColumnTable) {
   };
 }
 
+function transformReviews(data: SanityReviews) {
+  return {
+    productId: data.product?.shopifyProductId,
+  };
+}
+
 function transformPdpHeroV2(data: SanityPdpHeroV2) {
   const product = data.product;
 
@@ -468,16 +476,37 @@ function transformPdpHeroV2(data: SanityPdpHeroV2) {
     }
   }
 
+  // Merge page-level orderTypes over product-level, field-by-field
+  const pageOT = data.orderTypes;
+  const prodOT = product?.orderTypes;
+  const mergedAutoRenew = pageOT?.autoRenew || prodOT?.autoRenew
+    ? {
+        badgeText: pageOT?.autoRenew?.badgeText ?? prodOT?.autoRenew?.badgeText,
+        title: pageOT?.autoRenew?.title ?? prodOT?.autoRenew?.title,
+        benefits: pageOT?.autoRenew?.benefits ?? prodOT?.autoRenew?.benefits,
+        showTrialPack: (pageOT?.autoRenew?.showTrialPack ?? prodOT?.autoRenew?.showTrialPack) ?? undefined,
+        trialPackImage: resolveImageUrl(pageOT?.autoRenew?.trialPackImage ?? prodOT?.autoRenew?.trialPackImage),
+        trialPackTitle: (pageOT?.autoRenew?.trialPackTitle ?? prodOT?.autoRenew?.trialPackTitle) ?? undefined,
+        trialPackDescription: (pageOT?.autoRenew?.trialPackDescription ?? prodOT?.autoRenew?.trialPackDescription) ?? undefined,
+      }
+    : undefined;
+  const mergedOneTime = pageOT?.oneTimePurchase || prodOT?.oneTimePurchase
+    ? {
+        title: pageOT?.oneTimePurchase?.title ?? prodOT?.oneTimePurchase?.title,
+        benefits: pageOT?.oneTimePurchase?.benefits ?? prodOT?.oneTimePurchase?.benefits,
+      }
+    : undefined;
+
   return {
     rating: data.rating,
     reviewCount: data.reviewCount,
     productTitle: data.titleOverride || product?.title,
     images: images.length > 0 ? images : undefined,
     sizeImages: Object.keys(sizeImages).length > 0 ? sizeImages : undefined,
-    orderTypeConfig: product?.orderTypes
+    orderTypeConfig: mergedAutoRenew || mergedOneTime
       ? {
-          autoRenew: product.orderTypes.autoRenew,
-          oneTimePurchase: product.orderTypes.oneTimePurchase,
+          autoRenew: mergedAutoRenew,
+          oneTimePurchase: mergedOneTime,
         }
       : undefined,
     hideSizeSelector: data.hideSizeSelector,
@@ -553,6 +582,8 @@ export function renderSanityComponent(component: SanityComponent) {
       return <ThreeColumnTable key={key} {...transformThreeColumnTable(component)} />;
     case 'pdpHeroV2':
       return <PDPHeroV2 key={key} {...transformPdpHeroV2(component)} />;
+    case 'reviews':
+      return <Reviews key={key} {...transformReviews(component)} />;
     default:
       console.warn(`Unknown component type: ${(component as { _type: string })._type}`);
       return null;

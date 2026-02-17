@@ -404,6 +404,10 @@ export interface SanityPdpHeroV2 {
         badgeText?: string;
         title?: string;
         benefits?: string[];
+        showTrialPack?: boolean;
+        trialPackImage?: SanityImage;
+        trialPackTitle?: string;
+        trialPackDescription?: string;
       };
       oneTimePurchase?: {
         title?: string;
@@ -429,6 +433,27 @@ export interface SanityPdpHeroV2 {
     title: string;
     content?: PortableTextBlock[];
   }[];
+  orderTypes?: {
+    autoRenew?: {
+      badgeText?: string;
+      title?: string;
+      benefits?: string[];
+      showTrialPack?: boolean;
+      trialPackImage?: SanityImage;
+      trialPackTitle?: string;
+      trialPackDescription?: string;
+    };
+    oneTimePurchase?: {
+      title?: string;
+      benefits?: string[];
+    };
+  };
+}
+
+export interface SanityReviews {
+  _type: 'reviews';
+  _key: string;
+  product?: { _id: string; shopifyProductId?: string };
 }
 
 export type SanityComponent =
@@ -459,7 +484,8 @@ export type SanityComponent =
   | SanitySimpleStats
   | SanitySteppedStats
   | SanityThreeColumnTable
-  | SanityPdpHeroV2;
+  | SanityPdpHeroV2
+  | SanityReviews;
 
 export interface FunnelRoute {
   _key: string;

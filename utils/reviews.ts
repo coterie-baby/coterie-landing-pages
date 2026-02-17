@@ -1,3 +1,6 @@
+const isServer = typeof window === 'undefined';
+const API_BASE = isServer ? 'https://www.coterie.com' : '';
+
 interface ReviewsParams {
   productId?: string;
   page?: number;
@@ -7,7 +10,7 @@ interface ReviewsParams {
 
 export async function getReviews({ productId, page = 1, scores, customFilters = {} }: ReviewsParams) {
   try {
-    const url = `https://www.coterie.com/api/yotpo/${productId}/search-reviews`;
+    const url = `${API_BASE}/api/yotpo/${productId}/search-reviews`;
     const payload: Record<string, unknown> = {
       page,
       customFilters,
@@ -33,7 +36,7 @@ export async function getReviews({ productId, page = 1, scores, customFilters = 
 
 export async function voteReview(reviewId: number, voteType: 'up' | 'down') {
   try {
-    const url = `https://www.coterie.com/api/yotpo/${reviewId}/vote/${voteType}`;
+    const url = `${API_BASE}/api/yotpo/${reviewId}/vote/${voteType}`;
 
     const response = await fetch(url, {
       method: 'POST',

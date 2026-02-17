@@ -110,7 +110,10 @@ function ImageCarousel({ images }: { images: { src: string; alt: string }[] }) {
   // Reset to first slide when images change (e.g. size selection swaps featured image)
   const firstSrc = images[0]?.src;
   useEffect(() => {
-    scrollRef.current?.scrollTo({ left: 0, behavior: 'instant' as ScrollBehavior });
+    scrollRef.current?.scrollTo({
+      left: 0,
+      behavior: 'instant' as ScrollBehavior,
+    });
   }, [firstSrc]);
 
   return (
@@ -146,6 +149,10 @@ export interface OrderTypeConfig {
     badgeText?: string;
     title?: string;
     benefits?: string[];
+    showTrialPack?: boolean;
+    trialPackImage?: string;
+    trialPackTitle?: string;
+    trialPackDescription?: string;
   };
   oneTimePurchase?: {
     title?: string;
@@ -162,6 +169,11 @@ const defaultOrderTypeConfig: OrderTypeConfig = {
       'First box includes next size trial',
       'Skip or cancel anytime',
     ],
+    showTrialPack: true,
+    trialPackImage: '/images/diaper_s1.png',
+    trialPackTitle: 'Next Size Trial Pack',
+    trialPackDescription:
+      'A trial pack of size 2 diapers, giving you a head start on the next stage.',
   },
   oneTimePurchase: {
     title: 'One-time Purchase',
@@ -178,7 +190,18 @@ function OrderTypeSelector({ config }: { config: OrderTypeConfig }) {
   const subscriptionPrice = diaperOnlyPlan?.subscriptionPrice ?? 95;
   const basePrice = diaperOnlyPlan?.basePrice ?? 105.5;
 
-  const autoRenew = config.autoRenew ?? defaultOrderTypeConfig.autoRenew!;
+  const defaults = defaultOrderTypeConfig.autoRenew!;
+  const cms = config.autoRenew;
+  const autoRenew = {
+    badgeText: cms?.badgeText ?? defaults.badgeText,
+    title: cms?.title ?? defaults.title,
+    benefits: cms?.benefits ?? defaults.benefits,
+    showTrialPack: cms?.showTrialPack ?? defaults.showTrialPack,
+    trialPackImage: cms?.trialPackImage ?? defaults.trialPackImage,
+    trialPackTitle: cms?.trialPackTitle ?? defaults.trialPackTitle,
+    trialPackDescription:
+      cms?.trialPackDescription ?? defaults.trialPackDescription,
+  };
   const otp = config.oneTimePurchase ?? defaultOrderTypeConfig.oneTimePurchase!;
 
   return (
@@ -206,7 +229,7 @@ function OrderTypeSelector({ config }: { config: OrderTypeConfig }) {
             {autoRenew.badgeText}
           </div>
         )}
-        <div className="p-2">
+        <div className="p-3">
           <div className="flex items-start justify-between mb-2 text-[14.5px]">
             <span className="font-semibold">{autoRenew.title}</span>
             <div className="text-right flex-shrink-0 ml-3">
@@ -221,13 +244,47 @@ function OrderTypeSelector({ config }: { config: OrderTypeConfig }) {
           {autoRenew.benefits && autoRenew.benefits.length > 0 && (
             <div className="space-y-1">
               {autoRenew.benefits.map((benefit, i) => (
-                <div key={i} className="flex items-center gap-2 text-xs text-[#515151]">
+                <div
+                  key={i}
+                  className="flex items-center gap-2 text-xs text-[#515151]"
+                >
                   <CheckIcon className="text-[#0000C9]" />
                   <span>{benefit}</span>
                 </div>
               ))}
             </div>
           )}
+          {autoRenew.showTrialPack &&
+            (autoRenew.trialPackTitle || autoRenew.trialPackDescription) && (
+              <>
+                <div className="border-t border-gray-200 my-3" />
+                <div className="flex items-center gap-3">
+                  {autoRenew.trialPackImage && (
+                    <div className="relative w-12 h-12 flex-shrink-0 rounded overflow-hidden">
+                      <Image
+                        src={autoRenew.trialPackImage}
+                        alt={autoRenew.trialPackTitle || 'Trial pack'}
+                        fill
+                        className="object-cover"
+                        sizes="48px"
+                      />
+                    </div>
+                  )}
+                  <div className="min-w-0">
+                    {autoRenew.trialPackTitle && (
+                      <p className="text-xs font-semibold text-black">
+                        {autoRenew.trialPackTitle}
+                      </p>
+                    )}
+                    {autoRenew.trialPackDescription && (
+                      <p className="text-xs text-[#515151]">
+                        {autoRenew.trialPackDescription}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </>
+            )}
         </div>
       </button>
 
@@ -255,7 +312,10 @@ function OrderTypeSelector({ config }: { config: OrderTypeConfig }) {
         {otp.benefits && otp.benefits.length > 0 && (
           <div className="space-y-1">
             {otp.benefits.map((benefit, i) => (
-              <div key={i} className="flex items-center gap-2 text-xs text-[#515151]">
+              <div
+                key={i}
+                className="flex items-center gap-2 text-xs text-[#515151]"
+              >
                 <CheckIcon className="text-[#0000C9]" />
                 <span>{benefit}</span>
               </div>
@@ -300,7 +360,10 @@ function PDPHeroV2Content({
       return images;
     }
     const sizeImageUrl = sizeImages[state.selectedSize];
-    const sizeSlide = { src: sizeImageUrl, alt: `${productTitle} Size ${state.selectedSize}` };
+    const sizeSlide = {
+      src: sizeImageUrl,
+      alt: `${productTitle} Size ${state.selectedSize}`,
+    };
     return [sizeSlide, ...images.slice(1)];
   }, [state.selectedSize, sizeImages, images, productTitle]);
 
@@ -309,9 +372,14 @@ function PDPHeroV2Content({
       {/* Rating + Title */}
       <div className="flex flex-col gap-2 px-4 py-4">
         <HeroStarRating rating={rating} reviewCount={reviewCount} />
-        <h4 className="text-[26px] font-medium text-black mt-1 leading-tight">
-          {productTitle}
-        </h4>
+        <div className="flex flex-col gap-0.5">
+          <h4 className="text-[26px] font-medium text-black mt-1 leading-tight">
+            {productTitle}
+          </h4>
+          <p className="text-sm text-[#525252]">
+            Lorem ipsum dolor sit amet, consectetur adipiscing.
+          </p>
+        </div>
       </div>
 
       {/* Image Carousel */}

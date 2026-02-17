@@ -264,7 +264,11 @@ export const pageBySlugQuery = groq`
             autoRenew {
               badgeText,
               title,
-              benefits
+              benefits,
+              showTrialPack,
+              trialPackImage,
+              trialPackTitle,
+              trialPackDescription
             },
             oneTimePurchase {
               title,
@@ -287,7 +291,25 @@ export const pageBySlugQuery = groq`
           "shopifySellingPlanId": product->shopifySellingPlanId
         },
         features[] { icon, label },
-        accordionItems[] { title, content }
+        accordionItems[] { title, content },
+        orderTypes {
+          autoRenew {
+            badgeText,
+            title,
+            benefits,
+            showTrialPack,
+            trialPackImage,
+            trialPackTitle,
+            trialPackDescription
+          },
+          oneTimePurchase {
+            title,
+            benefits
+          }
+        }
+      },
+      _type == "reviews" => {
+        "product": product-> { _id, shopifyProductId }
       },
       _type == "threeColumnTable" => {
         headline,

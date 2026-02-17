@@ -37,7 +37,7 @@ export default function Footer() {
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-20 text-[11px] text-gray-600">
           <div className="flex-1">
             <p>
-              © 2025 Coterie Baby, Inc. Coterie is a United States registered
+              © 2026 Coterie Baby, Inc. Coterie is a United States registered
               trademark of Coterie Baby, Inc.
             </p>
           </div>
