@@ -290,6 +290,18 @@ export const pageBySlugQuery = groq`
           "shopifyVariantId": product->sizes[sizeKey == ^.sizeKey][0].shopifyVariantId,
           "shopifySellingPlanId": product->shopifySellingPlanId
         },
+        "upsellProducts": upsellProducts[] {
+          "product": product-> {
+            _id,
+            title,
+            thumbnail,
+            pricing { oneTimePurchase, autoRenew },
+            shopifySellingPlanId
+          },
+          sizeKey,
+          "variantImage": product->sizes[sizeKey == ^.sizeKey][0].featuredImage,
+          "shopifyVariantId": product->sizes[sizeKey == ^.sizeKey][0].shopifyVariantId
+        },
         features[] { icon, label },
         accordionItems[] { title, content },
         orderTypes {

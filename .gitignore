@@ -45,3 +45,4 @@ storybook-static
 
 # Claude project instructions
 CLAUDE.md
+.env*.local

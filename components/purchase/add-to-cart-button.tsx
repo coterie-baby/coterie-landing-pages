@@ -17,7 +17,12 @@ interface AddToCartButtonProps {
 export default function AddToCartButton({
   className = '',
 }: AddToCartButtonProps) {
-  const { state, isValid, currentPrice, originalPrice, savingsAmount, displaySize, diaperCount, bundleItems } = useProductOrder();
+  const { state, isValid, currentPrice, originalPrice, savingsAmount, displaySize, diaperCount, bundleItems, upsellItems, selectedUpsellIndices } = useProductOrder();
+
+  const selectedUpsells = (upsellItems ?? [])
+    .filter((_, i) => selectedUpsellIndices.includes(i))
+    .filter((item): item is typeof item & { shopifyVariantId: string } => !!item.shopifyVariantId)
+    .map((item) => ({ shopifyVariantId: item.shopifyVariantId, shopifySellingPlanId: item.shopifySellingPlanId }));
   const cart = useCart();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -53,6 +58,7 @@ export default function AddToCartButton({
         title: 'The Diaper',
         imageUrl: getDiaperImageUrl(),
         bundleItems,
+        upsellItems: selectedUpsells.length > 0 ? selectedUpsells : undefined,
       });
     } catch (err) {
       const errorMessage =

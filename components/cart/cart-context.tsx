@@ -19,6 +19,7 @@ import {
 import {
   buildCartLines,
   buildBundleCartLines,
+  buildUpsellCartLines,
 } from '@/lib/shopify/product-mapping';
 import type {
   DiaperSize,
@@ -138,6 +139,7 @@ export interface AddToCartOptions {
   title: string;
   imageUrl: string;
   bundleItems?: BundleItem[];
+  upsellItems?: { shopifyVariantId: string; shopifySellingPlanId?: string }[];
 }
 
 interface CartContextValue {
@@ -240,6 +242,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
             orderType: options.orderType,
             quantity: options.quantity,
             bundleItems: options.bundleItems,
+            upsellItems: options.upsellItems,
           });
 
           if (
@@ -280,6 +283,12 @@ export function CartProvider({ children }: { children: ReactNode }) {
           if (options.bundleItems && options.bundleItems.length > 0) {
             lines.push(
               ...buildBundleCartLines(options.bundleItems, options.orderType)
+            );
+          }
+
+          if (options.upsellItems && options.upsellItems.length > 0) {
+            lines.push(
+              ...buildUpsellCartLines(options.upsellItems, options.orderType)
             );
           }
 

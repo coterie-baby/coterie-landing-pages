@@ -80,6 +80,25 @@ export function buildCartLines(options: CartLineOptions): ShopifyCartLine[] {
 }
 
 /**
+ * Build cart lines for upsell items selected by the user.
+ */
+export function buildUpsellCartLines(
+  items: { shopifyVariantId: string; shopifySellingPlanId?: string }[],
+  orderType: 'subscription' | 'one-time'
+): ShopifyCartLine[] {
+  return items.map((item) => {
+    const line: ShopifyCartLine = {
+      merchandiseId: toVariantGid(item.shopifyVariantId),
+      quantity: 1,
+    };
+    if (orderType === 'subscription' && item.shopifySellingPlanId) {
+      line.sellingPlanId = toSellingPlanGid(item.shopifySellingPlanId);
+    }
+    return line;
+  });
+}
+
+/**
  * Build cart lines for bundle items (additional products included in a bundle).
  * Filters out items without a resolved shopifyVariantId.
  */

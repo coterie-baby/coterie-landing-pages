@@ -9,6 +9,7 @@ import {
   PLAN_CONFIGS,
   SIZE_ORDER,
   type DiaperSize,
+  type UpsellCartItem,
 } from './purchase/context';
 import type { BundleItem } from '@/lib/sanity/types';
 import type { PortableTextBlock } from '@portabletext/types';
@@ -180,6 +181,58 @@ const defaultOrderTypeConfig: OrderTypeConfig = {
     benefits: ["A month's supply of superior diapers"],
   },
 };
+
+function UpsellModule() {
+  const { state, upsellItems, selectedUpsellIndices, toggleUpsell } = useProductOrder();
+
+  if (!upsellItems?.length) return null;
+
+  return (
+    <div className="space-y-3">
+      <p className="text-sm">Complete your diaper bag:</p>
+      <div className="grid grid-cols-2 gap-2">
+        {upsellItems.map((product, i) => {
+          const isSelected = selectedUpsellIndices.includes(i);
+          const price =
+            state.orderType === 'subscription'
+              ? (product.subscriptionPrice ?? product.onetimePrice)
+              : product.onetimePrice;
+
+          return (
+            <button
+              key={i}
+              type="button"
+              onClick={() => toggleUpsell(i)}
+              className={`flex items-center gap-3 rounded-xl border p-2 text-left w-full transition-all ${
+                isSelected
+                  ? 'border-[#0000C9] bg-white'
+                  : 'border-gray-200 bg-white hover:border-gray-300'
+              }`}
+            >
+              <div className="relative w-10 h-10 flex-shrink-0 rounded-lg overflow-hidden bg-gray-100">
+                {product.imageUrl && (
+                  <Image
+                    src={product.imageUrl}
+                    alt={product.title}
+                    fill
+                    className="object-cover"
+                    sizes="40px"
+                  />
+                )}
+              </div>
+              <div>
+                <p className="font-bold text-sm text-black leading-tight">{product.title}</p>
+                {price != null && (
+                  <p className="text-sm text-gray-600 mt-0.5">${price}</p>
+                )}
+              </div>
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
 
 // ─── Order Type Selector (new design) ─────────────────────────
 
@@ -377,7 +430,7 @@ function PDPHeroV2Content({
             {productTitle}
           </h4>
           <p className="text-sm text-[#525252]">
-            Lorem ipsum dolor sit amet, consectetur adipiscing.
+            A combo pack of Newborn and Size 1 diapers
           </p>
         </div>
       </div>
@@ -389,6 +442,8 @@ function PDPHeroV2Content({
       <div className="px-4 pt-6 pb-6 space-y-6">
         {/* Size Selection — hidden in bundle mode when size is pre-selected */}
         {!hideSizeSelector && <SizeSelectionContainer />}
+
+        <UpsellModule />
 
         {/* Order Type */}
         <OrderTypeSelector config={orderTypeConfig} />
@@ -416,6 +471,7 @@ interface PDPHeroV2Props {
   hideSizeSelector?: boolean;
   preselectedSize?: string;
   bundleItems?: BundleItem[];
+  upsellProducts?: UpsellCartItem[];
   features?: { icon: string; label: string }[];
   accordionItems?: { title: string; content?: PortableTextBlock[] }[];
 }
@@ -451,6 +507,7 @@ function PDPHeroV2Inner({
   hideSizeSelector,
   preselectedSize,
   bundleItems,
+  upsellProducts,
   features,
   accordionItems,
 }: PDPHeroV2Props) {
@@ -461,6 +518,7 @@ function PDPHeroV2Inner({
     <ProductOrderProvider
       initialSize={(preselectedSize as DiaperSize) ?? sizeFromUrl ?? '1'}
       bundleItems={bundleItems}
+      upsellItems={upsellProducts}
     >
       <PDPHeroV2Content
         rating={rating}

@@ -422,6 +422,21 @@ export interface SanityPdpHeroV2 {
     image?: SanityImage;
     alt?: string;
   }[];
+  upsellProducts?: {
+    product: {
+      _id: string;
+      title: string;
+      thumbnail?: SanityImage;
+      pricing?: {
+        oneTimePurchase?: number;
+        autoRenew?: number;
+      };
+      shopifySellingPlanId?: string;
+    };
+    sizeKey?: string;
+    variantImage?: SanityImage;
+    shopifyVariantId?: string;
+  }[];
   hideSizeSelector?: boolean;
   preselectedSize?: string;
   bundleItems?: BundleItem[];

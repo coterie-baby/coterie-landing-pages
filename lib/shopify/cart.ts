@@ -2,7 +2,7 @@
 
 import { shopifyFetch } from './client';
 import { CART_CREATE_MUTATION, CART_LINES_ADD_MUTATION, CART_LINES_UPDATE_MUTATION, CART_LINES_REMOVE_MUTATION } from './mutations';
-import { buildCartLines, buildBundleCartLines } from './product-mapping';
+import { buildCartLines, buildBundleCartLines, buildUpsellCartLines } from './product-mapping';
 import type { DiaperSize, PlanType, OrderType } from '@/components/purchase/context';
 import type { BundleItem } from '@/lib/sanity/types';
 import type { CartCreateResponse, CartLinesAddResponse, CartLinesUpdateResponse, CartLinesRemoveResponse, ShopifyCartLine, ShopifyCart } from './types';
@@ -14,6 +14,7 @@ export interface CreateCartOptions {
   quantity?: number;
   attributes?: { key: string; value: string }[];
   bundleItems?: BundleItem[];
+  upsellItems?: { shopifyVariantId: string; shopifySellingPlanId?: string }[];
 }
 
 export interface CreateCartResult {
@@ -30,7 +31,7 @@ export interface CreateCartResult {
 export async function createCart(
   options: CreateCartOptions
 ): Promise<CreateCartResult> {
-  const { size, planType, orderType, quantity = 1, attributes = [], bundleItems } = options;
+  const { size, planType, orderType, quantity = 1, attributes = [], bundleItems, upsellItems } = options;
 
   try {
     // Build cart lines based on plan configuration
@@ -44,6 +45,11 @@ export async function createCart(
     // Append bundle items to cart
     if (bundleItems && bundleItems.length > 0) {
       lines.push(...buildBundleCartLines(bundleItems, orderType));
+    }
+
+    // Append selected upsell items to cart
+    if (upsellItems && upsellItems.length > 0) {
+      lines.push(...buildUpsellCartLines(upsellItems, orderType));
     }
 
     // Add order type attribute for Recurly/analytics

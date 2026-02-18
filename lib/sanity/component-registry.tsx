@@ -509,6 +509,16 @@ function transformPdpHeroV2(data: SanityPdpHeroV2) {
           oneTimePurchase: mergedOneTime,
         }
       : undefined,
+    upsellProducts: data.upsellProducts?.length
+      ? data.upsellProducts.map((item) => ({
+          title: item.product.title,
+          onetimePrice: item.product.pricing?.oneTimePurchase,
+          subscriptionPrice: item.product.pricing?.autoRenew,
+          imageUrl: resolveImageUrl(item.variantImage ?? item.product.thumbnail) || '',
+          shopifyVariantId: item.shopifyVariantId,
+          shopifySellingPlanId: item.product.shopifySellingPlanId,
+        }))
+      : undefined,
     hideSizeSelector: data.hideSizeSelector,
     preselectedSize: data.preselectedSize,
     bundleItems: data.bundleItems,

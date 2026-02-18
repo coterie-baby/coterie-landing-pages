@@ -14,6 +14,15 @@ import type { BundleItem } from '@/lib/sanity/types';
 // Types
 export type DiaperSize = 'n' | 'n+1' | '1' | '2' | '3' | '4' | '5' | '6' | '7';
 
+export interface UpsellCartItem {
+  title: string;
+  imageUrl: string;
+  onetimePrice?: number;
+  subscriptionPrice?: number;
+  shopifyVariantId?: string;
+  shopifySellingPlanId?: string;
+}
+
 export type PlanType = 'diaper-only' | 'diaper-wipe-bundle' | 'deluxe';
 
 export type OrderType = 'subscription' | 'one-time';
@@ -129,6 +138,7 @@ export interface ProductOrderState {
   selectedPlan: PlanType;
   orderType: OrderType;
   quantity: number;
+  selectedUpsellIndices: number[];
 }
 
 type ProductOrderAction =
@@ -136,6 +146,7 @@ type ProductOrderAction =
   | { type: 'SET_PLAN'; payload: PlanType }
   | { type: 'SET_ORDER_TYPE'; payload: OrderType }
   | { type: 'SET_QUANTITY'; payload: number }
+  | { type: 'TOGGLE_UPSELL'; payload: number }
   | { type: 'RESET' };
 
 // Plan configurations - can be extended or fetched from CMS/API
@@ -176,6 +187,7 @@ const initialState: ProductOrderState = {
   selectedPlan: 'diaper-only',
   orderType: 'subscription',
   quantity: 1,
+  selectedUpsellIndices: [],
 };
 
 // Reducer
@@ -192,6 +204,14 @@ function productOrderReducer(
       return { ...state, orderType: action.payload };
     case 'SET_QUANTITY':
       return { ...state, quantity: Math.max(1, action.payload) };
+    case 'TOGGLE_UPSELL': {
+      const idx = action.payload;
+      const current = state.selectedUpsellIndices;
+      const next = current.includes(idx)
+        ? current.filter((i) => i !== idx)
+        : [...current, idx];
+      return { ...state, selectedUpsellIndices: next };
+    }
     case 'RESET':
       return initialState;
     default:
@@ -207,6 +227,7 @@ interface ProductOrderContextValue {
   setPlan: (plan: PlanType) => void;
   setOrderType: (type: OrderType) => void;
   setQuantity: (qty: number) => void;
+  toggleUpsell: (index: number) => void;
   reset: () => void;
   // Computed values
   selectedPlanConfig: PlanConfig | undefined;
@@ -220,6 +241,8 @@ interface ProductOrderContextValue {
   displaySize: string;
   diaperCount: number;
   bundleItems?: BundleItem[];
+  upsellItems?: UpsellCartItem[];
+  selectedUpsellIndices: number[];
 }
 
 const ProductOrderContext = createContext<ProductOrderContextValue | null>(
@@ -233,6 +256,7 @@ interface ProductOrderProviderProps {
   initialPlan?: PlanType;
   initialOrderType?: OrderType;
   bundleItems?: BundleItem[];
+  upsellItems?: UpsellCartItem[];
 }
 
 export function ProductOrderProvider({
@@ -241,6 +265,7 @@ export function ProductOrderProvider({
   initialPlan,
   initialOrderType,
   bundleItems,
+  upsellItems,
 }: ProductOrderProviderProps) {
   const [state, dispatch] = useReducer(productOrderReducer, {
     ...initialState,
@@ -264,6 +289,10 @@ export function ProductOrderProvider({
 
   const setQuantity = useCallback((qty: number) => {
     dispatch({ type: 'SET_QUANTITY', payload: qty });
+  }, []);
+
+  const toggleUpsell = useCallback((index: number) => {
+    dispatch({ type: 'TOGGLE_UPSELL', payload: index });
   }, []);
 
   const reset = useCallback(() => {
@@ -328,6 +357,7 @@ export function ProductOrderProvider({
     setPlan,
     setOrderType,
     setQuantity,
+    toggleUpsell,
     reset,
     selectedPlanConfig,
     selectedSizeConfig,
@@ -340,6 +370,8 @@ export function ProductOrderProvider({
     displaySize,
     diaperCount,
     bundleItems,
+    upsellItems,
+    selectedUpsellIndices: state.selectedUpsellIndices,
   };
 
   return (
