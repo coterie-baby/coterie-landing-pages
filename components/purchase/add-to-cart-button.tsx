@@ -12,17 +12,33 @@ import { getDiaperImageUrl } from '@/lib/config/products';
 
 interface AddToCartButtonProps {
   className?: string;
+  title?: string;
 }
 
 export default function AddToCartButton({
   className = '',
+  title = 'The Diaper',
 }: AddToCartButtonProps) {
   const { state, isValid, currentPrice, originalPrice, savingsAmount, displaySize, diaperCount, bundleItems, upsellItems, selectedUpsellIndices } = useProductOrder();
 
   const selectedUpsells = (upsellItems ?? [])
     .filter((_, i) => selectedUpsellIndices.includes(i))
-    .filter((item): item is typeof item & { shopifyVariantId: string } => !!item.shopifyVariantId)
-    .map((item) => ({ shopifyVariantId: item.shopifyVariantId, shopifySellingPlanId: item.shopifySellingPlanId }));
+    .filter((item): item is typeof item & { shopifyVariantId: string } => {
+      if (!item.shopifyVariantId) {
+        console.warn('[AddToCartButton] Upsell item dropped — missing shopifyVariantId:', item.title);
+        return false;
+      }
+      return true;
+    })
+    .map((item) => ({
+      shopifyVariantId: item.shopifyVariantId,
+      shopifySellingPlanId: item.shopifySellingPlanId,
+      title: item.title,
+      imageUrl: item.imageUrl,
+      price: state.orderType === 'subscription'
+        ? (item.subscriptionPrice ?? item.onetimePrice ?? 0)
+        : (item.onetimePrice ?? 0),
+    }));
   const cart = useCart();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -55,7 +71,7 @@ export default function AddToCartButton({
         currentPrice,
         originalPrice,
         savingsAmount,
-        title: 'The Diaper',
+        title,
         imageUrl: getDiaperImageUrl(),
         bundleItems,
         upsellItems: selectedUpsells.length > 0 ? selectedUpsells : undefined,

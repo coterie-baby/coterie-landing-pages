@@ -83,6 +83,27 @@ export function hydrateCartState(lsCart: LocalStorageCart): {
     const orderType =
       item.attributes?.type === 'auto_renew' ? 'subscription' : 'one-time';
     const savingsAmount = (item.compareAtPrice ?? item.price) - item.price;
+    const isAddOn = item.attributes?.isAddOn === true;
+
+    if (isAddOn) {
+      return {
+        lineId: item.id,
+        companionLineIds: [],
+        merchandiseId: item.variantId,
+        quantity: item.quantity,
+        title: item.productName,
+        imageUrl: item.image,
+        isAddOn: true,
+        size: '1' as DiaperSize,
+        displaySize: '',
+        diaperCount: 0,
+        planType: 'diaper-only' as const,
+        orderType,
+        currentPrice: item.price,
+        originalPrice: item.compareAtPrice ?? item.price,
+        savingsAmount,
+      };
+    }
 
     return {
       lineId: item.id,
@@ -123,6 +144,25 @@ function buildLocalStorageItem(
       price: item.currentPrice,
       compareAtPrice: item.originalPrice,
       variantId: item.merchandiseId,
+    };
+  }
+
+  // Add-on items (upsell products) — no size/diaper-count metadata
+  if (item.isAddOn) {
+    return {
+      id: item.lineId,
+      variantId: item.merchandiseId,
+      quantity: item.quantity,
+      productName: item.title,
+      image: item.imageUrl,
+      sizeName: '',
+      summarySubtitle: '',
+      price: item.currentPrice,
+      compareAtPrice: item.originalPrice,
+      attributes: {
+        type: item.orderType === 'subscription' ? 'auto_renew' : 'one_time',
+        isAddOn: true,
+      },
     };
   }
 

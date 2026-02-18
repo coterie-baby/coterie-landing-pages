@@ -37,9 +37,11 @@ export default function CartItem({
         <div className="flex items-start justify-between gap-2">
           <div>
             <p className="leading-tight">{item.title}</p>
-            <p className="text-xs text-[#515151] mt-0.5">
-              Size {item.displaySize} &middot; {item.diaperCount} diapers
-            </p>
+            {!item.isAddOn && (
+              <p className="text-xs text-[#515151] mt-0.5">
+                Size {item.displaySize} &middot; {item.diaperCount} diapers
+              </p>
+            )}
             {/* {item.orderType === 'subscription' && (
               <span className="inline-block mt-1 px-2 py-0.5 text-[10px] font-medium bg-[#d1e3fb] text-[#0000C9] rounded-full">
                 Subscribe & Save

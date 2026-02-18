@@ -300,7 +300,10 @@ export const pageBySlugQuery = groq`
           },
           sizeKey,
           "variantImage": product->sizes[sizeKey == ^.sizeKey][0].featuredImage,
-          "shopifyVariantId": product->sizes[sizeKey == ^.sizeKey][0].shopifyVariantId
+          "shopifyVariantId": coalesce(
+            product->sizes[sizeKey == ^.sizeKey][0].shopifyVariantId,
+            product->sizes[0].shopifyVariantId
+          )
         },
         features[] { icon, label },
         accordionItems[] { title, content },

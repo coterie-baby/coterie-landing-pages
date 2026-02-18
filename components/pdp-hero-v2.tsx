@@ -203,7 +203,7 @@ function UpsellModule() {
               key={i}
               type="button"
               onClick={() => toggleUpsell(i)}
-              className={`flex items-center gap-3 rounded-xl border p-2 text-left w-full transition-all ${
+              className={`flex items-center gap-3 rounded-lg border p-2 text-left w-full transition-all ${
                 isSelected
                   ? 'border-[#0000C9] bg-white'
                   : 'border-gray-200 bg-white hover:border-gray-300'
@@ -449,7 +449,7 @@ function PDPHeroV2Content({
         <OrderTypeSelector config={orderTypeConfig} />
 
         {/* Add to Cart */}
-        <AddToCartButton />
+        <AddToCartButton title={productTitle} />
       </div>
       <div className="px-4 py-2 space-y-6">
         <ProductFeatures features={features} />

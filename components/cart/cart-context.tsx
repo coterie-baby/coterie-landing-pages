@@ -21,6 +21,7 @@ import {
   buildBundleCartLines,
   buildUpsellCartLines,
 } from '@/lib/shopify/product-mapping';
+import { toVariantGid } from '@/lib/config/products';
 import type {
   DiaperSize,
   PlanType,
@@ -53,6 +54,7 @@ export interface CartItem {
   currentPrice: number;
   originalPrice: number;
   savingsAmount: number;
+  isAddOn?: boolean;
 }
 
 interface CartState {
@@ -139,7 +141,13 @@ export interface AddToCartOptions {
   title: string;
   imageUrl: string;
   bundleItems?: BundleItem[];
-  upsellItems?: { shopifyVariantId: string; shopifySellingPlanId?: string }[];
+  upsellItems?: {
+    shopifyVariantId: string;
+    shopifySellingPlanId?: string;
+    title: string;
+    imageUrl: string;
+    price: number;
+  }[];
 }
 
 interface CartContextValue {
@@ -180,6 +188,31 @@ function buildCartItemFromEdges(
     companionLineIds: companions.map((e) => e.node.id),
     merchandiseId: primary.node.merchandise.id,
     quantity: primary.node.quantity ?? fallbackQuantity ?? 1,
+  };
+}
+
+/** Build a CartItem for a selected upsell add-on (separate line, own display). */
+function buildAddOnCartItem(
+  edge: ShopifyCart['lines']['edges'][number],
+  upsellData: { title: string; imageUrl: string; price: number },
+  orderType: OrderType
+): CartItem {
+  return {
+    lineId: edge.node.id,
+    companionLineIds: [],
+    merchandiseId: edge.node.merchandise.id,
+    quantity: edge.node.quantity,
+    title: upsellData.title,
+    imageUrl: upsellData.imageUrl,
+    isAddOn: true,
+    size: '1' as DiaperSize,
+    displaySize: '',
+    diaperCount: 0,
+    planType: 'diaper-only',
+    orderType,
+    currentPrice: upsellData.price,
+    originalPrice: upsellData.price,
+    savingsAmount: 0,
   };
 }
 
@@ -256,19 +289,31 @@ export function CartProvider({ children }: { children: ReactNode }) {
             throw new Error(errorMsg);
           }
 
-          // Build a single CartItem from all Shopify response lines (primary + companions)
-          const cartItem = buildCartItemFromEdges(
-            result.cart.lines.edges,
-            displayData,
-            options.quantity
+          // Split edges: upsell add-ons get their own CartItem; the rest form the primary item
+          const upsellGids = new Set(
+            (options.upsellItems ?? []).map((u) => toVariantGid(u.shopifyVariantId))
           );
+          const mainEdges = result.cart.lines.edges.filter(
+            (e) => !upsellGids.has(e.node.merchandise.id)
+          );
+          const upsellEdges = result.cart.lines.edges.filter(
+            (e) => upsellGids.has(e.node.merchandise.id)
+          );
+
+          const cartItem = buildCartItemFromEdges(mainEdges, displayData, options.quantity);
+          const addOnItems = upsellEdges.map((edge) => {
+            const data = (options.upsellItems ?? []).find(
+              (u) => toVariantGid(u.shopifyVariantId) === edge.node.merchandise.id
+            )!;
+            return buildAddOnCartItem(edge, data, options.orderType);
+          });
 
           dispatch({
             type: 'SET_CART',
             payload: {
               cartId: result.cartId,
               checkoutUrl: result.checkoutUrl,
-              items: [...state.items, cartItem],
+              items: [...state.items, cartItem, ...addOnItems],
             },
           });
         } else {
@@ -326,11 +371,24 @@ export function CartProvider({ children }: { children: ReactNode }) {
             (edge) => !knownLineIds.has(edge.node.id)
           );
 
-          // Group new lines into a single CartItem (primary + companions)
-          const newItems: CartItem[] =
-            newEdges.length > 0
-              ? [buildCartItemFromEdges(newEdges, displayData)]
+          // Split new edges into main lines and upsell add-on lines
+          const upsellGids = new Set(
+            (options.upsellItems ?? []).map((u) => toVariantGid(u.shopifyVariantId))
+          );
+          const newMainEdges = newEdges.filter((e) => !upsellGids.has(e.node.merchandise.id));
+          const newUpsellEdges = newEdges.filter((e) => upsellGids.has(e.node.merchandise.id));
+
+          const newMainItem: CartItem[] =
+            newMainEdges.length > 0
+              ? [buildCartItemFromEdges(newMainEdges, displayData)]
               : [];
+          const newAddOnItems: CartItem[] = newUpsellEdges.map((edge) => {
+            const data = (options.upsellItems ?? []).find(
+              (u) => toVariantGid(u.shopifyVariantId) === edge.node.merchandise.id
+            )!;
+            return buildAddOnCartItem(edge, data, options.orderType);
+          });
+          const newItems = [...newMainItem, ...newAddOnItems];
 
           dispatch({
             type: 'SET_CART',
