@@ -317,6 +317,10 @@ function transformDiaperProblemSolver(data: SanityDiaperProblemSolver) {
 function transformQuote(data: SanityQuote) {
   return {
     quote: data.quote,
+    authorName: data.authorName,
+    authorPosition: data.authorPosition,
+    authorImageUrl: resolveImageUrl(data.authorImage),
+    authorImageAlt: data.authorImage?.alt,
   };
 }
 

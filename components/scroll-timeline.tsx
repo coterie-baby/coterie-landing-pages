@@ -70,11 +70,11 @@ export default function ScrollTimeline({
   }, [items]);
 
   return (
-    <section className="bg-white">
+    <section className="bg-white mt-6">
       {/* Featured image */}
       <div className='px-4'>
         {imageUrl && (
-        <div className="relative w-full aspect-[4/3] overflow-hidden min-h-[425px]">
+        <div className="relative w-full aspect-[4/3] overflow-hidden min-h-[450px]">
           <Image src={imageUrl} alt={imageAlt ?? ''} fill className="object-cover" />
         </div>
         )}

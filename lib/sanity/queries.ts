@@ -169,7 +169,10 @@ export const pageBySlugQuery = groq`
         }
       },
       _type == "quote" => {
-        quote
+        quote,
+        authorName,
+        authorPosition,
+        authorImage { ..., "alt": alt }
       },
       _type == "simplePdpHero" => {
         image,

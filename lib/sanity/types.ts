@@ -246,6 +246,9 @@ export interface SanityQuote {
   _type: 'quote';
   _key: string;
   quote: string;
+  authorName?: string;
+  authorPosition?: string;
+  authorImage?: SanityImage;
 }
 
 export interface SanitySimplePdpHero {
