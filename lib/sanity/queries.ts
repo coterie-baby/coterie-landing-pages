@@ -345,6 +345,24 @@ export const pageBySlugQuery = groq`
         description,
         items[] { subheading, description }
       },
+      _type == "valuePropCards" => {
+        headline,
+        description,
+        linkText,
+        linkUrl,
+        cards[] {
+          title,
+          subtitle,
+          image { ..., "alt": alt },
+          label,
+          modalDescription,
+          modalSectionLabel,
+          modalSectionText,
+          modalImage { ..., "alt": alt },
+          modalLinkText,
+          modalLinkUrl
+        }
+      },
       _type == "threeColumnTable" => {
         headline,
         sidebarLabels,

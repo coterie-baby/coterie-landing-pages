@@ -28,7 +28,7 @@ export default function Quote({
               src={authorImageUrl}
               alt={authorImageAlt ?? authorName ?? ''}
               fill
-              className="object-cover grayscale"
+              className="object-cover"
             />
           </div>
         )}

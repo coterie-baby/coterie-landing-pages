@@ -29,6 +29,7 @@ import PDPHeroV2 from '@/components/pdp-hero-v2';
 import Reviews from '@/components/reviews';
 import { ReviewsToggleSection } from '@/components/reviews-toggle';
 import ScrollTimeline from '@/components/scroll-timeline';
+import ValuePropCards from '@/components/value-prop-cards';
 import { urlFor } from './image';
 import type {
   SanityComponent,
@@ -62,6 +63,7 @@ import type {
   SanityPdpHeroV2,
   SanityReviews,
   SanityScrollTimeline,
+  SanityValuePropCards,
   SanityImage,
   SanityColor,
 } from './types';
@@ -456,6 +458,29 @@ function transformThreeColumnTable(data: SanityThreeColumnTable) {
   };
 }
 
+function transformValuePropCards(data: SanityValuePropCards) {
+  return {
+    headline: data.headline,
+    description: data.description,
+    linkText: data.linkText,
+    linkUrl: data.linkUrl,
+    cards: data.cards?.map((card) => ({
+      title: card.title,
+      subtitle: card.subtitle,
+      imageUrl: resolveImageUrl(card.image),
+      imageAlt: card.image?.alt,
+      label: card.label,
+      modalDescription: card.modalDescription,
+      modalSectionLabel: card.modalSectionLabel,
+      modalSectionText: card.modalSectionText,
+      modalImageUrl: resolveImageUrl(card.modalImage),
+      modalImageAlt: card.modalImage?.alt,
+      modalLinkText: card.modalLinkText,
+      modalLinkUrl: card.modalLinkUrl,
+    })),
+  };
+}
+
 function transformScrollTimeline(data: SanityScrollTimeline) {
   return {
     imageUrl: resolveImageUrl(data.image),
@@ -613,6 +638,8 @@ export function renderSanityComponent(component: SanityComponent) {
       return <Reviews key={key} {...transformReviews(component)} />;
     case 'scrollTimeline':
       return <ScrollTimeline key={key} {...transformScrollTimeline(component)} />;
+    case 'valuePropCards':
+      return <ValuePropCards key={key} {...transformValuePropCards(component)} />;
     case 'reviewsToggle':
       return <ReviewsToggleSection key={key} headline={component.headline} categoryDescriptions={component.categoryDescriptions} testimonials={component.testimonials ?? []} />;
     default:

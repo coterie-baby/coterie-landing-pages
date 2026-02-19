@@ -520,7 +520,31 @@ export type SanityComponent =
   | SanityPdpHeroV2
   | SanityReviews
   | SanityReviewsToggle
-  | SanityScrollTimeline;
+  | SanityScrollTimeline
+  | SanityValuePropCards;
+
+export interface SanityValuePropCard {
+  title: string;
+  subtitle?: string;
+  image?: SanityImage;
+  label?: string;
+  modalDescription?: string;
+  modalSectionLabel?: string;
+  modalSectionText?: string;
+  modalImage?: SanityImage;
+  modalLinkText?: string;
+  modalLinkUrl?: string;
+}
+
+export interface SanityValuePropCards {
+  _type: 'valuePropCards';
+  _key: string;
+  headline?: string;
+  description?: string;
+  linkText?: string;
+  linkUrl?: string;
+  cards?: SanityValuePropCard[];
+}
 
 export interface SanityScrollTimeline {
   _type: 'scrollTimeline';
