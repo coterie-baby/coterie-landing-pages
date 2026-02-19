@@ -60,7 +60,6 @@ import type {
   SanityThreeColumnTable,
   SanityPdpHeroV2,
   SanityReviews,
-  SanityReviewsToggle,
   SanityImage,
   SanityColor,
 } from './types';
