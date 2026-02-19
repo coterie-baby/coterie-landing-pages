@@ -471,6 +471,21 @@ export interface SanityReviews {
   product?: { _id: string; shopifyProductId?: string };
 }
 
+export interface SanityReviewsTestimonial {
+  category: string;
+  text: string;
+  author: string;
+  rating: number;
+}
+
+export interface SanityReviewsToggle {
+  _type: 'reviewsToggle';
+  _key: string;
+  headline?: string;
+  categoryDescriptions?: { category: string; description: string }[];
+  testimonials?: SanityReviewsTestimonial[];
+}
+
 export type SanityComponent =
   | SanityTitleBanner
   | SanityContentBanner
@@ -500,7 +515,8 @@ export type SanityComponent =
   | SanitySteppedStats
   | SanityThreeColumnTable
   | SanityPdpHeroV2
-  | SanityReviews;
+  | SanityReviews
+  | SanityReviewsToggle;
 
 export interface FunnelRoute {
   _key: string;

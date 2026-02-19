@@ -326,6 +326,16 @@ export const pageBySlugQuery = groq`
       _type == "reviews" => {
         "product": product-> { _id, shopifyProductId }
       },
+      _type == "reviewsToggle" => {
+        headline,
+        categoryDescriptions[] { category, description },
+        "testimonials": *[_type == "review"] {
+          category,
+          text,
+          author,
+          rating
+        }
+      },
       _type == "threeColumnTable" => {
         headline,
         sidebarLabels,
