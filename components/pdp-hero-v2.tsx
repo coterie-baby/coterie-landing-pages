@@ -468,6 +468,7 @@ interface PDPHeroV2Props {
   images?: { src: string; alt: string }[];
   sizeImages?: Record<string, string>;
   orderTypeConfig?: OrderTypeConfig;
+  cartImageOverride?: string;
   hideSizeSelector?: boolean;
   preselectedSize?: string;
   bundleItems?: BundleItem[];
@@ -504,6 +505,7 @@ function PDPHeroV2Inner({
   images = defaultImages,
   sizeImages,
   orderTypeConfig = defaultOrderTypeConfig,
+  cartImageOverride,
   hideSizeSelector,
   preselectedSize,
   bundleItems,
@@ -519,6 +521,7 @@ function PDPHeroV2Inner({
       initialSize={(preselectedSize as DiaperSize) ?? sizeFromUrl ?? '1'}
       bundleItems={bundleItems}
       upsellItems={upsellProducts}
+      cartImageOverride={cartImageOverride}
     >
       <PDPHeroV2Content
         rating={rating}

@@ -561,6 +561,7 @@ function transformPdpHeroV2(data: SanityPdpHeroV2) {
           shopifySellingPlanId: item.product.shopifySellingPlanId,
         }))
       : undefined,
+    cartImageOverride: resolveImageUrl(data.cartImageOverride),
     hideSizeSelector: data.hideSizeSelector,
     preselectedSize: data.preselectedSize,
     bundleItems: data.bundleItems,

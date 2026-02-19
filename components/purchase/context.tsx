@@ -243,6 +243,7 @@ interface ProductOrderContextValue {
   bundleItems?: BundleItem[];
   upsellItems?: UpsellCartItem[];
   selectedUpsellIndices: number[];
+  cartImageOverride?: string;
 }
 
 const ProductOrderContext = createContext<ProductOrderContextValue | null>(
@@ -257,6 +258,7 @@ interface ProductOrderProviderProps {
   initialOrderType?: OrderType;
   bundleItems?: BundleItem[];
   upsellItems?: UpsellCartItem[];
+  cartImageOverride?: string;
 }
 
 export function ProductOrderProvider({
@@ -266,6 +268,7 @@ export function ProductOrderProvider({
   initialOrderType,
   bundleItems,
   upsellItems,
+  cartImageOverride,
 }: ProductOrderProviderProps) {
   const [state, dispatch] = useReducer(productOrderReducer, {
     ...initialState,
@@ -372,6 +375,7 @@ export function ProductOrderProvider({
     bundleItems,
     upsellItems,
     selectedUpsellIndices: state.selectedUpsellIndices,
+    cartImageOverride,
   };
 
   return (

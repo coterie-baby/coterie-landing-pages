@@ -440,6 +440,7 @@ export interface SanityPdpHeroV2 {
     variantImage?: SanityImage;
     shopifyVariantId?: string;
   }[];
+  cartImageOverride?: SanityImage;
   hideSizeSelector?: boolean;
   preselectedSize?: string;
   bundleItems?: BundleItem[];

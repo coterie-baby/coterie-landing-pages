@@ -19,7 +19,7 @@ export default function AddToCartButton({
   className = '',
   title = 'The Diaper',
 }: AddToCartButtonProps) {
-  const { state, isValid, currentPrice, originalPrice, savingsAmount, displaySize, diaperCount, bundleItems, upsellItems, selectedUpsellIndices } = useProductOrder();
+  const { state, isValid, currentPrice, originalPrice, savingsAmount, displaySize, diaperCount, bundleItems, upsellItems, selectedUpsellIndices, cartImageOverride } = useProductOrder();
 
   const selectedUpsells = (upsellItems ?? [])
     .filter((_, i) => selectedUpsellIndices.includes(i))
@@ -72,7 +72,7 @@ export default function AddToCartButton({
         originalPrice,
         savingsAmount,
         title,
-        imageUrl: getDiaperImageUrl(),
+        imageUrl: cartImageOverride ?? getDiaperImageUrl(),
         bundleItems,
         upsellItems: selectedUpsells.length > 0 ? selectedUpsells : undefined,
       });
