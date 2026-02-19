@@ -73,14 +73,14 @@ export default function ValuePropCards({
 
             {/* Card content */}
             <div className="px-4 pt-4 pb-3">
-              <p className="text-sm font-medium text-[#1B1F3B]">{card.title}</p>
+              <p className="text-base font-medium text-[#1B1F3B]">{card.title}</p>
               {card.subtitle && (
-                <p className="text-xs text-[#525252] mt-1">{card.subtitle}</p>
+                <p className="text-sm text-[#525252] mt-1">{card.subtitle}</p>
               )}
             </div>
 
             {/* Bottom row */}
-            <div className="flex items-center justify-end px-4 pb-2">
+            <div className="flex items-center justify-end px-4 pb-4">
               {/* {card.label ? (
                 <p className="text-sm font-bold text-[#1B1F3B]">{card.label}</p>
               ) : (
