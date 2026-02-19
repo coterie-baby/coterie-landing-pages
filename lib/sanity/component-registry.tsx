@@ -28,6 +28,7 @@ import ThreeColumnTable from '@/components/three-column-table';
 import PDPHeroV2 from '@/components/pdp-hero-v2';
 import Reviews from '@/components/reviews';
 import { ReviewsToggleSection } from '@/components/reviews-toggle';
+import ScrollTimeline from '@/components/scroll-timeline';
 import { urlFor } from './image';
 import type {
   SanityComponent,
@@ -60,6 +61,7 @@ import type {
   SanityThreeColumnTable,
   SanityPdpHeroV2,
   SanityReviews,
+  SanityScrollTimeline,
   SanityImage,
   SanityColor,
 } from './types';
@@ -450,6 +452,16 @@ function transformThreeColumnTable(data: SanityThreeColumnTable) {
   };
 }
 
+function transformScrollTimeline(data: SanityScrollTimeline) {
+  return {
+    imageUrl: resolveImageUrl(data.image),
+    imageAlt: data.image?.alt,
+    title: data.title,
+    description: data.description,
+    items: data.items ?? [],
+  };
+}
+
 function transformReviews(data: SanityReviews) {
   return {
     productId: data.product?.shopifyProductId,
@@ -595,6 +607,8 @@ export function renderSanityComponent(component: SanityComponent) {
       return <PDPHeroV2 key={key} {...transformPdpHeroV2(component)} />;
     case 'reviews':
       return <Reviews key={key} {...transformReviews(component)} />;
+    case 'scrollTimeline':
+      return <ScrollTimeline key={key} {...transformScrollTimeline(component)} />;
     case 'reviewsToggle':
       return <ReviewsToggleSection key={key} headline={component.headline} categoryDescriptions={component.categoryDescriptions} testimonials={component.testimonials ?? []} />;
     default:

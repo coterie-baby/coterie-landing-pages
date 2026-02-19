@@ -336,6 +336,12 @@ export const pageBySlugQuery = groq`
           rating
         }
       },
+      _type == "scrollTimeline" => {
+        image { ..., "alt": alt },
+        title,
+        description,
+        items[] { subheading, description }
+      },
       _type == "threeColumnTable" => {
         headline,
         sidebarLabels,

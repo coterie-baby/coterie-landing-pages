@@ -516,7 +516,17 @@ export type SanityComponent =
   | SanityThreeColumnTable
   | SanityPdpHeroV2
   | SanityReviews
-  | SanityReviewsToggle;
+  | SanityReviewsToggle
+  | SanityScrollTimeline;
+
+export interface SanityScrollTimeline {
+  _type: 'scrollTimeline';
+  _key: string;
+  image?: SanityImage;
+  title?: string;
+  description?: string;
+  items?: { subheading: string; description: string }[];
+}
 
 export interface FunnelRoute {
   _key: string;
