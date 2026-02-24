@@ -158,7 +158,7 @@ export function ReviewsToggleSection({
   );
 
   return (
-    <section className="relative py-12 bg-white overflow-hidden">
+    <section className="relative py-12 bg-white overflow-hidden" id="reviews">
       {/* Headline + description */}
       <div className="px-4 md:px-10 mb-6">
         <h3 className="text-5xl md:text-6xl font-bold text-black mb-2">
