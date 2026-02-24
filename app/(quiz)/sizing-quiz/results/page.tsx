@@ -233,6 +233,7 @@ export default function ResultsPage() {
                 fill
                 className="object-cover"
                 priority
+                sizes="96px"
               />
             </div>
 

@@ -1,3 +1,5 @@
+import Image from 'next/image';
+
 interface Testimonial {
   body: string;
   author: {
@@ -125,10 +127,12 @@ export default function TestimonialGrid({
                     <p>{`“${testimonial.body}”`}</p>
                   </blockquote>
                   <figcaption className="mt-6 flex items-center gap-x-4">
-                    <img
+                    <Image
                       alt=""
                       src={testimonial.author.imageUrl}
-                      className="size-10 rounded-full bg-gray-50 dark:bg-gray-800"
+                      width={40}
+                      height={40}
+                      className="rounded-full bg-gray-50 dark:bg-gray-800"
                     />
                     <div>
                       <div className="font-semibold text-gray-900 dark:text-white">

@@ -1,5 +1,6 @@
 'use client';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Button } from './ui/button';
 
 interface TitleBannerProps {
@@ -30,15 +31,6 @@ export default function TitleBanner({
 }: TitleBannerProps) {
   const label = button?.label || 'Read the safety standards';
   const href = button?.href || 'https://www.coterie.com/safety-reports';
-  const backgroundStyle = backgroundImage
-    ? {
-        backgroundImage: `url(${backgroundImage})`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-      }
-    : backgroundColor
-      ? { backgroundColor }
-      : {};
 
   const getJustifyClass = () => {
     switch (position) {
@@ -54,9 +46,20 @@ export default function TitleBanner({
   return (
     <section
       className={`relative ${fullHeight ? 'h-screen' : 'h-[64vh] md:h-[80vh]'}`}
+      style={!backgroundImage && backgroundColor ? { backgroundColor } : undefined}
     >
       {/* Background layer */}
-      <div className="absolute inset-0" style={backgroundStyle} />
+      {backgroundImage ? (
+        <Image
+          src={backgroundImage}
+          alt={headline || ''}
+          fill
+          sizes="100vw"
+          className="object-cover object-center"
+        />
+      ) : (
+        !backgroundColor && <div className="absolute inset-0" />
+      )}
 
       {/* Overlay layer */}
       {overlay && (

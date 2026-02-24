@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import type { CartItem as CartItemType } from './cart-context';
 
 interface CartItemProps {
@@ -18,12 +19,14 @@ export default function CartItem({
   return (
     <div className="flex gap-3 py-4 border-b border-gray-100">
       {/* Product image */}
-      <div className="w-20 h-20 bg-[#F5F5F5] rounded-lg flex-shrink-0 overflow-hidden">
+      <div className="relative w-20 h-20 bg-[#F5F5F5] rounded-lg flex-shrink-0 overflow-hidden">
         {item.imageUrl ? (
-          <img
+          <Image
             src={item.imageUrl}
             alt={item.title}
-            className="w-full h-full object-cover"
+            fill
+            sizes="80px"
+            className="object-cover"
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center text-gray-300 text-xs">

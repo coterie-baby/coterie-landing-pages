@@ -17,6 +17,7 @@ export default function SizingQuizLanding() {
           fill
           className="object-cover"
           priority
+          sizes="100vw"
         />
       </div>
 

@@ -122,6 +122,7 @@ function ProductCard({ image, headline, bodyCopy }: ProductCardProps) {
           alt={headline}
           className="h-full w-full object-cover"
           fill
+          sizes="(max-width: 768px) 280px, 33vw"
         />
       </div>
       <div className="flex flex-col gap-2 border-t border-[#E7E7E7] pt-5">

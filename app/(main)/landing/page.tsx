@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import USP2 from '@/components/usp2';
 import DiptychMediaTitle from '@/components/diptych-media-title';
@@ -37,16 +38,16 @@ export default function LandingPage() {
 
   return (
     <>
-      <section
-        style={{
-          backgroundImage:
-            "url('https://cdn.sanity.io/images/e4q6bkl9/staging/efd7fded0b766b196c98f754708a81eadd664810-4500x6000.jpg')",
-          backgroundSize: 'cover',
-          backgroundPosition: 'top',
-        }}
-        className="h-[70vh] p-4"
-      >
-        <div className="h-full">
+      <section className="h-[70vh] p-4 relative">
+        <Image
+          src="https://cdn.sanity.io/images/e4q6bkl9/staging/efd7fded0b766b196c98f754708a81eadd664810-4500x6000.jpg"
+          alt="Baby wearing Coterie diaper"
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover object-top"
+        />
+        <div className="relative z-10 h-full">
           <div className="flex flex-col gap-3 justify-end pb-10 h-full text-center">
             <h3 className="text-2xl font-medium text-white">
               Diapering without all the stress

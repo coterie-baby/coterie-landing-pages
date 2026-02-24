@@ -14,11 +14,16 @@ interface Testimonial {
 
 const TestimonialCard = memo(function TestimonialCard({
   testimonial,
+  cardWidth,
 }: {
   testimonial: Testimonial;
+  cardWidth?: string;
 }) {
   return (
-    <div className="bg-[#f0f0f0] rounded-2xl p-4 flex flex-col gap-3 min-h-[290px] min-w-[170px] w-[170px] flex-shrink-0">
+    <div
+      className="bg-[#f0f0f0] rounded-2xl p-4 flex flex-col gap-3 min-h-[290px] flex-shrink-0"
+      style={{ width: cardWidth ?? '170px', minWidth: cardWidth ?? '170px' }}
+    >
       <StarRating rating={testimonial.rating} />
       <p className="text-[#525252] text-base leading-[140%] flex-1">
         {testimonial.text}
@@ -189,11 +194,16 @@ export function ReviewsToggleSection({
       </div>
 
       {/* Cards — horizontal scroll */}
-      <div className="flex gap-3 overflow-x-auto px-4 md:px-10 scrollbar-hide">
+      <div className="flex gap-3 overflow-x-auto px-4 md:px-10 scrollbar-hide [--scroll-pad:32px] md:[--scroll-pad:80px]">
         {filteredTestimonials.map((testimonial, i) => (
           <TestimonialCard
             key={`${testimonial.category}-${i}`}
             testimonial={testimonial}
+            cardWidth={
+              filteredTestimonials.length > 2
+                ? 'calc((100vw - var(--scroll-pad) - 24px) / 2.15)'
+                : undefined
+            }
           />
         ))}
       </div>

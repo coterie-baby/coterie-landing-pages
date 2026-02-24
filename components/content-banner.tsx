@@ -1,5 +1,6 @@
 'use client';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Button } from './ui/button';
 
 export interface ContentBannerProps {
@@ -28,15 +29,6 @@ export default function ContentBanner({
 }: ContentBannerProps) {
   const label = button?.label || 'Read the safety standards';
   const href = button?.href || 'https://www.coterie.com/safety-reports';
-  const backgroundStyle = backgroundImage
-    ? {
-        backgroundImage: `url(${backgroundImage})`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-      }
-    : backgroundColor
-      ? { backgroundColor }
-      : {};
 
   const getJustifyClass = () => {
     switch (position) {
@@ -50,9 +42,22 @@ export default function ContentBanner({
   };
 
   return (
-    <section className="relative h-[56vh]">
+    <section
+      className="relative h-[56vh]"
+      style={!backgroundImage && backgroundColor ? { backgroundColor } : undefined}
+    >
       {/* Background layer with image/color */}
-      <div className="absolute inset-0" style={backgroundStyle} />
+      {backgroundImage ? (
+        <Image
+          src={backgroundImage}
+          alt={headline || ''}
+          fill
+          sizes="100vw"
+          className="object-cover object-center"
+        />
+      ) : (
+        !backgroundColor && <div className="absolute inset-0" />
+      )}
 
       {/* Overlay layer */}
       {overlay && (

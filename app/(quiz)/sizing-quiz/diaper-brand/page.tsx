@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import QuizHeader from '@/components/quiz/quiz-header';
 import QuizProgress from '@/components/quiz/quiz-progress';
 import WhyWeAsk from '@/components/quiz/why-we-ask';
@@ -51,10 +52,11 @@ export default function DiaperBrandQuestion() {
                   className="py-4 px-4 rounded-lg transition-colors bg-white text-[#141414] border border-[#E7E7E7] hover:border-[#0000C9] active:border-[#0000C9] flex items-center justify-center min-h-[72px]"
                 >
                   {logoSrc ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
+                    <Image
                       src={logoSrc}
                       alt={option.label}
+                      width={120}
+                      height={40}
                       className="max-h-[40px] max-w-full object-contain"
                     />
                   ) : (

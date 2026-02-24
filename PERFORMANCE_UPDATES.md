@@ -1,3 +1,5 @@
+claude mcp add --scope user --header "CONTEXT7_API_KEY: ctx7sk-e6e0b2bb-ce5c-4682-87df-1e514d06348b" --transport http context7 https://mcp.context7.com/mcp
+
 1.  Unoptimized static images in /public (LCP, bandwidth)
 
 Three files account for 6.5 MB of unoptimized assets served as-is:  

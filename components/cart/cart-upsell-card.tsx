@@ -1,5 +1,7 @@
 'use client';
 
+import Image from 'next/image';
+
 export interface UpsellProduct {
   id: string;
   title: string;
@@ -16,12 +18,14 @@ interface CartUpsellCardProps {
 export default function CartUpsellCard({ product, onAdd }: CartUpsellCardProps) {
   return (
     <div className="flex-shrink-0 w-36 bg-[#F8F8F8] rounded-lg p-3">
-      <div className="w-full h-24 bg-white rounded-md mb-2 overflow-hidden">
+      <div className="relative w-full h-24 bg-white rounded-md mb-2 overflow-hidden">
         {product.imageUrl ? (
-          <img
+          <Image
             src={product.imageUrl}
             alt={product.title}
-            className="w-full h-full object-cover"
+            fill
+            sizes="144px"
+            className="object-cover"
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center text-gray-300 text-xs">

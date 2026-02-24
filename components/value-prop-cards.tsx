@@ -43,7 +43,9 @@ export default function ValuePropCards({
           <h4 className="text-4xl font-bold text-[#1B1F3B] mb-4">{headline}</h4>
         )}
         {description && (
-          <p className="text-base text-[#525252] leading-relaxed mb-4">{description}</p>
+          <p className="text-base text-[#525252] leading-relaxed mb-4">
+            {description}
+          </p>
         )}
         {linkText && linkUrl && (
           <a href={linkUrl} className="text-[#1B1F3B] underline text-base">
@@ -73,7 +75,9 @@ export default function ValuePropCards({
 
             {/* Card content */}
             <div className="px-4 pt-4 pb-3">
-              <p className="text-base font-medium text-[#1B1F3B]">{card.title}</p>
+              <p className="text-base font-medium text-[#1B1F3B]">
+                {card.title}
+              </p>
               {card.subtitle && (
                 <p className="text-sm text-[#525252] mt-1">{card.subtitle}</p>
               )}
@@ -119,7 +123,9 @@ export default function ValuePropCards({
 
             <div className="px-6 pt-6 pb-8">
               {/* Modal title */}
-              <h3 className="text-2xl font-bold text-[#1B1F3B] mb-4">{activeCard.title}</h3>
+              <p className="text-lg font-medium text-[#1B1F3B] mb-4">
+                {activeCard.title}
+              </p>
               <hr className="border-gray-200 mb-5" />
 
               {/* Main description */}
