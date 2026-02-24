@@ -18,12 +18,14 @@ const TestimonialCard = memo(function TestimonialCard({
   testimonial: Testimonial;
 }) {
   return (
-    <div className="bg-[#f0f0f0] rounded-2xl p-4 flex flex-col gap-3 h-[290px] min-w-[170px] w-[170px] flex-shrink-0">
+    <div className="bg-[#f0f0f0] rounded-2xl p-4 flex flex-col gap-3 min-h-[290px] min-w-[170px] w-[170px] flex-shrink-0">
       <StarRating rating={testimonial.rating} />
       <p className="text-[#525252] text-base leading-[140%] flex-1">
         {testimonial.text}
       </p>
-      <p className="text-sm text-[#525252] leading-[140%]">{testimonial.author}</p>
+      <p className="text-sm text-[#525252] leading-[140%]">
+        {testimonial.author}
+      </p>
     </div>
   );
 });
@@ -91,7 +93,7 @@ const defaultTestimonials: Testimonial[] = [
   },
   {
     category: 'Value',
-    text: "I hate to say it but this diaper is worth the price. I tried every single diaper with my first son and eventually tried these once he was in size 4 and I needed something great for overnight. I was sold night one when I touched the inside of the diaper in the morning and it was so dry!!",
+    text: 'I hate to say it but this diaper is worth the price. I tried every single diaper with my first son and eventually tried these once he was in size 4 and I needed something great for overnight. I was sold night one when I touched the inside of the diaper in the morning and it was so dry!!',
     author: 'Kara',
     rating: 5,
   },
@@ -163,7 +165,9 @@ export function ReviewsToggleSection({
           {headline ?? 'The Internet\u2019s Favorite Diaper'}
         </h3>
         {activeDescription && (
-          <p className="text-[#525252] text-lg leading-[110%]">{activeDescription}</p>
+          <p className="text-[#525252] text-lg leading-[110%]">
+            {activeDescription}
+          </p>
         )}
       </div>
 
