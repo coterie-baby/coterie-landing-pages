@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import Image from 'next/image';
+// import Image from 'next/image';
 import { useProductOrder } from './context';
 import { useCart } from '@/components/cart/cart-context';
 import { trackAddToCart, trackCheckoutError } from '@/lib/gtm/ecommerce';
@@ -15,7 +15,7 @@ interface StickyAddToCartProps {
 
 export default function StickyAddToCart({
   productTitle,
-  imageUrl,
+  // imageUrl,
   show,
 }: StickyAddToCartProps) {
   const {
@@ -34,14 +34,10 @@ export default function StickyAddToCart({
 
   const selectedUpsells = (upsellItems ?? [])
     .filter((_, i) => selectedUpsellIndices.includes(i))
-    .filter(
-      (
-        item
-      ): item is typeof item & { shopifyVariantId: string } => {
-        if (!item.shopifyVariantId) return false;
-        return true;
-      }
-    )
+    .filter((item): item is typeof item & { shopifyVariantId: string } => {
+      if (!item.shopifyVariantId) return false;
+      return true;
+    })
     .map((item) => ({
       shopifyVariantId: item.shopifyVariantId,
       shopifySellingPlanId: item.shopifySellingPlanId,
@@ -56,8 +52,8 @@ export default function StickyAddToCart({
   const cart = useCart();
   const [isLoading, setIsLoading] = useState(false);
 
-  const isSubscription = state.orderType === 'subscription';
-  const hasDiscount = isSubscription && savingsAmount > 0;
+  // const isSubscription = state.orderType === 'subscription';
+  // const hasDiscount = isSubscription && savingsAmount > 0;
 
   const handleAddToCart = async () => {
     if (!isValid || !state.selectedSize) return;
@@ -110,9 +106,9 @@ export default function StickyAddToCart({
           : 'translate-y-full opacity-0 pointer-events-none'
       }`}
     >
-      <div className="bg-white rounded-t-2xl shadow-[0_-4px_20px_rgba(0,0,0,0.1)] px-4 pt-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))]">
+      <div className="bg-white shadow-[0_-4px_20px_rgba(0,0,0,0.1)] px-4 py-4">
         {/* Product info row */}
-        <div className="flex items-center gap-3 mb-3">
+        {/* <div className="flex items-center gap-3 mb-3">
           <div className="relative w-12 h-12 flex-shrink-0 rounded-lg overflow-hidden bg-gray-100">
             <Image
               src={imageUrl}
@@ -125,7 +121,7 @@ export default function StickyAddToCart({
           <p className="font-bold text-sm text-black leading-tight line-clamp-2">
             {productTitle}
           </p>
-        </div>
+        </div> */}
 
         {/* CTA button */}
         <button
@@ -137,13 +133,13 @@ export default function StickyAddToCart({
             'Adding...'
           ) : (
             <>
-              ADD TO CART –{' '}
-              {hasDiscount && (
+              Add to Cart
+              {/* {hasDiscount && (
                 <span className="line-through opacity-70 mr-1">
                   ${originalPrice.toFixed(2)}
                 </span>
               )}
-              ${currentPrice.toFixed(2)} / mo
+              ${currentPrice.toFixed(2)} / mo */}
             </>
           )}
         </button>
