@@ -16,6 +16,8 @@ import type { PortableTextBlock } from '@portabletext/types';
 import { useSearchParams } from 'next/navigation';
 import SizeSelectionContainer from './purchase/size-selection-container';
 import AddToCartButton from './purchase/add-to-cart-button';
+import StickyAddToCart from './purchase/sticky-add-to-cart';
+import { useInView } from '@/hooks/use-in-view';
 import { trackSelectPurchaseType } from '@/lib/gtm/ecommerce';
 import ProductFeatures from './purchase/product-features';
 import { ProductAccordion } from './purchase';
@@ -392,6 +394,7 @@ interface PDPHeroV2ContentProps {
   hideSizeSelector?: boolean;
   features?: { icon: string; label: string }[];
   accordionItems?: { title: string; content?: PortableTextBlock[] }[];
+  cartImageOverride?: string;
 }
 
 function PDPHeroV2Content({
@@ -404,8 +407,10 @@ function PDPHeroV2Content({
   hideSizeSelector,
   features,
   accordionItems,
+  cartImageOverride,
 }: PDPHeroV2ContentProps) {
   const { state } = useProductOrder();
+  const [addToCartRef, isAddToCartInView] = useInView({ threshold: 0 });
 
   // Build carousel images: if the selected size has a featured image, use it as the first slide
   const carouselImages = useMemo(() => {
@@ -449,12 +454,20 @@ function PDPHeroV2Content({
         <OrderTypeSelector config={orderTypeConfig} />
 
         {/* Add to Cart */}
-        <AddToCartButton title={productTitle} />
+        <div ref={addToCartRef}>
+          <AddToCartButton title={productTitle} />
+        </div>
       </div>
       <div className="px-4 py-2 space-y-6">
         <ProductFeatures features={features} />
         <ProductAccordion items={accordionItems} />
       </div>
+
+      <StickyAddToCart
+        productTitle={productTitle}
+        imageUrl={cartImageOverride ?? images[0]?.src ?? ''}
+        show={!isAddToCartInView}
+      />
     </div>
   );
 }
@@ -533,6 +546,7 @@ function PDPHeroV2Inner({
         hideSizeSelector={hideSizeSelector}
         features={features}
         accordionItems={accordionItems}
+        cartImageOverride={cartImageOverride}
       />
     </ProductOrderProvider>
   );
