@@ -37,10 +37,6 @@ export default function CartCheckoutButton({
     window.location.href = checkoutUrl;
   };
 
-  // const variantIds = items.flatMap((item) =>
-  //   Array.from({ length: item.quantity }, () => item.merchandiseId)
-  // );
-
   return (
     <div className="px-4 pb-4">
       <button
@@ -50,19 +46,33 @@ export default function CartCheckoutButton({
       >
         {isNavigating ? 'Redirecting...' : 'Continue to Checkout'}
       </button>
-      {/* {checkoutUrl && items.length > 0 && (
-        <>
-          <div className="flex items-center gap-3 my-3">
-            <div className="flex-1 h-px bg-gray-200" />
-            <span className="text-xs text-gray-400 uppercase">or</span>
-            <div className="flex-1 h-px bg-gray-200" />
-          </div>
-          <ShopPayButton
-            variantIds={variantIds}
-            className="w-full"
-          />
-        </>
-      )} */}
+
+      {/* Full-screen overlay to mask the white flash during Shopify redirect */}
+      {isNavigating && (
+        <div className="fixed inset-0 z-[100] bg-white flex flex-col items-center justify-center gap-4">
+          <svg
+            className="animate-spin h-8 w-8 text-[#0000C9]"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <circle
+              className="opacity-25"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              strokeWidth="4"
+            />
+            <path
+              className="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+            />
+          </svg>
+          <p className="text-sm text-[#515151]">Taking you to checkout...</p>
+        </div>
+      )}
     </div>
   );
 }

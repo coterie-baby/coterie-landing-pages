@@ -10,6 +10,7 @@ import CartCheckoutButton from './cart-checkout-button';
 export default function CartDrawer() {
   const {
     state,
+    pendingLineIds,
     closeCart,
     updateQuantity,
     removeItem,
@@ -78,6 +79,7 @@ export default function CartDrawer() {
                   <CartItem
                     key={item.lineId}
                     item={item}
+                    isPending={pendingLineIds.includes(item.lineId)}
                     onUpdateQuantity={updateQuantity}
                     onRemove={removeItem}
                   />

@@ -44,6 +44,15 @@ export default async function RootLayout({
           crossOrigin="anonymous"
         />
         <link rel="dns-prefetch" href="https://player.vimeo.com" />
+        <link
+          rel="preconnect"
+          href={`https://${process.env.NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN || 'staging-shop.coterie.com'}`}
+          crossOrigin="anonymous"
+        />
+        <link
+          rel="dns-prefetch"
+          href={`https://${process.env.NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN || 'staging-shop.coterie.com'}`}
+        />
 
         {/* Preload critical fonts for faster text rendering */}
         <link

@@ -200,8 +200,8 @@ export function ReviewsToggleSection({
             key={`${testimonial.category}-${i}`}
             testimonial={testimonial}
             cardWidth={
-              filteredTestimonials.length > 2
-                ? 'calc((100vw - var(--scroll-pad) - 24px) / 2.15)'
+              filteredTestimonials.length > 1
+                ? 'calc((100vw - var(--scroll-pad) - 12px) / 1.5)'
                 : undefined
             }
           />
