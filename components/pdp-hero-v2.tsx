@@ -172,7 +172,7 @@ const defaultOrderTypeConfig: OrderTypeConfig = {
       'Skip or cancel anytime',
     ],
     showTrialPack: true,
-    trialPackImage: '/images/diaper_s1.png',
+    trialPackImage: '/images/trial_pack_2.png',
     trialPackTitle: 'Free Next Size Trial Pack',
     trialPackDescription:
       'A trial pack of size 2 diapers, giving you a head start on the next stage.',
@@ -554,9 +554,50 @@ function PDPHeroV2Inner({
   );
 }
 
+function PDPHeroV2Skeleton() {
+  return (
+    <div className="bg-white animate-pulse">
+      {/* Rating + Title */}
+      <div className="flex flex-col gap-2 px-4 py-4">
+        <div className="h-4 w-40 bg-gray-200 rounded" />
+        <div className="h-8 w-48 bg-gray-200 rounded mt-1" />
+        <div className="h-4 w-64 bg-gray-200 rounded" />
+      </div>
+      {/* Image Carousel */}
+      <div className="flex min-h-[294px]" style={{ gap: `${SLIDE_GAP}px` }}>
+        <div
+          className="min-h-[294px] bg-gray-100 flex-shrink-0"
+          style={{ width: `calc(100% - ${SLIDE_PEEK}px)` }}
+        />
+        <div
+          className="min-h-[294px] bg-gray-100 flex-shrink-0"
+          style={{ width: `calc(100% - ${SLIDE_PEEK}px)` }}
+        />
+      </div>
+      {/* Form Content */}
+      <div className="px-4 pt-6 pb-6 space-y-6">
+        <div className="space-y-3">
+          <div className="h-4 w-32 bg-gray-200 rounded" />
+          <div className="flex gap-2">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <div key={i} className="h-16 w-16 bg-gray-100 rounded-lg" />
+            ))}
+          </div>
+        </div>
+        <div className="space-y-3">
+          <div className="h-4 w-40 bg-gray-200 rounded" />
+          <div className="h-32 bg-gray-100 rounded-lg" />
+          <div className="h-16 bg-gray-100 rounded-lg" />
+        </div>
+        <div className="h-14 bg-gray-200 rounded-lg" />
+      </div>
+    </div>
+  );
+}
+
 export default function PDPHeroV2(props: PDPHeroV2Props) {
   return (
-    <Suspense>
+    <Suspense fallback={<PDPHeroV2Skeleton />}>
       <PDPHeroV2Inner {...props} />
     </Suspense>
   );
