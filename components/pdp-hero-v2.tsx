@@ -169,12 +169,11 @@ const defaultOrderTypeConfig: OrderTypeConfig = {
     title: 'Auto-Renew + Next Size Trial',
     benefits: [
       "A month's supply of superior diapers",
-      'First box includes next size trial',
       'Skip or cancel anytime',
     ],
     showTrialPack: true,
     trialPackImage: '/images/diaper_s1.png',
-    trialPackTitle: 'Next Size Trial Pack',
+    trialPackTitle: 'Free Next Size Trial Pack',
     trialPackDescription:
       'A trial pack of size 2 diapers, giving you a head start on the next stage.',
   },
@@ -185,7 +184,8 @@ const defaultOrderTypeConfig: OrderTypeConfig = {
 };
 
 function UpsellModule() {
-  const { state, upsellItems, selectedUpsellIndices, toggleUpsell } = useProductOrder();
+  const { state, upsellItems, selectedUpsellIndices, toggleUpsell } =
+    useProductOrder();
 
   if (!upsellItems?.length) return null;
 
@@ -223,7 +223,9 @@ function UpsellModule() {
                 )}
               </div>
               <div>
-                <p className="font-bold text-sm text-black leading-tight">{product.title}</p>
+                <p className="font-bold text-sm text-black leading-tight">
+                  {product.title}
+                </p>
                 {price != null && (
                   <p className="text-sm text-gray-600 mt-0.5">${price}</p>
                 )}
