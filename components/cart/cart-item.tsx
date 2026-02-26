@@ -1,32 +1,44 @@
 'use client';
 
+import { memo } from 'react';
 import Image from 'next/image';
 import type { CartItem as CartItemType } from './cart-context';
+import { getCartThumbnailUrl } from '@/lib/image-utils';
 
 interface CartItemProps {
   item: CartItemType;
+  isPending?: boolean;
   onUpdateQuantity: (lineId: string, quantity: number) => void;
   onRemove: (lineId: string) => void;
 }
 
-export default function CartItem({
+const CartItem = memo(function CartItem({
   item,
+  isPending,
   onUpdateQuantity,
   onRemove,
 }: CartItemProps) {
   const hasDiscount = item.savingsAmount > 0;
+  const thumbnailUrl = item.imageUrl ? getCartThumbnailUrl(item.imageUrl) : '';
+  const isSanityUrl = item.imageUrl?.includes('cdn.sanity.io');
 
   return (
-    <div className="flex gap-3 py-4 border-b border-gray-100">
+    <div
+      className={`flex gap-3 py-4 border-b border-gray-100 transition-opacity${
+        isPending ? ' opacity-60 pointer-events-none' : ''
+      }`}
+    >
       {/* Product image */}
       <div className="relative w-20 h-20 bg-[#F5F5F5] rounded-lg flex-shrink-0 overflow-hidden">
         {item.imageUrl ? (
           <Image
-            src={item.imageUrl}
+            src={thumbnailUrl}
             alt={item.title}
             fill
             sizes="80px"
             className="object-cover"
+            loading="eager"
+            {...(isSanityUrl ? { unoptimized: true } : {})}
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center text-gray-300 text-xs">
@@ -45,11 +57,6 @@ export default function CartItem({
                 Size {item.displaySize} &middot; {item.diaperCount} diapers
               </p>
             )}
-            {/* {item.orderType === 'subscription' && (
-              <span className="inline-block mt-1 px-2 py-0.5 text-[10px] font-medium bg-[#d1e3fb] text-[#0000C9] rounded-full">
-                Subscribe & Save
-              </span>
-            )} */}
           </div>
 
           {/* Delete button */}
@@ -139,4 +146,6 @@ export default function CartItem({
       </div>
     </div>
   );
-}
+});
+
+export default CartItem;

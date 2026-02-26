@@ -61,6 +61,8 @@ interface CartState {
   cartId: string | null;
   checkoutUrl: string | null;
   items: CartItem[];
+  previousItems: CartItem[] | null;
+  pendingLineIds: string[];
   isOpen: boolean;
   isLoading: boolean;
   error: string | null;
@@ -79,12 +81,18 @@ type CartAction =
     }
   | { type: 'UPDATE_ITEMS'; payload: CartItem[] }
   | { type: 'OPEN_CART' }
-  | { type: 'CLOSE_CART' };
+  | { type: 'CLOSE_CART' }
+  | { type: 'OPTIMISTIC_ADD'; payload: CartItem[] }
+  | { type: 'OPTIMISTIC_UPDATE_QUANTITY'; payload: { lineId: string; quantity: number } }
+  | { type: 'OPTIMISTIC_REMOVE'; payload: string }
+  | { type: 'ROLLBACK' };
 
 const initialState: CartState = {
   cartId: null,
   checkoutUrl: null,
   items: [],
+  previousItems: null,
+  pendingLineIds: [],
   isOpen: false,
   isLoading: false,
   error: null,
@@ -102,6 +110,8 @@ function cartReducer(state: CartState, action: CartAction): CartState {
         cartId: action.payload.cartId,
         checkoutUrl: action.payload.checkoutUrl,
         items: action.payload.items,
+        pendingLineIds: [],
+        previousItems: null,
         isLoading: false,
         error: null,
         isOpen: true,
@@ -116,11 +126,57 @@ function cartReducer(state: CartState, action: CartAction): CartState {
         error: null,
       };
     case 'UPDATE_ITEMS':
-      return { ...state, items: action.payload, isLoading: false, error: null };
+      return {
+        ...state,
+        items: action.payload,
+        pendingLineIds: [],
+        previousItems: null,
+        isLoading: false,
+        error: null,
+      };
     case 'OPEN_CART':
       return { ...state, isOpen: true };
     case 'CLOSE_CART':
       return { ...state, isOpen: false };
+    case 'OPTIMISTIC_ADD': {
+      const newIds = action.payload.map((item) => item.lineId);
+      return {
+        ...state,
+        previousItems: state.items,
+        items: [...state.items, ...action.payload],
+        pendingLineIds: [...state.pendingLineIds, ...newIds],
+        isOpen: true,
+        isLoading: false,
+      };
+    }
+    case 'OPTIMISTIC_UPDATE_QUANTITY':
+      return {
+        ...state,
+        previousItems: state.items,
+        items: state.items.map((item) =>
+          item.lineId === action.payload.lineId
+            ? { ...item, quantity: action.payload.quantity }
+            : item
+        ),
+        pendingLineIds: [...state.pendingLineIds, action.payload.lineId],
+        isLoading: false,
+      };
+    case 'OPTIMISTIC_REMOVE':
+      return {
+        ...state,
+        previousItems: state.items,
+        items: state.items.filter((item) => item.lineId !== action.payload),
+        pendingLineIds: [...state.pendingLineIds, action.payload],
+        isLoading: false,
+      };
+    case 'ROLLBACK':
+      return {
+        ...state,
+        items: state.previousItems ?? state.items,
+        previousItems: null,
+        pendingLineIds: [],
+        isLoading: false,
+      };
     default:
       return state;
   }
@@ -152,6 +208,7 @@ export interface AddToCartOptions {
 
 interface CartContextValue {
   state: CartState;
+  pendingLineIds: string[];
   addToCart: (options: AddToCartOptions) => Promise<void>;
   updateQuantity: (lineId: string, quantity: number) => Promise<void>;
   removeItem: (lineId: string) => Promise<void>;
@@ -231,9 +288,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  // Persist cart state changes back to localStorage
+  // Persist cart state changes back to localStorage (skip while optimistic ops are pending)
   useEffect(() => {
     if (!state.cartId) return;
+    if (state.pendingLineIds.length > 0) return;
     if (isHydratingRef.current) {
       isHydratingRef.current = false;
       return;
@@ -246,27 +304,61 @@ export function CartProvider({ children }: { children: ReactNode }) {
     );
     rawCartRef.current = lsCart;
     writeCartToStorage(lsCart);
-  }, [state.cartId, state.checkoutUrl, state.items]);
+  }, [state.cartId, state.checkoutUrl, state.items, state.pendingLineIds]);
 
   const addToCart = useCallback(
     async (options: AddToCartOptions) => {
-      dispatch({ type: 'SET_LOADING', payload: true });
       dispatch({ type: 'SET_ERROR', payload: null });
 
-      try {
-        const displayData = {
-          title: options.title,
-          imageUrl: options.imageUrl,
-          size: options.size,
-          displaySize: options.displaySize,
-          diaperCount: options.diaperCount,
-          planType: options.planType,
-          orderType: options.orderType,
-          currentPrice: options.currentPrice,
-          originalPrice: options.originalPrice,
-          savingsAmount: options.savingsAmount,
-        };
+      const displayData = {
+        title: options.title,
+        imageUrl: options.imageUrl,
+        size: options.size,
+        displaySize: options.displaySize,
+        diaperCount: options.diaperCount,
+        planType: options.planType,
+        orderType: options.orderType,
+        currentPrice: options.currentPrice,
+        originalPrice: options.originalPrice,
+        savingsAmount: options.savingsAmount,
+      };
 
+      // Build optimistic items with temporary IDs
+      const tempId = `pending-${Date.now()}`;
+      const optimisticMain: CartItem = {
+        ...displayData,
+        lineId: tempId,
+        companionLineIds: [],
+        merchandiseId: '',
+        quantity: options.quantity,
+      };
+      const optimisticAddOns: CartItem[] = (options.upsellItems ?? []).map(
+        (u, i) => ({
+          lineId: `${tempId}-upsell-${i}`,
+          companionLineIds: [],
+          merchandiseId: '',
+          quantity: 1,
+          title: u.title,
+          imageUrl: u.imageUrl,
+          isAddOn: true,
+          size: '1' as DiaperSize,
+          displaySize: '',
+          diaperCount: 0,
+          planType: 'diaper-only' as PlanType,
+          orderType: options.orderType,
+          currentPrice: u.price,
+          originalPrice: u.price,
+          savingsAmount: 0,
+        })
+      );
+
+      // Dispatch optimistic update — drawer opens immediately
+      dispatch({
+        type: 'OPTIMISTIC_ADD',
+        payload: [optimisticMain, ...optimisticAddOns],
+      });
+
+      try {
         if (!state.cartId) {
           // First add — create a new cart
           const result = await createCart({
@@ -284,9 +376,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
             !result.cartId ||
             !result.cart
           ) {
+            dispatch({ type: 'ROLLBACK' });
             const errorMsg = result.error || 'Failed to create cart';
             dispatch({ type: 'SET_ERROR', payload: errorMsg });
-            throw new Error(errorMsg);
+            return;
           }
 
           // Split edges: upsell add-ons get their own CartItem; the rest form the primary item
@@ -308,12 +401,22 @@ export function CartProvider({ children }: { children: ReactNode }) {
             return buildAddOnCartItem(edge, data, options.orderType);
           });
 
+          // Replace optimistic items with confirmed Shopify data
+          // Filter out the pending items we added optimistically
+          const pendingIds = new Set([
+            optimisticMain.lineId,
+            ...optimisticAddOns.map((a) => a.lineId),
+          ]);
+          const existingConfirmed = state.items.filter(
+            (i) => !pendingIds.has(i.lineId)
+          );
+
           dispatch({
             type: 'SET_CART',
             payload: {
               cartId: result.cartId,
               checkoutUrl: result.checkoutUrl,
-              items: [...state.items, cartItem, ...addOnItems],
+              items: [...existingConfirmed, cartItem, ...addOnItems],
             },
           });
         } else {
@@ -337,16 +440,19 @@ export function CartProvider({ children }: { children: ReactNode }) {
             );
           }
 
-          // Collect all known Shopify line IDs (primary + companions)
+          // Collect all known real Shopify line IDs (exclude pending)
           const knownLineIds = new Set(
-            state.items.flatMap((i) => [i.lineId, ...i.companionLineIds])
+            state.items
+              .filter((i) => !i.lineId.startsWith('pending-'))
+              .flatMap((i) => [i.lineId, ...i.companionLineIds])
           );
           const result = await addCartLines(state.cartId, lines);
 
           if (!result.success || !result.cart) {
+            dispatch({ type: 'ROLLBACK' });
             const errorMsg = result.error || 'Failed to add to cart';
             dispatch({ type: 'SET_ERROR', payload: errorMsg });
-            throw new Error(errorMsg);
+            return;
           }
 
           // Build a lookup of Shopify line quantities to detect merges
@@ -357,14 +463,16 @@ export function CartProvider({ children }: { children: ReactNode }) {
             ])
           );
 
-          // Update existing items whose quantities changed (Shopify merged lines)
-          const updatedExistingItems = state.items.map((item) => {
-            const shopifyQty = shopifyQuantities.get(item.lineId);
-            if (shopifyQty !== undefined && shopifyQty !== item.quantity) {
-              return { ...item, quantity: shopifyQty };
-            }
-            return item;
-          });
+          // Get confirmed (non-pending) items, update quantities if Shopify merged lines
+          const confirmedItems = state.items
+            .filter((i) => !i.lineId.startsWith('pending-'))
+            .map((item) => {
+              const shopifyQty = shopifyQuantities.get(item.lineId);
+              if (shopifyQty !== undefined && shopifyQty !== item.quantity) {
+                return { ...item, quantity: shopifyQty };
+              }
+              return item;
+            });
 
           // Find truly new lines (not primary or companion of any existing item)
           const newEdges = result.cart.lines.edges.filter(
@@ -395,11 +503,12 @@ export function CartProvider({ children }: { children: ReactNode }) {
             payload: {
               cartId: state.cartId,
               checkoutUrl: result.cart.checkoutUrl,
-              items: [...updatedExistingItems, ...newItems],
+              items: [...confirmedItems, ...newItems],
             },
           });
         }
       } catch (err) {
+        dispatch({ type: 'ROLLBACK' });
         dispatch({
           type: 'SET_ERROR',
           payload:
@@ -413,7 +522,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const updateQuantity = useCallback(
     async (lineId: string, quantity: number) => {
       if (!state.cartId) return;
-      dispatch({ type: 'SET_LOADING', payload: true });
+
+      // Optimistic update
+      dispatch({ type: 'OPTIMISTIC_UPDATE_QUANTITY', payload: { lineId, quantity } });
 
       const item = state.items.find((i) => i.lineId === lineId);
       const allLineIds = item ? [lineId, ...item.companionLineIds] : [lineId];
@@ -425,6 +536,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       );
 
       if (!result.success) {
+        dispatch({ type: 'ROLLBACK' });
         dispatch({
           type: 'SET_ERROR',
           payload: result.error || 'Failed to update quantity',
@@ -443,7 +555,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const removeItem = useCallback(
     async (lineId: string) => {
       if (!state.cartId) return;
-      dispatch({ type: 'SET_LOADING', payload: true });
+
+      // Optimistic removal
+      dispatch({ type: 'OPTIMISTIC_REMOVE', payload: lineId });
 
       const item = state.items.find((i) => i.lineId === lineId);
       const allLineIds = item ? [lineId, ...item.companionLineIds] : [lineId];
@@ -451,6 +565,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       const result = await removeCartLine(state.cartId, allLineIds);
 
       if (!result.success) {
+        dispatch({ type: 'ROLLBACK' });
         dispatch({
           type: 'SET_ERROR',
           payload: result.error || 'Failed to remove item',
@@ -503,6 +618,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const value: CartContextValue = {
     state,
+    pendingLineIds: state.pendingLineIds,
     addToCart,
     updateQuantity,
     removeItem,
@@ -524,6 +640,7 @@ const noop = async () => {};
 
 const defaultCartValue: CartContextValue = {
   state: initialState,
+  pendingLineIds: [],
   addToCart: noop as CartContextValue['addToCart'],
   updateQuantity: noop as CartContextValue['updateQuantity'],
   removeItem: noop as CartContextValue['removeItem'],

@@ -16,6 +16,8 @@ import type { PortableTextBlock } from '@portabletext/types';
 import { useSearchParams } from 'next/navigation';
 import SizeSelectionContainer from './purchase/size-selection-container';
 import AddToCartButton from './purchase/add-to-cart-button';
+import StickyAddToCart from './purchase/sticky-add-to-cart';
+import { useInView } from '@/hooks/use-in-view';
 import { trackSelectPurchaseType } from '@/lib/gtm/ecommerce';
 import ProductFeatures from './purchase/product-features';
 import { ProductAccordion } from './purchase';
@@ -167,12 +169,11 @@ const defaultOrderTypeConfig: OrderTypeConfig = {
     title: 'Auto-Renew + Next Size Trial',
     benefits: [
       "A month's supply of superior diapers",
-      'First box includes next size trial',
       'Skip or cancel anytime',
     ],
     showTrialPack: true,
-    trialPackImage: '/images/diaper_s1.png',
-    trialPackTitle: 'Next Size Trial Pack',
+    trialPackImage: '/images/trial_pack_2.png',
+    trialPackTitle: 'Free Next Size Trial Pack',
     trialPackDescription:
       'A trial pack of size 2 diapers, giving you a head start on the next stage.',
   },
@@ -183,7 +184,8 @@ const defaultOrderTypeConfig: OrderTypeConfig = {
 };
 
 function UpsellModule() {
-  const { state, upsellItems, selectedUpsellIndices, toggleUpsell } = useProductOrder();
+  const { state, upsellItems, selectedUpsellIndices, toggleUpsell } =
+    useProductOrder();
 
   if (!upsellItems?.length) return null;
 
@@ -221,7 +223,9 @@ function UpsellModule() {
                 )}
               </div>
               <div>
-                <p className="font-bold text-sm text-black leading-tight">{product.title}</p>
+                <p className="font-bold text-sm text-black leading-tight">
+                  {product.title}
+                </p>
                 {price != null && (
                   <p className="text-sm text-gray-600 mt-0.5">${price}</p>
                 )}
@@ -392,6 +396,7 @@ interface PDPHeroV2ContentProps {
   hideSizeSelector?: boolean;
   features?: { icon: string; label: string }[];
   accordionItems?: { title: string; content?: PortableTextBlock[] }[];
+  cartImageOverride?: string;
 }
 
 function PDPHeroV2Content({
@@ -404,8 +409,10 @@ function PDPHeroV2Content({
   hideSizeSelector,
   features,
   accordionItems,
+  cartImageOverride,
 }: PDPHeroV2ContentProps) {
   const { state } = useProductOrder();
+  const [addToCartRef, isAddToCartInView] = useInView({ threshold: 0 });
 
   // Build carousel images: if the selected size has a featured image, use it as the first slide
   const carouselImages = useMemo(() => {
@@ -449,12 +456,20 @@ function PDPHeroV2Content({
         <OrderTypeSelector config={orderTypeConfig} />
 
         {/* Add to Cart */}
-        <AddToCartButton title={productTitle} />
+        <div ref={addToCartRef}>
+          <AddToCartButton title={productTitle} />
+        </div>
       </div>
       <div className="px-4 py-2 space-y-6">
         <ProductFeatures features={features} />
         <ProductAccordion items={accordionItems} />
       </div>
+
+      <StickyAddToCart
+        productTitle={productTitle}
+        imageUrl={cartImageOverride ?? images[0]?.src ?? ''}
+        show={!isAddToCartInView}
+      />
     </div>
   );
 }
@@ -533,14 +548,56 @@ function PDPHeroV2Inner({
         hideSizeSelector={hideSizeSelector}
         features={features}
         accordionItems={accordionItems}
+        cartImageOverride={cartImageOverride}
       />
     </ProductOrderProvider>
   );
 }
 
+function PDPHeroV2Skeleton() {
+  return (
+    <div className="bg-white animate-pulse">
+      {/* Rating + Title */}
+      <div className="flex flex-col gap-2 px-4 py-4">
+        <div className="h-4 w-40 bg-gray-200 rounded" />
+        <div className="h-8 w-48 bg-gray-200 rounded mt-1" />
+        <div className="h-4 w-64 bg-gray-200 rounded" />
+      </div>
+      {/* Image Carousel */}
+      <div className="flex min-h-[294px]" style={{ gap: `${SLIDE_GAP}px` }}>
+        <div
+          className="min-h-[294px] bg-gray-100 flex-shrink-0"
+          style={{ width: `calc(100% - ${SLIDE_PEEK}px)` }}
+        />
+        <div
+          className="min-h-[294px] bg-gray-100 flex-shrink-0"
+          style={{ width: `calc(100% - ${SLIDE_PEEK}px)` }}
+        />
+      </div>
+      {/* Form Content */}
+      <div className="px-4 pt-6 pb-6 space-y-6">
+        <div className="space-y-3">
+          <div className="h-4 w-32 bg-gray-200 rounded" />
+          <div className="flex gap-2">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <div key={i} className="h-16 w-16 bg-gray-100 rounded-lg" />
+            ))}
+          </div>
+        </div>
+        <div className="space-y-3">
+          <div className="h-4 w-40 bg-gray-200 rounded" />
+          <div className="h-32 bg-gray-100 rounded-lg" />
+          <div className="h-16 bg-gray-100 rounded-lg" />
+        </div>
+        <div className="h-14 bg-gray-200 rounded-lg" />
+      </div>
+    </div>
+  );
+}
+
 export default function PDPHeroV2(props: PDPHeroV2Props) {
   return (
-    <Suspense>
+    <Suspense fallback={<PDPHeroV2Skeleton />}>
       <PDPHeroV2Inner {...props} />
     </Suspense>
   );
