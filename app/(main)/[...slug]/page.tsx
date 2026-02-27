@@ -52,8 +52,7 @@ export async function generateMetadata({
   return metadata;
 }
 
-// If a slug is not in the list above, a 404 page will be returned
-export const dynamicParams = false;
+export const dynamicParams = true;
 
 export default async function SanityPage({ params }: PageProps) {
   const { slug } = await params;
