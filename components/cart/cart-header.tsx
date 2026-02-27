@@ -10,9 +10,11 @@ export default function CartHeader({ itemCount, onClose }: CartHeaderProps) {
     <div className="flex items-center justify-between px-4 py-4 border-b border-gray-100">
       <p className="text-sm flex gap-2">
         Cart{' '}
-        <span className="flex justify-center border border-[#E7E7E7] min-w-[22px] min-h-[22px] rounded-full">
-          {itemCount > 0 && `${itemCount}`}
-        </span>
+        {itemCount > 0 && (
+          <span className="flex justify-center border border-[#E7E7E7] min-w-[22px] min-h-[22px] rounded-full">
+            {itemCount}
+          </span>
+        )}
       </p>
       <button
         onClick={onClose}

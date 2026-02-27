@@ -15,6 +15,7 @@ import {
   addCartLines,
   updateCartLineQuantity,
   removeCartLine,
+  updateCartLines,
 } from '@/lib/shopify/cart';
 import {
   buildCartLines,
@@ -573,7 +574,42 @@ export function CartProvider({ children }: { children: ReactNode }) {
         return;
       }
 
-      const updatedItems = state.items.filter((i) => i.lineId !== lineId);
+      let updatedItems = state.items.filter((i) => i.lineId !== lineId);
+
+      // If only add-ons remain (no anchor product), convert subscription add-ons to one-time
+      const hasAnchor = updatedItems.some((i) => !i.isAddOn);
+      const subscriptionAddOns = updatedItems.filter(
+        (i) => i.isAddOn && i.orderType === 'subscription'
+      );
+
+      if (!hasAnchor && subscriptionAddOns.length > 0) {
+        const convertResult = await updateCartLines(
+          state.cartId,
+          subscriptionAddOns.map((addon) => ({
+            id: addon.lineId,
+            sellingPlanId: null,
+          }))
+        );
+
+        if (convertResult.success && convertResult.cart) {
+          // Build a price lookup from the Shopify response
+          const priceByLineId = new Map(
+            convertResult.cart.lines.edges.map((edge) => [
+              edge.node.id,
+              parseFloat(edge.node.cost.amountPerQuantity.amount),
+            ])
+          );
+
+          updatedItems = updatedItems.map((i) => {
+            if (i.isAddOn && i.orderType === 'subscription') {
+              const otpPrice = priceByLineId.get(i.lineId) ?? i.currentPrice;
+              return { ...i, orderType: 'one-time' as OrderType, currentPrice: otpPrice };
+            }
+            return i;
+          });
+        }
+      }
+
       dispatch({ type: 'UPDATE_ITEMS', payload: updatedItems });
     },
     [state.cartId, state.items]

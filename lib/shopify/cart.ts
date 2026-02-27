@@ -225,6 +225,41 @@ export async function removeCartLine(
 }
 
 /**
+ * Update arbitrary fields on one or more cart lines (e.g. clear sellingPlanId)
+ */
+export async function updateCartLines(
+  cartId: string,
+  lines: { id: string; sellingPlanId?: string | null; quantity?: number }[]
+): Promise<CartMutationResult> {
+  try {
+    const response = await shopifyFetch<CartLinesUpdateResponse>(
+      CART_LINES_UPDATE_MUTATION,
+      { cartId, lines }
+    );
+
+    if (response.errors?.length) {
+      return { success: false, error: response.errors.map((e) => e.message).join(', ') };
+    }
+
+    const { cart, userErrors } = response.data?.cartLinesUpdate || {};
+    if (userErrors?.length) {
+      return { success: false, error: userErrors.map((e) => e.message).join(', ') };
+    }
+
+    if (!cart) {
+      return { success: false, error: 'No cart returned from Shopify' };
+    }
+
+    return { success: true, cart };
+  } catch (error) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Failed to update cart lines',
+    };
+  }
+}
+
+/**
  * Create a cart with raw line items (for advanced use cases)
  */
 export async function createCartWithLines(
