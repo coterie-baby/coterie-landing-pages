@@ -1,6 +1,7 @@
 // GTM E-commerce Event Tracking (GA4 Schema)
 
 import { sendGTMEvent } from '@next/third-parties/google';
+import { track } from '@vercel/analytics';
 import amplitude from '@/amplitude';
 import { trackConversion } from '@/lib/umami';
 import type { DiaperSize, PlanType, OrderType } from '@/components/purchase/context';
@@ -80,6 +81,16 @@ export function trackAddToCart(data: AddToCartEventData): void {
 
   // Send to Amplitude
   amplitude.track('add_to_cart', eventData);
+
+  // Send to Vercel Analytics
+  track('add_to_cart', {
+    currency,
+    value: price * quantity,
+    location: location || '',
+    plan_type: planType,
+    size,
+    order_type: orderType,
+  });
 
   // Send to Umami (conversion event for funnel dashboard)
   trackConversion('add_to_cart');
@@ -202,6 +213,16 @@ export function trackBeginCheckout(data: BeginCheckoutEventData): void {
 
   // Send to Amplitude
   amplitude.track('begin_checkout', eventData);
+
+  // Send to Vercel Analytics
+  track('begin_checkout', {
+    currency,
+    value: price * quantity,
+    location: location || '',
+    plan_type: planType,
+    size,
+    order_type: orderType,
+  });
 }
 
 /**
