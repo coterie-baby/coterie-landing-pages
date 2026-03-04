@@ -18,7 +18,7 @@ import SizeSelectionContainer from './purchase/size-selection-container';
 import AddToCartButton from './purchase/add-to-cart-button';
 import StickyAddToCart from './purchase/sticky-add-to-cart';
 import { useInView } from '@/hooks/use-in-view';
-import { trackSelectPurchaseType } from '@/lib/gtm/ecommerce';
+import { trackSelectPurchaseType, trackSelectBundleAddOn, trackRemoveBundleAddOn } from '@/lib/gtm/ecommerce';
 import ProductFeatures from './purchase/product-features';
 import { ProductAccordion } from './purchase';
 import Link from 'next/link';
@@ -204,7 +204,16 @@ function UpsellModule() {
             <button
               key={i}
               type="button"
-              onClick={() => toggleUpsell(i)}
+              onClick={() => {
+                const trackFn = isSelected ? trackRemoveBundleAddOn : trackSelectBundleAddOn;
+                trackFn({
+                  itemName: product.title,
+                  itemVariantId: product.shopifyVariantId,
+                  price: price ?? undefined,
+                  location: 'PDP Hero V2',
+                });
+                toggleUpsell(i);
+              }}
               className={`flex items-center gap-3 rounded-lg border p-2 text-left w-full transition-all ${
                 isSelected
                   ? 'border-[#0000C9] bg-white'
