@@ -541,7 +541,6 @@ function PDPHeroV2Inner({
 }: PDPHeroV2Props) {
   const searchParams = useSearchParams();
   const sizeFromUrl = parseSizeParam(searchParams.get('size'));
-  const { discountClaimed } = useDiscount();
 
   return (
     <ProductOrderProvider
