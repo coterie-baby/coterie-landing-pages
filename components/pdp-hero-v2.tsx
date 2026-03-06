@@ -1,8 +1,7 @@
 'use client';
 
-import { useRef, useMemo, useEffect, useState, Suspense } from 'react';
+import { useRef, useMemo, Suspense, useEffect } from 'react';
 import Image from 'next/image';
-import FirstVisitPopup from './first-visit-popup';
 import {
   ProductOrderProvider,
   useProductOrder,
@@ -542,23 +541,7 @@ function PDPHeroV2Inner({
 }: PDPHeroV2Props) {
   const searchParams = useSearchParams();
   const sizeFromUrl = parseSizeParam(searchParams.get('size'));
-  const { discountClaimed, claimDiscount } = useDiscount();
-
-  const [showPopup, setShowPopup] = useState(false);
-
-  useEffect(() => {
-    // TODO: remove — always show popup for UI editing
-    setShowPopup(true);
-  }, []);
-
-  const handleClaim = () => {
-    claimDiscount();
-    setShowPopup(false);
-  };
-
-  const handleClosePopup = () => {
-    setShowPopup(false);
-  };
+  const { discountClaimed } = useDiscount();
 
   return (
     <ProductOrderProvider
@@ -579,9 +562,6 @@ function PDPHeroV2Inner({
         accordionItems={accordionItems}
         cartImageOverride={cartImageOverride}
       />
-      {showPopup && !discountClaimed && (
-        <FirstVisitPopup onClaim={handleClaim} onClose={handleClosePopup} />
-      )}
     </ProductOrderProvider>
   );
 }
