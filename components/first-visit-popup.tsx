@@ -52,7 +52,7 @@ export default function FirstVisitPopup({ onClaim, onClose }: FirstVisitPopupPro
               />
             </svg>
           </div> */}
-          <p className="text-2xl text-black mb-2">You've got 10% off!</p>
+          <p className="text-2xl text-black mb-2">You&apos;ve got 10% off!</p>
           <p className="text-sm text-[#515151]">
             Save on your first <strong>Auto-Renew</strong> order.
             <br />

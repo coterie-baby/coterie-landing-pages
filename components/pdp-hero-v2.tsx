@@ -524,7 +524,6 @@ function parseSizeParam(raw: string | null): DiaperSize | undefined {
   return undefined;
 }
 
-const FIRST_VISIT_KEY = 'coterie_has_visited_pdp';
 
 function PDPHeroV2Inner({
   rating = 0,
