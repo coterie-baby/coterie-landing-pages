@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import { trackBeginCheckout } from '@/lib/gtm/ecommerce';
 import type { CartItem } from './cart-context';
+import { useDiscount, FIRST_ORDER_DISCOUNT_CODE } from '@/components/discount-context';
 
 interface CartCheckoutButtonProps {
   checkoutUrl: string | null;
@@ -15,6 +16,7 @@ export default function CartCheckoutButton({
   subtotal,
 }: CartCheckoutButtonProps) {
   const [isNavigating, setIsNavigating] = useState(false);
+  const { discountClaimed } = useDiscount();
 
   const handleCheckout = () => {
     if (!checkoutUrl) return;
@@ -34,7 +36,19 @@ export default function CartCheckoutButton({
       });
     }
 
-    window.location.href = checkoutUrl;
+    // Append discount code if the first-visit discount was claimed
+    let finalUrl = checkoutUrl;
+    if (discountClaimed) {
+      try {
+        const url = new URL(checkoutUrl);
+        url.searchParams.set('discount', FIRST_ORDER_DISCOUNT_CODE);
+        finalUrl = url.toString();
+      } catch {
+        // invalid URL — fall back to original
+      }
+    }
+
+    window.location.href = finalUrl;
   };
 
   return (

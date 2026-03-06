@@ -1,7 +1,8 @@
 'use client';
 
-import { useRef, useMemo, useEffect, Suspense } from 'react';
+import { useRef, useMemo, useEffect, useState, Suspense } from 'react';
 import Image from 'next/image';
+import FirstVisitPopup from './first-visit-popup';
 import {
   ProductOrderProvider,
   useProductOrder,
@@ -22,6 +23,7 @@ import { trackSelectPurchaseType } from '@/lib/gtm/ecommerce';
 import ProductFeatures from './purchase/product-features';
 import { ProductAccordion } from './purchase';
 import Link from 'next/link';
+import { useDiscount, FIRST_ORDER_DISCOUNT_PERCENT } from './discount-context';
 
 // ─── Star Rating ──────────────────────────────────────────────
 
@@ -240,12 +242,21 @@ function UpsellModule() {
 
 // ─── Order Type Selector (new design) ─────────────────────────
 
-function OrderTypeSelector({ config }: { config: OrderTypeConfig }) {
+function OrderTypeSelector({
+  config,
+}: {
+  config: OrderTypeConfig;
+}) {
   const { state, setOrderType } = useProductOrder();
+  const { discountClaimed } = useDiscount();
 
   const diaperOnlyPlan = PLAN_CONFIGS.find((p) => p.id === 'diaper-only');
   const subscriptionPrice = diaperOnlyPlan?.subscriptionPrice ?? 95;
   const basePrice = diaperOnlyPlan?.basePrice ?? 105.5;
+
+  const discountedSubscriptionPrice = discountClaimed
+    ? Math.round(subscriptionPrice * (1 - FIRST_ORDER_DISCOUNT_PERCENT) * 100) / 100
+    : null;
 
   const defaults = defaultOrderTypeConfig.autoRenew!;
   const cms = config.autoRenew;
@@ -283,7 +294,7 @@ function OrderTypeSelector({ config }: { config: OrderTypeConfig }) {
         {/* Recommended badge */}
         {autoRenew.badgeText && (
           <div className="bg-[#0000C9] text-white text-[10px] font-bold tracking-wider uppercase px-2 py-1.5">
-            {autoRenew.badgeText}
+            {discountClaimed ? '10% off applied — ' : ''}{autoRenew.badgeText}
           </div>
         )}
         <div className="p-3">
@@ -291,10 +302,10 @@ function OrderTypeSelector({ config }: { config: OrderTypeConfig }) {
             <span className="font-semibold">{autoRenew.title}</span>
             <div className="text-right flex-shrink-0 ml-3">
               <span className="text-[#0000C9]">
-                ${subscriptionPrice.toFixed(2)}
+                ${(discountedSubscriptionPrice ?? subscriptionPrice).toFixed(2)}
               </span>
               <span className="ml-2 text-[#515151] line-through text-sm">
-                ${basePrice.toFixed(2)}
+                ${discountClaimed ? subscriptionPrice.toFixed(2) : basePrice.toFixed(2)}
               </span>
             </div>
           </div>
@@ -513,6 +524,8 @@ function parseSizeParam(raw: string | null): DiaperSize | undefined {
   return undefined;
 }
 
+const FIRST_VISIT_KEY = 'coterie_has_visited_pdp';
+
 function PDPHeroV2Inner({
   rating = 0,
   reviewCount = 0,
@@ -530,6 +543,23 @@ function PDPHeroV2Inner({
 }: PDPHeroV2Props) {
   const searchParams = useSearchParams();
   const sizeFromUrl = parseSizeParam(searchParams.get('size'));
+  const { discountClaimed, claimDiscount } = useDiscount();
+
+  const [showPopup, setShowPopup] = useState(false);
+
+  useEffect(() => {
+    // TODO: remove — always show popup for UI editing
+    setShowPopup(true);
+  }, []);
+
+  const handleClaim = () => {
+    claimDiscount();
+    setShowPopup(false);
+  };
+
+  const handleClosePopup = () => {
+    setShowPopup(false);
+  };
 
   return (
     <ProductOrderProvider
@@ -550,6 +580,9 @@ function PDPHeroV2Inner({
         accordionItems={accordionItems}
         cartImageOverride={cartImageOverride}
       />
+      {showPopup && !discountClaimed && (
+        <FirstVisitPopup onClaim={handleClaim} onClose={handleClosePopup} />
+      )}
     </ProductOrderProvider>
   );
 }

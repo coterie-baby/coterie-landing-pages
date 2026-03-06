@@ -7,6 +7,7 @@ interface CartSummaryProps {
   totalSavings: number;
   yearlySavingsProjection: number;
   hasFreeShipping: boolean;
+  promoDiscount?: number;
 }
 
 export default function CartSummary({
@@ -14,10 +15,13 @@ export default function CartSummary({
   totalSavings,
   yearlySavingsProjection,
   hasFreeShipping,
+  promoDiscount = 0,
 }: CartSummaryProps) {
+  const discountedSubtotal = subtotal - promoDiscount;
+
   return (
     <div className="px-4 py-3 space-y-2">
-      <CartShippingBar subtotal={subtotal} hasFreeShipping={hasFreeShipping} />
+      <CartShippingBar subtotal={discountedSubtotal} hasFreeShipping={hasFreeShipping} />
       <div>
         {totalSavings > 0 && (
           <div className="flex items-center justify-between text-xs text-[#515151]">
@@ -32,10 +36,21 @@ export default function CartSummary({
             </div>
           </div>
         )}
+        {promoDiscount > 0 && (
+          <div className="flex items-center justify-between text-xs">
+            <span className="text-[#0000C9]">Discount</span>
+            <span className="text-[#0000C9]">-${promoDiscount.toFixed(2)}</span>
+          </div>
+        )}
       </div>
       <div className="flex items-center justify-between">
         <span className="text-sm font-medium">Subtotal</span>
-        <span className="text-sm font-medium">${subtotal.toFixed(2)}</span>
+        <div className="flex items-baseline gap-1.5">
+          <span className="text-sm font-medium">${discountedSubtotal.toFixed(2)}</span>
+          {promoDiscount > 0 && (
+            <span className="text-xs text-[#515151] line-through">${subtotal.toFixed(2)}</span>
+          )}
+        </div>
       </div>
       <p className="text-[11px] text-gray-500">
         Shipping & taxes calculated at checkout

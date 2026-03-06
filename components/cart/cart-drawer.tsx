@@ -6,6 +6,7 @@ import CartHeader from './cart-header';
 import CartItem from './cart-item';
 import CartSummary from './cart-summary';
 import CartCheckoutButton from './cart-checkout-button';
+import { useDiscount, FIRST_ORDER_DISCOUNT_PERCENT } from '@/components/discount-context';
 
 export default function CartDrawer() {
   const {
@@ -20,6 +21,18 @@ export default function CartDrawer() {
     yearlySavingsProjection,
     hasFreeShipping,
   } = useCart();
+
+  const { discountClaimed } = useDiscount();
+
+  // Total promo discount across subscription items only
+  const promoDiscount = discountClaimed
+    ? state.items.reduce((sum, item) => {
+        if (item.orderType === 'subscription') {
+          return sum + Math.round(item.currentPrice * FIRST_ORDER_DISCOUNT_PERCENT * 100) / 100 * item.quantity;
+        }
+        return sum;
+      }, 0)
+    : 0;
 
   // Prevent body scroll when drawer is open
   useEffect(() => {
@@ -75,15 +88,22 @@ export default function CartDrawer() {
             <>
               {/* Cart items */}
               <div className="px-4">
-                {state.items.map((item) => (
-                  <CartItem
-                    key={item.lineId}
-                    item={item}
-                    isPending={pendingLineIds.includes(item.lineId)}
-                    onUpdateQuantity={updateQuantity}
-                    onRemove={removeItem}
-                  />
-                ))}
+                {state.items.map((item) => {
+                  const discountedPrice =
+                    discountClaimed && item.orderType === 'subscription'
+                      ? Math.round(item.currentPrice * (1 - FIRST_ORDER_DISCOUNT_PERCENT) * 100) / 100
+                      : undefined;
+                  return (
+                    <CartItem
+                      key={item.lineId}
+                      item={item}
+                      isPending={pendingLineIds.includes(item.lineId)}
+                      onUpdateQuantity={updateQuantity}
+                      onRemove={removeItem}
+                      discountedPrice={discountedPrice}
+                    />
+                  );
+                })}
               </div>
 
               {/* Upsells */}
@@ -107,6 +127,7 @@ export default function CartDrawer() {
               totalSavings={totalSavings}
               yearlySavingsProjection={yearlySavingsProjection}
               hasFreeShipping={hasFreeShipping}
+              promoDiscount={promoDiscount}
             />
             <CartCheckoutButton
               checkoutUrl={state.checkoutUrl}

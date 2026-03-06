@@ -10,6 +10,7 @@ interface CartItemProps {
   isPending?: boolean;
   onUpdateQuantity: (lineId: string, quantity: number) => void;
   onRemove: (lineId: string) => void;
+  discountedPrice?: number;
 }
 
 const CartItem = memo(function CartItem({
@@ -17,8 +18,11 @@ const CartItem = memo(function CartItem({
   isPending,
   onUpdateQuantity,
   onRemove,
+  discountedPrice,
 }: CartItemProps) {
-  const hasDiscount = item.savingsAmount > 0;
+  const hasDiscount = item.savingsAmount > 0 || discountedPrice != null;
+  const displayPrice = discountedPrice ?? item.currentPrice;
+  const strikethroughPrice = discountedPrice != null ? item.currentPrice : item.originalPrice;
   const thumbnailUrl = item.imageUrl ? getCartThumbnailUrl(item.imageUrl) : '';
   const isSanityUrl = item.imageUrl?.includes('cdn.sanity.io');
 
@@ -86,11 +90,11 @@ const CartItem = memo(function CartItem({
           {/* Price */}
           <div className="flex items-baseline gap-1.5 text-sm">
             <span className="text-[#0000C9]">
-              ${item.currentPrice.toFixed(2)}
+              ${displayPrice.toFixed(2)}
             </span>
             {hasDiscount && (
-              <span className="line-through">
-                ${item.originalPrice.toFixed(2)}
+              <span className="line-through text-[#515151]">
+                ${strikethroughPrice.toFixed(2)}
               </span>
             )}
           </div>
