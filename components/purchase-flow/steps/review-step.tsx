@@ -44,7 +44,6 @@ export default function ReviewStep() {
     diaperCount,
     diaperPrice,
     wipesPrice,
-    skincarePrice,
     totalPrice,
     originalTotalPrice,
     totalSavings,
