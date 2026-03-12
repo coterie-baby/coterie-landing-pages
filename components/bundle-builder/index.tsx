@@ -18,8 +18,6 @@ import {
   trackAddToCart,
   trackCheckoutError,
 } from '@/lib/gtm/ecommerce';
-import ContentBanner from '../content-banner';
-import FlexAnnouncementBar from '../flex-announcement-bar';
 
 type WipesSelection = 'the-wipe' | 'the-soft-wipe' | 'none' | null;
 type OrderType = 'subscription' | 'one-time';
@@ -113,13 +111,13 @@ function ChevronIcon({ open }: { open: boolean }) {
   );
 }
 
-function TruckIcon() {
-  return (
-    <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-      <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 00-3.213-9.193 2.056 2.056 0 00-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 00-10.026 0 1.106 1.106 0 00-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12" />
-    </svg>
-  );
-}
+// function TruckIcon() {
+//   return (
+//     <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+//       <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 00-3.213-9.193 2.056 2.056 0 00-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 00-10.026 0 1.106 1.106 0 00-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12" />
+//     </svg>
+//   );
+// }
 
 function CheckCircle() {
   return (
@@ -204,136 +202,136 @@ function NewbornModal({
 
 // -- Bundle Items Sheet --
 
-function BundleItemsSheet({
-  isOpen,
-  onClose,
-  selectedSize,
-  selectedWipes,
-  selectedSkincareIndices,
-  orderType,
-  diaperPrice,
-  wipesPrice,
-  totalPrice,
-  originalTotalPrice,
-  onCheckout,
-  isLoading,
-}: {
-  isOpen: boolean;
-  onClose: () => void;
-  selectedSize: DiaperSize | null;
-  selectedWipes: WipesSelection;
-  selectedSkincareIndices: number[];
-  orderType: OrderType;
-  diaperPrice: number;
-  wipesPrice: number;
-  totalPrice: number;
-  originalTotalPrice: number;
-  onCheckout: () => void;
-  isLoading: boolean;
-}) {
-  const wipesConfig = selectedWipes ? WIPES_PRODUCTS.find((w) => w.id === selectedWipes) : null;
+// function BundleItemsSheet({
+//   isOpen,
+//   onClose,
+//   selectedSize,
+//   selectedWipes,
+//   selectedSkincareIndices,
+//   orderType,
+//   diaperPrice,
+//   wipesPrice,
+//   totalPrice,
+//   originalTotalPrice,
+//   onCheckout,
+//   isLoading,
+// }: {
+//   isOpen: boolean;
+//   onClose: () => void;
+//   selectedSize: DiaperSize | null;
+//   selectedWipes: WipesSelection;
+//   selectedSkincareIndices: number[];
+//   orderType: OrderType;
+//   diaperPrice: number;
+//   wipesPrice: number;
+//   totalPrice: number;
+//   originalTotalPrice: number;
+//   onCheckout: () => void;
+//   isLoading: boolean;
+// }) {
+//   const wipesConfig = selectedWipes ? WIPES_PRODUCTS.find((w) => w.id === selectedWipes) : null;
 
-  const getSizeLabel = (size: DiaperSize) => {
-    if (size === 'n') return 'Newborn';
-    if (size === 'n+1') return 'N+1 Combo';
-    return `Size ${size}`;
-  };
+//   const getSizeLabel = (size: DiaperSize) => {
+//     if (size === 'n') return 'Newborn';
+//     if (size === 'n+1') return 'N+1 Combo';
+//     return `Size ${size}`;
+//   };
 
-  return (
-    <>
-      {isOpen && <div className="fixed inset-0 bg-black/40 z-40" onClick={onClose} />}
-      <div
-        className={`fixed left-0 right-0 z-50 bg-white rounded-t-2xl shadow-2xl max-h-[70vh] overflow-y-auto transition-transform duration-300 ${
-          isOpen ? 'translate-y-0' : 'translate-y-full'
-        }`}
-        style={{ bottom: '96px' }}
-      >
-        {/* Drag handle */}
-        <div className="flex justify-center pt-3 pb-1">
-          <div className="w-8 h-1 bg-gray-300 rounded-full" />
-        </div>
+//   return (
+//     <>
+//       {isOpen && <div className="fixed inset-0 bg-black/40 z-40" onClick={onClose} />}
+//       <div
+//         className={`fixed left-0 right-0 z-50 bg-white rounded-t-2xl shadow-2xl max-h-[70vh] overflow-y-auto transition-transform duration-300 ${
+//           isOpen ? 'translate-y-0' : 'translate-y-full'
+//         }`}
+//         style={{ bottom: '96px' }}
+//       >
+//         {/* Drag handle */}
+//         <div className="flex justify-center pt-3 pb-1">
+//           <div className="w-8 h-1 bg-gray-300 rounded-full" />
+//         </div>
 
-        <div className="px-4 pb-4 pt-2">
-          <div className="space-y-3">
-            {selectedSize && (
-              <div className="flex items-center gap-3">
-                <div className="relative w-12 h-12 flex-shrink-0">
-                  <Image
-                    src="https://m.media-amazon.com/images/I/815Q-eQIQkL._AC_SX679_.jpg"
-                    alt="The Diaper"
-                    fill
-                    className="object-cover rounded-lg"
-                  />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium">The Diaper — {getSizeLabel(selectedSize)}</p>
-                  <p className="text-xs text-gray-500">{SIZE_CONFIGS[selectedSize].count} diapers/delivery</p>
-                </div>
-                <p className="text-sm font-semibold text-[#0000C9]">${diaperPrice.toFixed(2)}</p>
-              </div>
-            )}
+//         <div className="px-4 pb-4 pt-2">
+//           <div className="space-y-3">
+//             {selectedSize && (
+//               <div className="flex items-center gap-3">
+//                 <div className="relative w-12 h-12 flex-shrink-0">
+//                   <Image
+//                     src="https://m.media-amazon.com/images/I/815Q-eQIQkL._AC_SX679_.jpg"
+//                     alt="The Diaper"
+//                     fill
+//                     className="object-cover rounded-lg"
+//                   />
+//                 </div>
+//                 <div className="flex-1 min-w-0">
+//                   <p className="text-sm font-medium">The Diaper — {getSizeLabel(selectedSize)}</p>
+//                   <p className="text-xs text-gray-500">{SIZE_CONFIGS[selectedSize].count} diapers/delivery</p>
+//                 </div>
+//                 <p className="text-sm font-semibold text-[#0000C9]">${diaperPrice.toFixed(2)}</p>
+//               </div>
+//             )}
 
-            {selectedWipes && selectedWipes !== 'none' && wipesConfig && (
-              <div className="flex items-center gap-3">
-                <div className="relative w-12 h-12 flex-shrink-0">
-                  <Image
-                    src="https://cdn.sanity.io/images/e4q6bkl9/production/fafaef923e0bc3fe3a063b06998eba6e567acab9-2048x2048.jpg?w=200&h=200&q=90&fit=crop&auto=format"
-                    alt="The Wipe"
-                    fill
-                    className="object-cover rounded-lg"
-                  />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium">{wipesConfig.name}</p>
-                  <p className="text-xs text-gray-500">{wipesConfig.count} wipes</p>
-                </div>
-                <p className="text-sm font-semibold text-[#0000C9]">${wipesPrice.toFixed(2)}</p>
-              </div>
-            )}
+//             {selectedWipes && selectedWipes !== 'none' && wipesConfig && (
+//               <div className="flex items-center gap-3">
+//                 <div className="relative w-12 h-12 flex-shrink-0">
+//                   <Image
+//                     src="https://cdn.sanity.io/images/e4q6bkl9/production/fafaef923e0bc3fe3a063b06998eba6e567acab9-2048x2048.jpg?w=200&h=200&q=90&fit=crop&auto=format"
+//                     alt="The Wipe"
+//                     fill
+//                     className="object-cover rounded-lg"
+//                   />
+//                 </div>
+//                 <div className="flex-1 min-w-0">
+//                   <p className="text-sm font-medium">{wipesConfig.name}</p>
+//                   <p className="text-xs text-gray-500">{wipesConfig.count} wipes</p>
+//                 </div>
+//                 <p className="text-sm font-semibold text-[#0000C9]">${wipesPrice.toFixed(2)}</p>
+//               </div>
+//             )}
 
-            {selectedSkincareIndices.map((idx) => {
-              const item = SKINCARE_ITEMS[idx];
-              if (!item) return null;
-              const price = orderType === 'subscription' ? item.subPrice : item.otpPrice;
-              return (
-                <div key={item.id} className="flex items-center gap-3">
-                  <div className={`w-12 h-12 flex-shrink-0 rounded-lg ${item.bgClass}`} />
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium">{item.name}</p>
-                  </div>
-                  <p className="text-sm font-semibold text-[#0000C9]">${price.toFixed(2)}</p>
-                </div>
-              );
-            })}
+//             {selectedSkincareIndices.map((idx) => {
+//               const item = SKINCARE_ITEMS[idx];
+//               if (!item) return null;
+//               const price = orderType === 'subscription' ? item.subPrice : item.otpPrice;
+//               return (
+//                 <div key={item.id} className="flex items-center gap-3">
+//                   <div className={`w-12 h-12 flex-shrink-0 rounded-lg ${item.bgClass}`} />
+//                   <div className="flex-1 min-w-0">
+//                     <p className="text-sm font-medium">{item.name}</p>
+//                   </div>
+//                   <p className="text-sm font-semibold text-[#0000C9]">${price.toFixed(2)}</p>
+//                 </div>
+//               );
+//             })}
 
-            {!selectedSize && (
-              <p className="text-sm text-gray-400 text-center py-2">No items selected yet</p>
-            )}
-          </div>
+//             {!selectedSize && (
+//               <p className="text-sm text-gray-400 text-center py-2">No items selected yet</p>
+//             )}
+//           </div>
 
-          <div className="border-t border-gray-100 mt-4 pt-4 flex items-center justify-between">
-            <span className="font-semibold">Total</span>
-            <div className="flex items-baseline gap-2">
-              <span className="font-bold text-lg">${totalPrice.toFixed(2)}</span>
-              {orderType === 'subscription' && <span className="text-sm text-gray-500">/mo</span>}
-              {originalTotalPrice > totalPrice && (
-                <span className="text-sm text-gray-400 line-through">${originalTotalPrice.toFixed(2)}</span>
-              )}
-            </div>
-          </div>
+//           <div className="border-t border-gray-100 mt-4 pt-4 flex items-center justify-between">
+//             <span className="font-semibold">Total</span>
+//             <div className="flex items-baseline gap-2">
+//               <span className="font-bold text-lg">${totalPrice.toFixed(2)}</span>
+//               {orderType === 'subscription' && <span className="text-sm text-gray-500">/mo</span>}
+//               {originalTotalPrice > totalPrice && (
+//                 <span className="text-sm text-gray-400 line-through">${originalTotalPrice.toFixed(2)}</span>
+//               )}
+//             </div>
+//           </div>
 
-          <Button
-            onClick={onCheckout}
-            disabled={isLoading}
-            className="w-full mt-4"
-          >
-            {isLoading ? 'Adding...' : 'Add to cart'}
-          </Button>
-        </div>
-      </div>
-    </>
-  );
-}
+//           <Button
+//             onClick={onCheckout}
+//             disabled={isLoading}
+//             className="w-full mt-4"
+//           >
+//             {isLoading ? 'Adding...' : 'Add to cart'}
+//           </Button>
+//         </div>
+//       </div>
+//     </>
+//   );
+// }
 
 // -- Wipes Card --
 
@@ -403,7 +401,7 @@ function SkincareCard({
   orderType: OrderType;
 }) {
   const price = orderType === 'subscription' ? item.subPrice : item.otpPrice;
-  const savings = item.otpPrice - item.subPrice;
+  // const savings = item.otpPrice - item.subPrice;
 
   return (
     <button
@@ -714,7 +712,7 @@ export default function BundleBuilder() {
   const [selectedSize, setSelectedSize] = useState<DiaperSize | null>(null);
   const [selectedWipes, setSelectedWipes] = useState<WipesSelection>(null);
   const [selectedSkincareIndices, setSelectedSkincareIndices] = useState<number[]>([]);
-  const [orderType, setOrderType] = useState<OrderType>('subscription');
+  const [orderType] = useState<OrderType>('subscription');
   const [wipesOpen, setWipesOpen] = useState(false);
   const [skincareOpen, setSkincareOpen] = useState(false);
 
@@ -862,50 +860,16 @@ export default function BundleBuilder() {
             Build Your Diapering Bundle
           </h1>
         </div>
-        <div className='px-4 py-6'>
+        <div className='flex flex-col gap-6 px-4 py-6'>
           <div className='space-y-4'>
             <p className='font-semibold'>Lorem ipsum dolor mont blanc </p>
             <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
           </div>
           <div className='grid grid-cols-2 gap-6'>
-            <div className='aspect-square bg-[#F5F5F5] flex flex-col items-center justify-center gap-4 px-4 rounded-xl'>
-              <div className='relative w-10 h-10'>
-                <Image src='/fragrance-free.svg' alt='' fill />
-              </div>
-              <div>
-                <div className='flex flex-col text-center'>
-                  <span className='font-semibold'>Free next size trial</span>
-                  <span>(included in first Auto-Renew box)</span>
-                </div>
-              </div>
-            </div>
-
-            <div className='aspect-square bg-[#F5F5F5] flex flex-col items-center justify-center gap-4 px-4 rounded-xl'>
-              <div className='relative w-10 h-10'>
-                <Image src='/fragrance-free.svg' alt='' fill />
-              </div>
-              <div>
-                <span className='font-semibold'>Free next size trial</span>
-              </div>
-            </div>
-
-            <div className='aspect-square bg-[#F5F5F5] flex flex-col items-center justify-center gap-4 px-4 rounded-xl'>
-              <div className='relative w-10 h-10'>
-                <Image src='/fragrance-free.svg' alt='' fill />
-              </div>
-              <div>
-                <span className='font-semibold'>Free next size trial</span>
-              </div>
-            </div>
-
-            <div className='aspect-square bg-[#F5F5F5] flex flex-col items-center justify-center gap-4 px-4 rounded-xl'>
-              <div className='relative w-10 h-10'>
-                <Image src='/fragrance-free.svg' alt='' fill />
-              </div>
-              <div>
-                <span className='font-semibold'>Free next size trial</span>
-              </div>
-            </div>
+            <BenefitTile icon='/fragrance-free.svg' title='Free next size trial' subtitle='(included in first Auto-Renew box)' />
+            <BenefitTile icon='/fragrance-free.svg' title='Manage deliveries via text' />
+            <BenefitTile icon='/fragrance-free.svg' title='Size up assist' />
+            <BenefitTile icon='/fragrance-free.svg' title='Auto-ships each month' />
           </div>
         </div>
         <div className='w-full px-4'>
