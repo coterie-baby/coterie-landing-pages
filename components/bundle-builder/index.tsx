@@ -74,8 +74,8 @@ const SKINCARE_ITEMS: SkincareItem[] = [
     id: 'first-wash',
     name: 'First Wash',
     description: 'Tear-free hair + body wash for a gentle cleanse',
-    subPrice: 14.0,
-    otpPrice: 16.0,
+    subPrice: 35.0,
+    otpPrice: 40.0,
     bgClass: 'bg-sky-50',
     image: 'https://cdn.sanity.io/images/e4q6bkl9/production/3fc74efb5fcc16d6aad0a15782c67bcdb8ee2873-3390x3390.jpg', 
   },
@@ -83,8 +83,8 @@ const SKINCARE_ITEMS: SkincareItem[] = [
     id: 'soft-cream',
     name: 'Soft Cream',
     description: 'Face + body moisturizer for up to 24-hr hydration',
-    subPrice: 14.0,
-    otpPrice: 16.0,
+    subPrice: 35.0,
+    otpPrice: 40.0,
     bgClass: 'bg-amber-50',
     image: 'https://cdn.sanity.io/images/e4q6bkl9/production/576070920de4d78aa3ab57fafda90e461e910ee1-3390x3390.jpg'
   },
@@ -92,8 +92,8 @@ const SKINCARE_ITEMS: SkincareItem[] = [
     id: 'bun-balm',
     name: 'Bun Balm',
     description: 'Diaper + dry skin ointment for skin barrier support',
-    subPrice: 12.0,
-    otpPrice: 14.0,
+    subPrice: 35.0,
+    otpPrice: 40.0,
     bgClass: 'bg-emerald-50',
     image: 'https://cdn.sanity.io/images/e4q6bkl9/production/28ead0f676c048788e047c876189be9e80ff2a06-3390x3390.jpg'
   },
@@ -379,12 +379,11 @@ function WipesCard({
         )}
       </div>
       <div className="p-3">
-        <p className="font-semibold text-gray-900 text-sm leading-tight mb-1">{product.name}</p>
-        <p className="text-xs text-gray-500 mb-1">{product.description}</p>
-        <p className="text-xs text-gray-500 mb-2">4-pack · {product.count} wipes</p>
+        <p className="font-semibold text-sm leading-tight mb-1">{product.name}</p>
+        <p className="text-xs text-[#515151] mb-2">4-pack · {product.count} wipes</p>
+        <p className="text-xs text-[#515151] mb-1">{product.description}</p>
         <p className="text-sm font-bold text-[#0000C9]">
           +${price.toFixed(2)}
-          {orderType === 'subscription' && <span className="font-normal text-xs">/mo</span>}
         </p>
       </div>
     </button>
@@ -429,11 +428,10 @@ function SkincareCard({
         )}
       </div>
       <div className="p-3">
-        <p className="font-semibold text-gray-900 text-sm leading-tight mb-1">{item.name}</p>
-        <p className="text-xs text-gray-500 mb-2">{item.description}</p>
+        <p className="font-semibold text-sm leading-tight mb-1">{item.name}</p>
+        <p className="text-xs text-[#515151] mb-2">{item.description}</p>
         <p className="text-sm font-bold text-[#0000C9]">
           +${price.toFixed(2)}
-          {orderType === 'subscription' && <span className="font-normal text-xs">/mo</span>}
         </p>
         {/* {orderType === 'subscription' && savings > 0 && (
           <p className="text-xs text-gray-400 mt-0.5">
@@ -811,6 +809,10 @@ export default function BundleBuilder() {
   };
 
   const handleWipesSelect = (wipes: WipesSelection) => {
+    if (selectedWipes === wipes) {
+      setSelectedWipes(null);
+      return;
+    }
     setSelectedWipes(wipes);
     if (!skincareOpen) {
       setSkincareOpen(true);
@@ -951,9 +953,9 @@ export default function BundleBuilder() {
             <SectionHeader
               step={2}
               title="Select a wipe:"
-              label="Required section"
+              label="Optional"
               isOpen={wipesOpen}
-              isDone={selectedWipes !== null}
+              isDone={selectedWipes !== null && selectedWipes !== 'none'}
               onClick={() => setWipesOpen((v) => !v)}
             />
             <div className={`h-px w-full ${wipesOpen ? 'bg-[#0000C9]' : 'bg-gray-200'}`} />
@@ -980,7 +982,7 @@ export default function BundleBuilder() {
             <SectionHeader
               step={3}
               title="Add skincare:"
-              label="Optional section"
+              label="Optional"
               isOpen={skincareOpen}
               isDone={selectedSkincareIndices.length > 0}
               onClick={() => setSkincareOpen((v) => !v)}
