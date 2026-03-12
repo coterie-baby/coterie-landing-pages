@@ -584,6 +584,14 @@ export interface SiteSettings {
   };
 }
 
+export interface LpDiscount {
+  code: string;
+  discountPercent: number;
+  label?: string;
+  eligibleOrderTypes: ('subscription' | 'one-time')[];
+  eligiblePlanTypes?: ('diaper-only' | 'diaper-wipe-bundle' | 'deluxe')[];
+}
+
 export interface SanityPage {
   _id: string;
   _type: 'page';
@@ -595,5 +603,6 @@ export interface SanityPage {
     ogImage?: SanityImage;
     noIndex?: boolean;
   };
+  discount?: LpDiscount;
   components: SanityComponent[];
 }

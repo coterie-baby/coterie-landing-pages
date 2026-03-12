@@ -3,17 +3,11 @@
 import { usePurchaseFlow, STEPS } from './context';
 
 export default function ProgressBar() {
-  const { currentStepIndex, state } = usePurchaseFlow();
+  const { currentStepIndex } = usePurchaseFlow();
 
-  // Don't show on welcome step
-  if (state.currentStep === 'welcome') return null;
+  const progress = ((currentStepIndex + 1) / STEPS.length) * 100;
 
-  // Calculate progress (excluding welcome step)
-  const visibleSteps = STEPS.filter((s) => s !== 'welcome');
-  const adjustedIndex = currentStepIndex - 1; // Adjust for hidden welcome step
-  const progress = ((adjustedIndex + 1) / visibleSteps.length) * 100;
-
-  const stepLabels = ['Size', 'Bundle', 'Review'];
+  const stepLabels = ['Size', 'Wipes', 'Skincare', 'Review'];
 
   return (
     <div className="fixed top-0 left-0 right-0 z-40 bg-white">
@@ -29,8 +23,8 @@ export default function ProgressBar() {
       {/* Step labels */}
       <div className="flex justify-between px-4 py-3 max-w-md mx-auto">
         {stepLabels.map((label, index) => {
-          const isCompleted = index < adjustedIndex;
-          const isCurrent = index === adjustedIndex;
+          const isCompleted = index < currentStepIndex;
+          const isCurrent = index === currentStepIndex;
 
           return (
             <div key={label} className="flex items-center gap-1.5">

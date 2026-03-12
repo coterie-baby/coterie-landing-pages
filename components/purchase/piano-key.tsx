@@ -17,7 +17,7 @@ export default function PianoKey({
       className={`px-[7px] h-[54px] flex flex-col justify-center rounded-lg border text-sm font-medium transition-all whitespace-nowrap cursor-pointer ${
         isSelected
           ? 'border-[#0000C9] bg-white'
-          : 'border-gray-200 bg-white hover:border-gray-300'
+          : 'border-[#E0E0E0] bg-white hover:border-gray-300'
       }`}
     >
       <span className="font-semibold text-sm">{size.label}</span>
