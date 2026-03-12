@@ -42,7 +42,7 @@ const WIPES_PRODUCTS: WipesProduct[] = [
     basePrice: 33,
     subscriptionPrice: 28,
     image:
-      'https://cdn.sanity.io/images/e4q6bkl9/production/fafaef923e0bc3fe3a063b06998eba6e567acab9-2048x2048.jpg?w=400&h=400&q=90&fit=crop&auto=format',
+      'https://cdn.sanity.io/images/e4q6bkl9/production/8e47d12b67b1a511fd8011809ef4a0b017a1679a-1920x2400.png',
     badge: 'Most Popular',
   },
   {
@@ -53,7 +53,7 @@ const WIPES_PRODUCTS: WipesProduct[] = [
     basePrice: 33,
     subscriptionPrice: 28,
     image:
-      'https://cdn.sanity.io/images/e4q6bkl9/production/fafaef923e0bc3fe3a063b06998eba6e567acab9-2048x2048.jpg?w=400&h=400&q=90&fit=crop&auto=format',
+      'https://cdn.sanity.io/images/e4q6bkl9/production/2efc22da90edbd361a2b1fa39fd32c76ab9c90f1-1920x2400.png',
   },
 ];
 
@@ -66,6 +66,7 @@ interface SkincareItem {
   subPrice: number;
   otpPrice: number;
   bgClass: string;
+  image?: string;
 }
 
 const SKINCARE_ITEMS: SkincareItem[] = [
@@ -76,6 +77,7 @@ const SKINCARE_ITEMS: SkincareItem[] = [
     subPrice: 14.0,
     otpPrice: 16.0,
     bgClass: 'bg-sky-50',
+    image: 'https://cdn.sanity.io/images/e4q6bkl9/production/3fc74efb5fcc16d6aad0a15782c67bcdb8ee2873-3390x3390.jpg', 
   },
   {
     id: 'soft-cream',
@@ -84,6 +86,7 @@ const SKINCARE_ITEMS: SkincareItem[] = [
     subPrice: 14.0,
     otpPrice: 16.0,
     bgClass: 'bg-amber-50',
+    image: 'https://cdn.sanity.io/images/e4q6bkl9/production/576070920de4d78aa3ab57fafda90e461e910ee1-3390x3390.jpg'
   },
   {
     id: 'bun-balm',
@@ -92,6 +95,7 @@ const SKINCARE_ITEMS: SkincareItem[] = [
     subPrice: 12.0,
     otpPrice: 14.0,
     bgClass: 'bg-emerald-50',
+    image: 'https://cdn.sanity.io/images/e4q6bkl9/production/28ead0f676c048788e047c876189be9e80ff2a06-3390x3390.jpg'
   },
 ];
 
@@ -410,8 +414,14 @@ function SkincareCard({
         isSelected ? 'border-[#0000C9] shadow-sm' : 'border-[#E0E0E0] hover:border-gray-300'
       }`}
     >
-      <div className={`relative aspect-square ${item.bgClass} flex items-center justify-center`}>
-        <span className="text-4xl opacity-20 select-none">✦</span>
+      <div className={`relative aspect-square ${item.bgClass}`}>
+        {item.image ? (
+          <Image src={item.image} alt={item.name} fill className="object-cover" sizes="(max-width: 768px) 50vw, 300px" />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center">
+            <span className="text-4xl opacity-20 select-none">✦</span>
+          </div>
+        )}
         {isSelected && (
           <div className="absolute top-2 right-2 w-6 h-6 bg-[#0000C9] rounded-full flex items-center justify-center">
             <CheckCircle />
@@ -444,8 +454,8 @@ function BenefitTile({ icon, title, subtitle }: { icon: string; title: string; s
         <Image src={icon} alt='' fill />
       </div>
       <div className='flex flex-col text-center'>
-        <span className='font-semibold'>{title}</span>
-        {subtitle && <span className='text-sm'>{subtitle}</span>}
+        <span className=''>{title}</span>
+        {subtitle && <span className='text-xs'>{subtitle}</span>}
       </div>
     </div>
   );
@@ -724,6 +734,7 @@ export default function BundleBuilder() {
 
   const wipesRef = useRef<HTMLDivElement>(null);
   const skincareRef = useRef<HTMLDivElement>(null);
+  const sizeRef = useRef<HTMLDivElement>(null);
 
   // Piano key sizes — dynamic label for newborn key
   const getNewbornLabel = (): string => {
@@ -862,18 +873,12 @@ export default function BundleBuilder() {
         </div>
         <div className='flex flex-col gap-6 px-4 py-6'>
           <div className='space-y-4'>
-            <p className='font-semibold'>Lorem ipsum dolor mont blanc </p>
-            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
-          </div>
-          <div className='grid grid-cols-2 gap-6'>
-            <BenefitTile icon='/fragrance-free.svg' title='Free next size trial' subtitle='(included in first Auto-Renew box)' />
-            <BenefitTile icon='/fragrance-free.svg' title='Manage deliveries via text' />
-            <BenefitTile icon='/fragrance-free.svg' title='Size up assist' />
-            <BenefitTile icon='/fragrance-free.svg' title='Auto-ships each month' />
+            <p className='font-semibold'>Customize your perfect bundle and save 15%</p>
+            <p className='leading-7 text-sm'>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
           </div>
         </div>
         <div className='w-full px-4'>
-          <div className="border-t border-gray-200 my-6" /> 
+          <div className="border-t border-gray-200 mb-6" /> 
         </div>
         <div className="max-w-lg mx-auto px-4 pt-5 pb-6">
           {/* <h4 className="mb-5">Build Your Diapering Bundle</h4> */}
@@ -903,7 +908,7 @@ export default function BundleBuilder() {
           {/* <div className="border-t border-gray-200 my-6" /> */}
 
           {/* Step 1: Size */}
-          <div className="mb-8">
+          <div ref={sizeRef} className="mb-8">
             <div className="flex items-center justify-between mb-3">
               <p className="text-base">
                 <span className="font-semibold">Step 1:</span>{' '}
@@ -1016,23 +1021,33 @@ export default function BundleBuilder() {
         error={error}
         onCheckout={handleAddToCart}
       />
+      <div className='py-6 px-4'>
+        <div className='grid grid-cols-2 gap-6'>
+            <BenefitTile icon='/fragrance-free.svg' title='Free next size trial' subtitle='(included in first Auto-Renew box)' />
+            <BenefitTile icon='/fragrance-free.svg' title='Manage deliveries via text' />
+            <BenefitTile icon='/fragrance-free.svg' title='Size up assist' />
+            <BenefitTile icon='/fragrance-free.svg' title='Auto-ships each month' />
+        </div>
+      </div>
 
       {/* Sticky bottom bar */}
       <div className="fixed bottom-0 left-0 right-0 z-30 bg-white border-t border-gray-200">
         <div className="max-w-lg mx-auto px-4 pt-2 pb-3 space-y-2">
-          <div className="flex items-baseline gap-1.5 text-sm">
-            <span className="font-bold text-green-600">${totalPrice.toFixed(2)}</span>
-            <span className="text-gray-500">
-              Comp. Value:{' '}
-              <span className="line-through">${originalTotalPrice.toFixed(2)}</span>
-            </span>
-          </div>
+          {selectedSize && (
+            <div className="flex items-baseline gap-1.5 text-sm">
+              <span className="font-bold text-green-600">${totalPrice.toFixed(2)}</span>
+              <span className="text-gray-500">
+                Comp. Value:{' '}
+                <span className="line-through">${originalTotalPrice.toFixed(2)}</span>
+              </span>
+            </div>
+          )}
           <Button
-            onClick={handleAddToCart}
+            onClick={selectedSize ? handleAddToCart : () => sizeRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
             disabled={isLoading}
             className="w-full"
           >
-            {isLoading ? 'Adding...' : 'Add to cart'}
+            {selectedSize ? (isLoading ? 'Adding...' : 'Add to cart') : 'Build my Bundle'}
           </Button>
         </div>
       </div>
