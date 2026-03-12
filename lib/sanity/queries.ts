@@ -292,6 +292,7 @@ export const pageBySlugQuery = groq`
         images[] { image, alt },
         cartImageOverride { ..., "alt": alt },
         hideSizeSelector,
+        showBundleBuilder,
         preselectedSize,
         bundleItems[] {
           _key,

@@ -23,6 +23,9 @@ import ProductFeatures from './purchase/product-features';
 import { ProductAccordion } from './purchase';
 import Link from 'next/link';
 import { useDiscount, FIRST_ORDER_DISCOUNT_PERCENT } from './discount-context';
+import { BundleSelectorProvider } from './bundle-builder/bundle-selector';
+import BundleSelector from './bundle-builder/bundle-selector';
+import BundleStickyBar from './bundle-builder/bundle-sticky-bar';
 
 // ─── Star Rating ──────────────────────────────────────────────
 
@@ -404,6 +407,7 @@ interface PDPHeroV2ContentProps {
   sizeImages?: Record<string, string>;
   orderTypeConfig: OrderTypeConfig;
   hideSizeSelector?: boolean;
+  showBundleBuilder?: boolean;
   features?: { icon: string; label: string }[];
   accordionItems?: { title: string; content?: PortableTextBlock[] }[];
   cartImageOverride?: string;
@@ -417,6 +421,7 @@ function PDPHeroV2Content({
   sizeImages,
   orderTypeConfig,
   hideSizeSelector,
+  showBundleBuilder,
   features,
   accordionItems,
   cartImageOverride,
@@ -457,29 +462,33 @@ function PDPHeroV2Content({
 
       {/* Form Content */}
       <div className="px-4 pt-6 pb-6 space-y-6">
-        {/* Size Selection — hidden in bundle mode when size is pre-selected */}
-        {!hideSizeSelector && <SizeSelectionContainer />}
-
-        <UpsellModule />
-
-        {/* Order Type */}
-        <OrderTypeSelector config={orderTypeConfig} />
-
-        {/* Add to Cart */}
-        <div ref={addToCartRef}>
-          <AddToCartButton title={productTitle} />
-        </div>
+        {showBundleBuilder ? (
+          <BundleSelector />
+        ) : (
+          <>
+            {!hideSizeSelector && <SizeSelectionContainer />}
+            <UpsellModule />
+            <OrderTypeSelector config={orderTypeConfig} />
+            <div ref={addToCartRef}>
+              <AddToCartButton title={productTitle} />
+            </div>
+          </>
+        )}
       </div>
       <div className="px-4 py-2 space-y-6">
         <ProductFeatures features={features} />
         <ProductAccordion items={accordionItems} />
       </div>
 
-      <StickyAddToCart
-        productTitle={productTitle}
-        imageUrl={cartImageOverride ?? images[0]?.src ?? ''}
-        show={!isAddToCartInView}
-      />
+      {showBundleBuilder ? (
+        <BundleStickyBar />
+      ) : (
+        <StickyAddToCart
+          productTitle={productTitle}
+          imageUrl={cartImageOverride ?? images[0]?.src ?? ''}
+          show={!isAddToCartInView}
+        />
+      )}
     </div>
   );
 }
@@ -495,6 +504,7 @@ interface PDPHeroV2Props {
   orderTypeConfig?: OrderTypeConfig;
   cartImageOverride?: string;
   hideSizeSelector?: boolean;
+  showBundleBuilder?: boolean;
   preselectedSize?: string;
   bundleItems?: BundleItem[];
   upsellProducts?: UpsellCartItem[];
@@ -533,6 +543,7 @@ function PDPHeroV2Inner({
   orderTypeConfig = defaultOrderTypeConfig,
   cartImageOverride,
   hideSizeSelector,
+  showBundleBuilder,
   preselectedSize,
   bundleItems,
   upsellProducts,
@@ -542,6 +553,22 @@ function PDPHeroV2Inner({
   const searchParams = useSearchParams();
   const sizeFromUrl = parseSizeParam(searchParams.get('size'));
 
+  const content = (
+    <PDPHeroV2Content
+      rating={rating}
+      reviewCount={reviewCount}
+      productTitle={productTitle}
+      images={images}
+      sizeImages={sizeImages}
+      orderTypeConfig={orderTypeConfig}
+      hideSizeSelector={hideSizeSelector}
+      showBundleBuilder={showBundleBuilder}
+      features={features}
+      accordionItems={accordionItems}
+      cartImageOverride={cartImageOverride}
+    />
+  );
+
   return (
     <ProductOrderProvider
       initialSize={(preselectedSize as DiaperSize) ?? sizeFromUrl ?? '1'}
@@ -549,18 +576,11 @@ function PDPHeroV2Inner({
       upsellItems={upsellProducts}
       cartImageOverride={cartImageOverride}
     >
-      <PDPHeroV2Content
-        rating={rating}
-        reviewCount={reviewCount}
-        productTitle={productTitle}
-        images={images}
-        sizeImages={sizeImages}
-        orderTypeConfig={orderTypeConfig}
-        hideSizeSelector={hideSizeSelector}
-        features={features}
-        accordionItems={accordionItems}
-        cartImageOverride={cartImageOverride}
-      />
+      {showBundleBuilder ? (
+        <BundleSelectorProvider>{content}</BundleSelectorProvider>
+      ) : (
+        content
+      )}
     </ProductOrderProvider>
   );
 }

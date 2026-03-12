@@ -442,6 +442,7 @@ export interface SanityPdpHeroV2 {
   }[];
   cartImageOverride?: SanityImage;
   hideSizeSelector?: boolean;
+  showBundleBuilder?: boolean;
   preselectedSize?: string;
   bundleItems?: BundleItem[];
   features?: {

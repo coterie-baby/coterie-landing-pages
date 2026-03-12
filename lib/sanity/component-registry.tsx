@@ -563,6 +563,7 @@ function transformPdpHeroV2(data: SanityPdpHeroV2) {
       : undefined,
     cartImageOverride: resolveImageUrl(data.cartImageOverride),
     hideSizeSelector: data.hideSizeSelector,
+    showBundleBuilder: data.showBundleBuilder,
     preselectedSize: data.preselectedSize,
     bundleItems: data.bundleItems,
     features: data.features?.length
