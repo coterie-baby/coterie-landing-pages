@@ -549,9 +549,9 @@ export function BabyNameDrawer({
         <div className="flex justify-center mb-4">
           <div className="w-8 h-1 bg-gray-300 rounded-full" />
         </div>
-        <p className="text-lg font-medium text-gray-900 mb-1">Who's this bundle for?</p>
+        <p className="text-lg font-medium text-gray-900 mb-1">Who&apos;s this bundle for?</p>
         <p className="text-sm text-[#515151] mb-4">
-          Enter your baby's name to personalize your bundle.
+          Enter your baby&apos;s name to personalize your bundle.
         </p>
         <input
           type="text"
