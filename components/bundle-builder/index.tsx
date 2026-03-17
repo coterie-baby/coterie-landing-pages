@@ -2,6 +2,8 @@
 
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
+import { useState, useRef } from 'react';
+import Link from 'next/link';
 import {
   BundleSelectorProvider,
   useBundleSelector,
@@ -44,8 +46,6 @@ function ChevronIcon({ open }: { open: boolean }) {
     </svg>
   );
 }
-
-import { useState } from 'react';
 
 function BundleSummary() {
   const {
@@ -303,6 +303,163 @@ export default function BundleBuilder() {
   return (
     <BundleSelectorProvider>
       <BundleBuilderInner />
+    </BundleSelectorProvider>
+  );
+}
+
+// ── V2: PDPHeroV2-style header ─────────────────────────────────
+
+const STAR_PATH =
+  'M6.5 0L8.02 4.68H13L8.99 7.57L10.51 12.25L6.5 9.36L2.49 12.25L4.01 7.57L0 4.68H4.98L6.5 0Z';
+
+function StarIcon({ fillPercent = 0 }: { fillPercent?: number }) {
+  const id = `bundle-star-${fillPercent}`;
+  const isPartial = fillPercent > 0 && fillPercent < 100;
+  return (
+    <svg width="14" height="14" viewBox="0 0 13 13" aria-hidden="true">
+      {isPartial && (
+        <defs>
+          <clipPath id={id}>
+            <rect x="0" y="0" width={`${(fillPercent / 100) * 13}`} height="13" />
+          </clipPath>
+        </defs>
+      )}
+      <path d={STAR_PATH} fill="none" stroke="#D1D5DB" strokeWidth="1" />
+      {fillPercent > 0 && (
+        <path d={STAR_PATH} fill="#0000C9" clipPath={isPartial ? `url(#${id})` : undefined} />
+      )}
+    </svg>
+  );
+}
+
+function BundleStarRating({ rating, reviewCount }: { rating: number; reviewCount: number }) {
+  return (
+    <div className="flex items-center gap-1.5">
+      <div className="flex items-center gap-0.5">
+        {[1, 2, 3, 4, 5].map((star) => {
+          const fill = Math.min(100, Math.max(0, (rating - (star - 1)) * 100));
+          return <StarIcon key={star} fillPercent={fill} />;
+        })}
+      </div>
+      <Link className="text-xs text-gray-600 underline" href="#reviews">
+        {rating}/5 ({reviewCount.toLocaleString()} reviews)
+      </Link>
+    </div>
+  );
+}
+
+const SLIDE_GAP = 8;
+const SLIDE_PEEK = 32;
+
+function ImageCarouselV2({ images }: { images: { src: string; alt: string }[] }) {
+  const scrollRef = useRef<HTMLDivElement>(null);
+  return (
+    <div
+      ref={scrollRef}
+      className="flex snap-x snap-mandatory overflow-x-auto min-h-[294px]"
+      style={{ gap: `${SLIDE_GAP}px`, scrollbarWidth: 'none' }}
+    >
+      {images.map((image, index) => (
+        <div
+          key={index}
+          className="relative aspect-square min-h-[294px] max-w-[320px] flex-shrink-0 snap-start"
+          style={{ width: `calc(100% - ${SLIDE_PEEK}px)` }}
+        >
+          <Image
+            src={image.src}
+            alt={image.alt}
+            fill
+            className="object-cover"
+            sizes="(max-width: 1024px) 90vw, 50vw"
+            priority={index === 0}
+          />
+        </div>
+      ))}
+    </div>
+  );
+}
+
+const BUNDLE_IMAGES = [
+  {
+    src: '/images/bundle-featured-image.jpg',
+    alt: 'Coterie Build Your Bundle',
+  },
+  {
+    src: 'https://cdn.sanity.io/images/e4q6bkl9/production/8e47d12b67b1a511fd8011809ef4a0b017a1679a-1920x2400.png',
+    alt: 'The Wipe by Coterie',
+  },
+  {
+    src: 'https://cdn.sanity.io/images/e4q6bkl9/production/3fc74efb5fcc16d6aad0a15782c67bcdb8ee2873-3390x3390.jpg',
+    alt: 'Coterie skincare',
+  },
+];
+
+interface BundleBuilderV2Props {
+  title?: string;
+  subtitle?: string;
+  rating?: number;
+  reviewCount?: number;
+  images?: { src: string; alt: string }[];
+}
+
+function BundleBuilderV2Inner({
+  title = 'Build Your Diapering Bundle',
+  subtitle = 'Customize your perfect bundle and save 15%',
+  rating = 4.9,
+  reviewCount = 1284,
+  images = BUNDLE_IMAGES,
+}: BundleBuilderV2Props) {
+  return (
+    <>
+      <div className="bg-white">
+        {/* Rating + Title (PDPHeroV2 style) */}
+        <div className="flex flex-col gap-2 px-4 py-4">
+          <BundleStarRating rating={rating} reviewCount={reviewCount} />
+          <div className="flex flex-col gap-0.5">
+            <h4 className="text-[26px] font-medium text-black mt-1 leading-tight">
+              {title}
+            </h4>
+            <p className="text-sm text-[#525252]">{subtitle}</p>
+          </div>
+        </div>
+
+        {/* Image Carousel (PDPHeroV2 style) */}
+        <ImageCarouselV2 images={images} />
+
+        {/* <div className="w-full px-4 pt-6">
+          <div className="border-t border-gray-200 mb-6" />
+        </div> */}
+
+        {/* Three-step selector */}
+        <div className="max-w-lg mx-auto px-4 py-6">
+          <BundleSelector />
+        </div>
+      </div>
+
+      <BundleSummary />
+
+      <div className="py-6 px-4">
+        <div className="grid grid-cols-2 gap-6">
+          <BenefitTile
+            icon="/fragrance-free.svg"
+            title="Free next size trial"
+            subtitle="(included in first Auto-Renew box)"
+          />
+          <BenefitTile icon="/fragrance-free.svg" title="Manage deliveries via text" />
+          <BenefitTile icon="/fragrance-free.svg" title="Size up assist" />
+          <BenefitTile icon="/fragrance-free.svg" title="Auto-ships each month" />
+        </div>
+      </div>
+
+      <BundleStickyBar />
+    </>
+  );
+}
+
+export function BundleBuilderV2(props: BundleBuilderV2Props) {
+  return (
+    <BundleSelectorProvider>
+      <BundleBuilderV2Inner {...props} />
     </BundleSelectorProvider>
   );
 }

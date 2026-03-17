@@ -470,6 +470,19 @@ export interface SanityPdpHeroV2 {
   };
 }
 
+export interface SanityBundleBuilderV2 {
+  _type: 'bundleBuilderV2';
+  _key: string;
+  title?: string;
+  subtitle?: string;
+  rating?: number;
+  reviewCount?: number;
+  images?: {
+    image?: SanityImage;
+    alt?: string;
+  }[];
+}
+
 export interface SanityReviews {
   _type: 'reviews';
   _key: string;
@@ -520,6 +533,7 @@ export type SanityComponent =
   | SanitySteppedStats
   | SanityThreeColumnTable
   | SanityPdpHeroV2
+  | SanityBundleBuilderV2
   | SanityReviews
   | SanityReviewsToggle
   | SanityScrollTimeline

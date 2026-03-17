@@ -26,6 +26,7 @@ import SimpleStats from '@/components/simple-stats';
 import SteppedStats from '@/components/stepped-stats';
 import ThreeColumnTable from '@/components/three-column-table';
 import PDPHeroV2 from '@/components/pdp-hero-v2';
+import { BundleBuilderV2 } from '@/components/bundle-builder';
 import Reviews from '@/components/reviews';
 import { ReviewsToggleSection } from '@/components/reviews-toggle';
 import ScrollTimeline from '@/components/scroll-timeline';
@@ -61,6 +62,7 @@ import type {
   SanitySteppedStats,
   SanityThreeColumnTable,
   SanityPdpHeroV2,
+  SanityBundleBuilderV2,
   SanityReviews,
   SanityScrollTimeline,
   SanityValuePropCards,
@@ -576,6 +578,23 @@ function transformPdpHeroV2(data: SanityPdpHeroV2) {
   };
 }
 
+function transformBundleBuilderV2(data: SanityBundleBuilderV2) {
+  const images = (data.images || [])
+    .map((img) => ({
+      src: resolveImageUrl(img.image) || '',
+      alt: img.alt || 'Bundle image',
+    }))
+    .filter((img) => img.src);
+
+  return {
+    title: data.title,
+    subtitle: data.subtitle,
+    rating: data.rating,
+    reviewCount: data.reviewCount,
+    images: images.length > 0 ? images : undefined,
+  };
+}
+
 export function renderSanityComponent(component: SanityComponent) {
   const key = component._key;
 
@@ -636,6 +655,8 @@ export function renderSanityComponent(component: SanityComponent) {
       return <ThreeColumnTable key={key} {...transformThreeColumnTable(component)} />;
     case 'pdpHeroV2':
       return <PDPHeroV2 key={key} {...transformPdpHeroV2(component)} />;
+    case 'bundleBuilderV2':
+      return <BundleBuilderV2 key={key} {...transformBundleBuilderV2(component)} />;
     case 'reviews':
       return <Reviews key={key} {...transformReviews(component)} />;
     case 'scrollTimeline':

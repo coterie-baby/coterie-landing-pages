@@ -335,6 +335,13 @@ export const pageBySlugQuery = groq`
           }
         }
       },
+      _type == "bundleBuilderV2" => {
+        title,
+        subtitle,
+        rating,
+        reviewCount,
+        images[] { image, alt }
+      },
       _type == "reviews" => {
         "product": product-> { _id, shopifyProductId }
       },
