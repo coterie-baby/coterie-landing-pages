@@ -32,13 +32,9 @@ export default function BundleStep() {
   const {
     state,
     setWipes,
-    setOrderType,
     nextStep,
     prevStep,
     diaperCount,
-    totalPrice,
-    originalTotalPrice,
-    totalSavings,
   } = usePurchaseFlow();
 
   const getSelectedLabel = () => {
@@ -105,8 +101,9 @@ export default function BundleStep() {
       <div className="space-y-3 mb-6">
         {WIPES_CONFIGS.map((config) => {
           const isSelected = state.selectedWipes === config.id;
-          const price = state.orderType === 'subscription' ? config.subscriptionPrice : config.basePrice;
-          const savings = state.orderType === 'subscription' ? config.basePrice - config.subscriptionPrice : 0;
+          const subPrice = config.subscriptionPrice;
+          const otpPrice = config.basePrice;
+          const savings = otpPrice - subPrice;
 
           return (
             <button
@@ -138,19 +135,13 @@ export default function BundleStep() {
                   {config.id !== 'none' ? (
                     <>
                       <p className="text-sm font-medium">
-                        {state.orderType === 'subscription' ? (
-                          <>
-                            <span className="text-[#0000C9]">+${price}</span>
-                            <span className="text-gray-400 line-through text-xs ml-1.5">
-                              ${config.basePrice}
-                            </span>
-                          </>
-                        ) : (
-                          <span>+${price}</span>
-                        )}
+                        <span className="text-[#0000C9]">+${subPrice}</span>
+                        <span className="text-gray-400 line-through text-xs ml-1.5">
+                          ${otpPrice}
+                        </span>
                       </p>
                       {savings > 0 && (
-                        <p className="text-xs text-green-600">Save ${savings}</p>
+                        <p className="text-xs text-green-600">Save ${savings} w/ Auto-Renew</p>
                       )}
                     </>
                   ) : (
@@ -168,46 +159,6 @@ export default function BundleStep() {
             </button>
           );
         })}
-      </div>
-
-      {/* Order Type Toggle */}
-      <div className="flex items-center justify-between p-4 bg-gray-50 rounded-xl mb-6">
-        <div>
-          <p className="text-sm font-medium">Auto-Renew & Save 10%</p>
-          <p className="text-xs text-gray-500">Cancel or pause anytime</p>
-        </div>
-        <button
-          onClick={() => setOrderType(state.orderType === 'subscription' ? 'one-time' : 'subscription')}
-          className={`relative w-12 h-7 rounded-full transition-colors ${
-            state.orderType === 'subscription' ? 'bg-[#0000C9]' : 'bg-gray-300'
-          }`}
-        >
-          <div
-            className={`absolute top-1 w-5 h-5 rounded-full bg-white shadow transition-transform ${
-              state.orderType === 'subscription' ? 'translate-x-6' : 'translate-x-1'
-            }`}
-          />
-        </button>
-      </div>
-
-      {/* Price Summary */}
-      <div className="bg-[#D1E3FB]/30 rounded-xl p-4 mb-6">
-        <div className="flex items-center justify-between mb-2">
-          <span className="text-sm">Monthly Total</span>
-          <div className="text-right">
-            <span className="text-lg font-semibold">${totalPrice.toFixed(2)}</span>
-            {totalSavings > 0 && (
-              <span className="text-sm text-gray-400 line-through ml-2">
-                ${originalTotalPrice.toFixed(2)}
-              </span>
-            )}
-          </div>
-        </div>
-        {totalSavings > 0 && (
-          <p className="text-xs text-green-600 text-right">
-            You&apos;re saving ${totalSavings.toFixed(2)}/month with Auto-Renew
-          </p>
-        )}
       </div>
 
       {/* Navigation */}

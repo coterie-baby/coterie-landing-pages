@@ -9,16 +9,15 @@ import {
   ReactNode,
 } from 'react';
 import { DiaperSize, SIZE_CONFIGS, PlanType, OrderType, PLAN_CONFIGS } from '../purchase/context';
+import type { SanityPdpHeroV2 } from '@/lib/sanity/types';
 
-export type PurchaseFlowStep = 'welcome' | 'size' | 'bundle' | 'review';
+export type SkincareProduct = NonNullable<SanityPdpHeroV2['upsellProducts']>[number];
 
-export const STEPS: PurchaseFlowStep[] = ['welcome', 'size', 'bundle', 'review'];
+export type PurchaseFlowStep = 'size' | 'bundle' | 'skincare' | 'review';
+
+export const STEPS: PurchaseFlowStep[] = ['size', 'bundle', 'skincare', 'review'];
 
 export const STEP_CONFIG: Record<PurchaseFlowStep, { title: string; subtitle: string }> = {
-  welcome: {
-    title: 'Build Your Bundle',
-    subtitle: "Let's find the perfect fit for your baby",
-  },
   size: {
     title: 'Select Your Size',
     subtitle: 'Choose the right size for your baby',
@@ -26,6 +25,10 @@ export const STEP_CONFIG: Record<PurchaseFlowStep, { title: string; subtitle: st
   bundle: {
     title: 'Build Your Bundle',
     subtitle: 'Add wipes to save more',
+  },
+  skincare: {
+    title: 'Add Skincare',
+    subtitle: 'Complete your routine',
   },
   review: {
     title: 'Review Your Order',
@@ -76,6 +79,7 @@ export interface PurchaseFlowState {
   currentStep: PurchaseFlowStep;
   selectedSize: DiaperSize | null;
   selectedWipes: WipesOption;
+  selectedSkincareIndices: number[];
   orderType: OrderType;
   isAnimating: boolean;
 }
@@ -84,6 +88,7 @@ type PurchaseFlowAction =
   | { type: 'SET_STEP'; payload: PurchaseFlowStep }
   | { type: 'SET_SIZE'; payload: DiaperSize }
   | { type: 'SET_WIPES'; payload: WipesOption }
+  | { type: 'TOGGLE_SKINCARE'; payload: number }
   | { type: 'SET_ORDER_TYPE'; payload: OrderType }
   | { type: 'SET_ANIMATING'; payload: boolean }
   | { type: 'NEXT_STEP' }
@@ -91,9 +96,10 @@ type PurchaseFlowAction =
   | { type: 'RESET' };
 
 const initialState: PurchaseFlowState = {
-  currentStep: 'welcome',
+  currentStep: 'size',
   selectedSize: null,
   selectedWipes: '4-pack',
+  selectedSkincareIndices: [],
   orderType: 'subscription',
   isAnimating: false,
 };
@@ -109,6 +115,17 @@ function purchaseFlowReducer(
       return { ...state, selectedSize: action.payload };
     case 'SET_WIPES':
       return { ...state, selectedWipes: action.payload };
+    case 'TOGGLE_SKINCARE': {
+      const index = action.payload;
+      const current = state.selectedSkincareIndices;
+      const isSelected = current.includes(index);
+      return {
+        ...state,
+        selectedSkincareIndices: isSelected
+          ? current.filter((i) => i !== index)
+          : [...current, index],
+      };
+    }
     case 'SET_ORDER_TYPE':
       return { ...state, orderType: action.payload };
     case 'SET_ANIMATING':
@@ -136,10 +153,12 @@ function purchaseFlowReducer(
 
 interface PurchaseFlowContextValue {
   state: PurchaseFlowState;
+  skincareProducts: SkincareProduct[];
   // Actions
   setStep: (step: PurchaseFlowStep) => void;
   setSize: (size: DiaperSize) => void;
   setWipes: (wipes: WipesOption) => void;
+  toggleSkincare: (index: number) => void;
   setOrderType: (type: OrderType) => void;
   setAnimating: (animating: boolean) => void;
   nextStep: () => void;
@@ -152,9 +171,11 @@ interface PurchaseFlowContextValue {
   selectedWipesConfig: WipesConfig | undefined;
   diaperPrice: number;
   wipesPrice: number;
+  skincarePrice: number;
   totalPrice: number;
   originalDiaperPrice: number;
   originalWipesPrice: number;
+  originalSkincarePrice: number;
   originalTotalPrice: number;
   totalSavings: number;
   diaperCount: number;
@@ -166,9 +187,10 @@ const PurchaseFlowContext = createContext<PurchaseFlowContextValue | null>(null)
 
 interface PurchaseFlowProviderProps {
   children: ReactNode;
+  skincareProducts?: SkincareProduct[];
 }
 
-export function PurchaseFlowProvider({ children }: PurchaseFlowProviderProps) {
+export function PurchaseFlowProvider({ children, skincareProducts = [] }: PurchaseFlowProviderProps) {
   const [state, dispatch] = useReducer(purchaseFlowReducer, initialState);
 
   // Actions
@@ -182,6 +204,10 @@ export function PurchaseFlowProvider({ children }: PurchaseFlowProviderProps) {
 
   const setWipes = useCallback((wipes: WipesOption) => {
     dispatch({ type: 'SET_WIPES', payload: wipes });
+  }, []);
+
+  const toggleSkincare = useCallback((index: number) => {
+    dispatch({ type: 'TOGGLE_SKINCARE', payload: index });
   }, []);
 
   const setOrderType = useCallback((type: OrderType) => {
@@ -257,14 +283,35 @@ export function PurchaseFlowProvider({ children }: PurchaseFlowProviderProps) {
     [selectedWipesConfig]
   );
 
+  // Skincare pricing
+  const skincarePrice = useMemo(() => {
+    return state.selectedSkincareIndices.reduce((sum, idx) => {
+      const product = skincareProducts[idx];
+      if (!product) return sum;
+      const price =
+        state.orderType === 'subscription'
+          ? product.product?.pricing?.autoRenew
+          : product.product?.pricing?.oneTimePurchase;
+      return sum + (price ?? 0);
+    }, 0);
+  }, [state.selectedSkincareIndices, state.orderType, skincareProducts]);
+
+  const originalSkincarePrice = useMemo(() => {
+    return state.selectedSkincareIndices.reduce((sum, idx) => {
+      const product = skincareProducts[idx];
+      if (!product) return sum;
+      return sum + (product.product?.pricing?.oneTimePurchase ?? 0);
+    }, 0);
+  }, [state.selectedSkincareIndices, skincareProducts]);
+
   const totalPrice = useMemo(
-    () => diaperPrice + wipesPrice,
-    [diaperPrice, wipesPrice]
+    () => diaperPrice + wipesPrice + skincarePrice,
+    [diaperPrice, wipesPrice, skincarePrice]
   );
 
   const originalTotalPrice = useMemo(
-    () => originalDiaperPrice + originalWipesPrice,
-    [originalDiaperPrice, originalWipesPrice]
+    () => originalDiaperPrice + originalWipesPrice + originalSkincarePrice,
+    [originalDiaperPrice, originalWipesPrice, originalSkincarePrice]
   );
 
   const totalSavings = useMemo(
@@ -281,12 +328,12 @@ export function PurchaseFlowProvider({ children }: PurchaseFlowProviderProps) {
 
   const canProceed = useMemo(() => {
     switch (state.currentStep) {
-      case 'welcome':
-        return true;
       case 'size':
         return state.selectedSize !== null;
       case 'bundle':
-        return true; // Can always proceed with any wipes selection
+        return true;
+      case 'skincare':
+        return true;
       case 'review':
         return state.selectedSize !== null;
       default:
@@ -296,9 +343,11 @@ export function PurchaseFlowProvider({ children }: PurchaseFlowProviderProps) {
 
   const value: PurchaseFlowContextValue = {
     state,
+    skincareProducts,
     setStep,
     setSize,
     setWipes,
+    toggleSkincare,
     setOrderType,
     setAnimating,
     nextStep,
@@ -310,9 +359,11 @@ export function PurchaseFlowProvider({ children }: PurchaseFlowProviderProps) {
     selectedWipesConfig,
     diaperPrice,
     wipesPrice,
+    skincarePrice,
     totalPrice,
     originalDiaperPrice,
     originalWipesPrice,
+    originalSkincarePrice,
     originalTotalPrice,
     totalSavings,
     diaperCount,

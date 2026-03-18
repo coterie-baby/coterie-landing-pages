@@ -114,7 +114,7 @@ const DISPLAY_SIZES = [
 ];
 
 export default function SizeStep() {
-  const { state, setSize, nextStep, prevStep, selectedSizeConfig, diaperCount } = usePurchaseFlow();
+  const { state, setSize, nextStep, selectedSizeConfig, diaperCount } = usePurchaseFlow();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const isNewbornSelected = state.selectedSize === 'n' || state.selectedSize === 'n+1';
@@ -213,16 +213,9 @@ export default function SizeStep() {
       {/* Navigation */}
       <div className="flex gap-3 mt-auto">
         <Button
-          variant="outline"
-          onClick={prevStep}
-          className="flex-1 border-gray-200"
-        >
-          Back
-        </Button>
-        <Button
           onClick={nextStep}
           disabled={!state.selectedSize}
-          className="flex-1 bg-[#0000C9] hover:bg-[#0000A0] disabled:bg-gray-200"
+          className="w-full bg-[#0000C9] hover:bg-[#0000A0] disabled:bg-gray-200"
         >
           Continue
         </Button>
