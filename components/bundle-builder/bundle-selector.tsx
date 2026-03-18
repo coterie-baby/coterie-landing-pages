@@ -13,6 +13,9 @@ import type { SizeOption } from '@/components/purchase/context';
 import PianoKey from '@/components/purchase/piano-key';
 import SizeFitGuideDrawer from '@/components/purchase/size-fit-guide-drawer';
 import { Button } from '@/components/ui/button';
+import { useCart } from '@/components/cart/cart-context';
+import { getDiaperImageUrl } from '@/lib/config/products';
+import { trackAddToCart, trackCheckoutError } from '@/lib/gtm/ecommerce';
 
 // ── Types ──────────────────────────────────────────────────────
 
@@ -107,12 +110,12 @@ interface BundleSelectorContextValue {
   originalTotalPrice: number;
   totalSavings: number;
   planType: 'diaper-only' | 'diaper-wipe-bundle';
+  bundleTitle: string;
   sizeError: boolean;
   wipesOpen: boolean;
   skincareOpen: boolean;
   showNewbornModal: boolean;
   showSizeGuide: boolean;
-  showBabyNameDrawer: boolean;
   isLoading: boolean;
   error: string | null;
   sizeRef: RefObject<HTMLDivElement>;
@@ -123,7 +126,6 @@ interface BundleSelectorContextValue {
   setSkincareOpen: (v: boolean) => void;
   setShowNewbornModal: (v: boolean) => void;
   setShowSizeGuide: (v: boolean) => void;
-  setShowBabyNameDrawer: (v: boolean) => void;
   setIsLoading: (v: boolean) => void;
   setError: (v: string | null) => void;
   handleSizeSelect: (sizeId: string) => void;
@@ -131,6 +133,7 @@ interface BundleSelectorContextValue {
   handleWipesSelect: (wipes: WipesSelection) => void;
   toggleSkincare: (index: number) => void;
   getSizeLabel: (size: DiaperSize) => string;
+  handleAddToCart: () => Promise<void>;
 }
 
 const BundleSelectorContext = createContext<BundleSelectorContextValue | null>(null);
@@ -141,7 +144,14 @@ export function useBundleSelector() {
   return ctx;
 }
 
-export function BundleSelectorProvider({ children }: { children: ReactNode }) {
+export function BundleSelectorProvider({
+  children,
+  bundleTitle = 'The Diaper',
+}: {
+  children: ReactNode;
+  bundleTitle?: string;
+}) {
+  const cart = useCart();
   const [selectedSize, setSelectedSize] = useState<DiaperSize | null>(null);
   const [selectedWipes, setSelectedWipes] = useState<WipesSelection>(null);
   const [selectedSkincareIndices, setSelectedSkincareIndices] = useState<number[]>([]);
@@ -150,7 +160,6 @@ export function BundleSelectorProvider({ children }: { children: ReactNode }) {
   const [skincareOpen, setSkincareOpen] = useState(false);
   const [showNewbornModal, setShowNewbornModal] = useState(false);
   const [showSizeGuide, setShowSizeGuide] = useState(false);
-  const [showBabyNameDrawer, setShowBabyNameDrawer] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [sizeError, setSizeError] = useState(false);
@@ -249,6 +258,45 @@ export function BundleSelectorProvider({ children }: { children: ReactNode }) {
     );
   };
 
+  const handleAddToCart = async () => {
+    if (!selectedSize) {
+      setSizeError(true);
+      sizeRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      return;
+    }
+    setIsLoading(true);
+    setError(null);
+    try {
+      trackAddToCart({
+        planType,
+        size: selectedSize,
+        orderType,
+        price: totalPrice,
+        quantity: 1,
+        location: 'Bundle Builder',
+      });
+      await cart.addToCart({
+        size: selectedSize,
+        displaySize: getSizeLabel(selectedSize),
+        diaperCount: SIZE_CONFIGS[selectedSize].count,
+        planType,
+        orderType,
+        quantity: 1,
+        currentPrice: totalPrice,
+        originalPrice: originalTotalPrice,
+        savingsAmount: totalSavings,
+        title: bundleTitle,
+        imageUrl: getDiaperImageUrl(),
+      });
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'An unexpected error occurred';
+      setError(msg);
+      trackCheckoutError(msg, { plan_type: planType, size: selectedSize, order_type: orderType });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <BundleSelectorContext.Provider
       value={{
@@ -262,12 +310,12 @@ export function BundleSelectorProvider({ children }: { children: ReactNode }) {
         originalTotalPrice,
         totalSavings,
         planType,
+        bundleTitle,
         sizeError,
         wipesOpen,
         skincareOpen,
         showNewbornModal,
         showSizeGuide,
-        showBabyNameDrawer,
         isLoading,
         error,
         sizeRef,
@@ -278,7 +326,6 @@ export function BundleSelectorProvider({ children }: { children: ReactNode }) {
         setSkincareOpen,
         setShowNewbornModal,
         setShowSizeGuide,
-        setShowBabyNameDrawer,
         setIsLoading,
         setError,
         handleSizeSelect,
@@ -286,6 +333,7 @@ export function BundleSelectorProvider({ children }: { children: ReactNode }) {
         handleWipesSelect,
         toggleSkincare,
         getSizeLabel,
+        handleAddToCart,
       }}
     >
       {children}
@@ -525,51 +573,6 @@ function SectionHeader({
         <ChevronIcon open={isOpen} />
       </div>
     </button>
-  );
-}
-
-// ── BabyNameDrawer (exported for sticky bars) ──────────────────
-
-export function BabyNameDrawer({
-  isOpen,
-  onConfirm,
-  onSkip,
-}: {
-  isOpen: boolean;
-  onConfirm: (name: string) => void;
-  onSkip: () => void;
-}) {
-  const [name, setName] = useState('');
-  if (!isOpen) return null;
-  const handleConfirm = () => onConfirm(name.trim());
-  return (
-    <div className="fixed inset-0 z-50 flex items-end">
-      <div className="absolute inset-0 bg-black/50" onClick={onSkip} />
-      <div className="relative w-full bg-white rounded-t-2xl shadow-2xl px-4 pt-5 pb-8">
-        <div className="flex justify-center mb-4">
-          <div className="w-8 h-1 bg-gray-300 rounded-full" />
-        </div>
-        <p className="text-lg font-medium text-gray-900 mb-1">Who&apos;s this bundle for?</p>
-        <p className="text-sm text-[#515151] mb-4">
-          Enter your baby&apos;s name to personalize your bundle.
-        </p>
-        <input
-          type="text"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          onKeyDown={(e) => e.key === 'Enter' && name.trim() && handleConfirm()}
-          placeholder="Baby's name"
-          autoFocus
-          className="w-full border border-gray-300 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#0000C9] mb-3"
-        />
-        <Button onClick={handleConfirm} disabled={!name.trim()} className="w-full mb-2">
-          Continue
-        </Button>
-        <button onClick={onSkip} className="w-full text-sm text-gray-400 py-1">
-          Skip
-        </button>
-      </div>
-    </div>
   );
 }
 

@@ -47,198 +47,198 @@ function ChevronIcon({ open }: { open: boolean }) {
   );
 }
 
-function BundleSummary() {
-  const {
-    selectedSize,
-    selectedWipes,
-    selectedSkincareIndices,
-    orderType,
-    diaperPrice,
-    wipesPrice,
-    totalPrice,
-    originalTotalPrice,
-    totalSavings,
-    isLoading,
-    error,
-    setShowBabyNameDrawer,
-    getSizeLabel,
-  } = useBundleSelector();
+// function BundleSummary() {
+//   const {
+//     selectedSize,
+//     selectedWipes,
+//     selectedSkincareIndices,
+//     orderType,
+//     diaperPrice,
+//     wipesPrice,
+//     totalPrice,
+//     originalTotalPrice,
+//     totalSavings,
+//     isLoading,
+//     error,
+//     handleAddToCart,
+//     getSizeLabel,
+//   } = useBundleSelector();
 
-  const [showItems, setShowItems] = useState(false);
+//   const [showItems, setShowItems] = useState(false);
 
-  const wipesConfig =
-    selectedWipes && selectedWipes !== 'none'
-      ? WIPES_PRODUCTS.find((w) => w.id === selectedWipes)
-      : null;
+//   const wipesConfig =
+//     selectedWipes && selectedWipes !== 'none'
+//       ? WIPES_PRODUCTS.find((w) => w.id === selectedWipes)
+//       : null;
 
-  const itemCount =
-    (selectedSize ? 1 : 0) + (wipesConfig ? 1 : 0) + selectedSkincareIndices.length;
+//   const itemCount =
+//     (selectedSize ? 1 : 0) + (wipesConfig ? 1 : 0) + selectedSkincareIndices.length;
 
-  const savingsPercent =
-    originalTotalPrice > 0 ? Math.round((totalSavings / originalTotalPrice) * 100) : 0;
+//   const savingsPercent =
+//     originalTotalPrice > 0 ? Math.round((totalSavings / originalTotalPrice) * 100) : 0;
 
-  const getSizeLabelLocal = (size: DiaperSize) => getSizeLabel(size);
+//   const getSizeLabelLocal = (size: DiaperSize) => getSizeLabel(size);
 
-  return (
-    <div className="bg-[#F9F4EC] py-10">
-      <div className="max-w-lg mx-auto px-4">
-        <div className="text-center mb-6">
-          <p className="text-sm text-gray-400 mb-2">Your new Coterie bundle awaits.</p>
-          <p className="text-3xl font-bold text-[#001A6E] leading-tight">
-            Designed for babies.
-            <br />
-            Built by you.
-          </p>
-        </div>
+//   return (
+//     <div className="bg-[#F9F4EC] py-10">
+//       <div className="max-w-lg mx-auto px-4">
+//         <div className="text-center mb-6">
+//           <p className="text-sm text-gray-400 mb-2">Your new Coterie bundle awaits.</p>
+//           <p className="text-3xl font-bold text-[#001A6E] leading-tight">
+//             Designed for babies.
+//             <br />
+//             Built by you.
+//           </p>
+//         </div>
 
-        <div className="relative h-[280px] rounded-2xl overflow-hidden mb-6">
-          <Image
-            src="https://cdn.sanity.io/images/e4q6bkl9/production/ec5a384428110d9ddc4b1445fdfdb118d4beb658-6720x4480.png?w=800&q=80&auto=format"
-            alt="Coterie diapers"
-            fill
-            className="object-cover"
-            sizes="(max-width: 512px) 100vw, 512px"
-          />
-        </div>
+//         <div className="relative h-[280px] rounded-2xl overflow-hidden mb-6">
+//           <Image
+//             src="https://cdn.sanity.io/images/e4q6bkl9/production/ec5a384428110d9ddc4b1445fdfdb118d4beb658-6720x4480.png?w=800&q=80&auto=format"
+//             alt="Coterie diapers"
+//             fill
+//             className="object-cover"
+//             sizes="(max-width: 512px) 100vw, 512px"
+//           />
+//         </div>
 
-        <div className="border border-gray-200 rounded-2xl overflow-hidden">
-          <button
-            onClick={() => setShowItems((v) => !v)}
-            className="w-full flex items-center justify-between px-4 py-4"
-          >
-            <span className="font-semibold text-gray-900">
-              Your bundle{' '}
-              <span className="font-normal text-gray-500">({itemCount} items)</span>
-            </span>
-            <span className="flex items-center gap-1 text-sm text-gray-600">
-              Show your bundle items
-              <ChevronIcon open={showItems} />
-            </span>
-          </button>
+//         <div className="border border-gray-200 rounded-2xl overflow-hidden">
+//           <button
+//             onClick={() => setShowItems((v) => !v)}
+//             className="w-full flex items-center justify-between px-4 py-4"
+//           >
+//             <span className="font-semibold text-gray-900">
+//               Your bundle{' '}
+//               <span className="font-normal text-gray-500">({itemCount} items)</span>
+//             </span>
+//             <span className="flex items-center gap-1 text-sm text-gray-600">
+//               Show your bundle items
+//               <ChevronIcon open={showItems} />
+//             </span>
+//           </button>
 
-          {showItems && itemCount > 0 && (
-            <div className="border-t border-gray-100 px-4 py-3 space-y-3">
-              {selectedSize && (
-                <div className="flex items-center gap-3">
-                  <div className="relative w-12 h-12 flex-shrink-0">
-                    <Image
-                      src="https://m.media-amazon.com/images/I/815Q-eQIQkL._AC_SX679_.jpg"
-                      alt="The Diaper"
-                      fill
-                      className="object-cover rounded-lg"
-                    />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-gray-900">
-                      The Diaper — {getSizeLabelLocal(selectedSize)}
-                    </p>
-                    <p className="text-xs text-gray-500">
-                      {SIZE_CONFIGS[selectedSize].count} diapers/delivery
-                    </p>
-                  </div>
-                  <p className="text-sm font-semibold">${diaperPrice.toFixed(2)}</p>
-                </div>
-              )}
+//           {showItems && itemCount > 0 && (
+//             <div className="border-t border-gray-100 px-4 py-3 space-y-3">
+//               {selectedSize && (
+//                 <div className="flex items-center gap-3">
+//                   <div className="relative w-12 h-12 flex-shrink-0">
+//                     <Image
+//                       src="https://m.media-amazon.com/images/I/815Q-eQIQkL._AC_SX679_.jpg"
+//                       alt="The Diaper"
+//                       fill
+//                       className="object-cover rounded-lg"
+//                     />
+//                   </div>
+//                   <div className="flex-1 min-w-0">
+//                     <p className="text-sm font-medium text-gray-900">
+//                       The Diaper — {getSizeLabelLocal(selectedSize)}
+//                     </p>
+//                     <p className="text-xs text-gray-500">
+//                       {SIZE_CONFIGS[selectedSize].count} diapers/delivery
+//                     </p>
+//                   </div>
+//                   <p className="text-sm font-semibold">${diaperPrice.toFixed(2)}</p>
+//                 </div>
+//               )}
 
-              {wipesConfig && (
-                <div className="flex items-center gap-3">
-                  <div className="relative w-12 h-12 flex-shrink-0">
-                    <Image
-                      src={wipesConfig.image}
-                      alt={wipesConfig.name}
-                      fill
-                      className="object-cover rounded-lg"
-                    />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-gray-900">{wipesConfig.name}</p>
-                    <p className="text-xs text-gray-500">{wipesConfig.count} wipes</p>
-                  </div>
-                  <p className="text-sm font-semibold">${wipesPrice.toFixed(2)}</p>
-                </div>
-              )}
+//               {wipesConfig && (
+//                 <div className="flex items-center gap-3">
+//                   <div className="relative w-12 h-12 flex-shrink-0">
+//                     <Image
+//                       src={wipesConfig.image}
+//                       alt={wipesConfig.name}
+//                       fill
+//                       className="object-cover rounded-lg"
+//                     />
+//                   </div>
+//                   <div className="flex-1 min-w-0">
+//                     <p className="text-sm font-medium text-gray-900">{wipesConfig.name}</p>
+//                     <p className="text-xs text-gray-500">{wipesConfig.count} wipes</p>
+//                   </div>
+//                   <p className="text-sm font-semibold">${wipesPrice.toFixed(2)}</p>
+//                 </div>
+//               )}
 
-              {selectedSkincareIndices.map((idx) => {
-                const item = SKINCARE_ITEMS[idx];
-                if (!item) return null;
-                const price = orderType === 'subscription' ? item.subPrice : item.otpPrice;
-                return (
-                  <div key={item.id} className="flex items-center gap-3">
-                    <div className={`w-12 h-12 flex-shrink-0 rounded-lg ${item.bgClass}`} />
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-gray-900">{item.name}</p>
-                    </div>
-                    <p className="text-sm font-semibold">${price.toFixed(2)}</p>
-                  </div>
-                );
-              })}
-            </div>
-          )}
+//               {selectedSkincareIndices.map((idx) => {
+//                 const item = SKINCARE_ITEMS[idx];
+//                 if (!item) return null;
+//                 const price = orderType === 'subscription' ? item.subPrice : item.otpPrice;
+//                 return (
+//                   <div key={item.id} className="flex items-center gap-3">
+//                     <div className={`w-12 h-12 flex-shrink-0 rounded-lg ${item.bgClass}`} />
+//                     <div className="flex-1 min-w-0">
+//                       <p className="text-sm font-medium text-gray-900">{item.name}</p>
+//                     </div>
+//                     <p className="text-sm font-semibold">${price.toFixed(2)}</p>
+//                   </div>
+//                 );
+//               })}
+//             </div>
+//           )}
 
-          <div className="border-t border-gray-200" />
+//           <div className="border-t border-gray-200" />
 
-          <div className="px-4 py-4 space-y-3">
-            <div className="flex items-center justify-between text-sm">
-              <span className="flex items-center gap-1.5 text-gray-600">
-                Comp. Value
-                <svg
-                  className="w-4 h-4 text-gray-400"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth={1.5}
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z"
-                  />
-                </svg>
-              </span>
-              <span className="text-gray-600">${originalTotalPrice.toFixed(2)}</span>
-            </div>
+//           <div className="px-4 py-4 space-y-3">
+//             <div className="flex items-center justify-between text-sm">
+//               <span className="flex items-center gap-1.5 text-gray-600">
+//                 Comp. Value
+//                 <svg
+//                   className="w-4 h-4 text-gray-400"
+//                   fill="none"
+//                   viewBox="0 0 24 24"
+//                   stroke="currentColor"
+//                   strokeWidth={1.5}
+//                 >
+//                   <path
+//                     strokeLinecap="round"
+//                     strokeLinejoin="round"
+//                     d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z"
+//                   />
+//                 </svg>
+//               </span>
+//               <span className="text-gray-600">${originalTotalPrice.toFixed(2)}</span>
+//             </div>
 
-            <div className="flex items-center justify-between text-sm">
-              <span className="font-semibold text-gray-900">Bundle Savings</span>
-              <div className="flex items-center gap-2">
-                <span className="font-semibold text-gray-900">-${totalSavings.toFixed(2)}</span>
-                {savingsPercent > 0 && (
-                  <span className="bg-[#1B5E50] text-white text-[11px] font-semibold px-2 py-0.5 rounded-full">
-                    {savingsPercent}% OFF
-                  </span>
-                )}
-              </div>
-            </div>
+//             <div className="flex items-center justify-between text-sm">
+//               <span className="font-semibold text-gray-900">Bundle Savings</span>
+//               <div className="flex items-center gap-2">
+//                 <span className="font-semibold text-gray-900">-${totalSavings.toFixed(2)}</span>
+//                 {savingsPercent > 0 && (
+//                   <span className="bg-[#1B5E50] text-white text-[11px] font-semibold px-2 py-0.5 rounded-full">
+//                     {savingsPercent}% OFF
+//                   </span>
+//                 )}
+//               </div>
+//             </div>
 
-            <div className="flex items-center justify-between text-sm">
-              <span className="font-semibold text-gray-900">Shipping</span>
-              <span className="text-gray-500">Free</span>
-            </div>
+//             <div className="flex items-center justify-between text-sm">
+//               <span className="font-semibold text-gray-900">Shipping</span>
+//               <span className="text-gray-500">Free</span>
+//             </div>
 
-            <div className="border-t border-gray-100 pt-3 flex items-center justify-between">
-              <span className="font-semibold text-gray-900">Total</span>
-              <span className="font-semibold text-gray-900">${totalPrice.toFixed(2)}</span>
-            </div>
-          </div>
-        </div>
+//             <div className="border-t border-gray-100 pt-3 flex items-center justify-between">
+//               <span className="font-semibold text-gray-900">Total</span>
+//               <span className="font-semibold text-gray-900">${totalPrice.toFixed(2)}</span>
+//             </div>
+//           </div>
+//         </div>
 
-        {error && (
-          <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-xl">
-            <p className="text-sm text-red-600">{error}</p>
-          </div>
-        )}
+//         {error && (
+//           <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-xl">
+//             <p className="text-sm text-red-600">{error}</p>
+//           </div>
+//         )}
 
-        <Button
-          onClick={() => setShowBabyNameDrawer(true)}
-          disabled={isLoading || !selectedSize}
-          className="w-full mt-4 bg-[#0000C9] hover:bg-[#0000A0]"
-        >
-          {isLoading ? 'Processing...' : 'Add to cart'}
-        </Button>
-      </div>
-    </div>
-  );
-}
+//         <Button
+//           onClick={handleAddToCart}
+//           disabled={isLoading || !selectedSize}
+//           className="w-full mt-4 bg-[#0000C9] hover:bg-[#0000A0]"
+//         >
+//           {isLoading ? 'Processing...' : 'Add to cart'}
+//         </Button>
+//       </div>
+//     </div>
+//   );
+// }
 
 // ── Inner page (uses context) ──────────────────────────────────
 
@@ -277,7 +277,7 @@ function BundleBuilderInner() {
         </div>
       </div>
 
-      <BundleSummary />
+      {/* <BundleSummary /> */}
 
       <div className="py-6 px-4">
         <div className="grid grid-cols-2 gap-6">
@@ -342,7 +342,7 @@ function BundleStarRating({ rating, reviewCount }: { rating: number; reviewCount
         })}
       </div>
       <Link className="text-xs text-gray-600 underline" href="#reviews">
-        {rating}/5 ({reviewCount.toLocaleString()} reviews)
+        {rating}/5 ({(reviewCount ?? 0).toLocaleString()} reviews)
       </Link>
     </div>
   );
@@ -436,7 +436,7 @@ function BundleBuilderV2Inner({
         </div>
       </div>
 
-      <BundleSummary />
+      {/* <BundleSummary /> */}
 
       <div className="py-6 px-4">
         <div className="grid grid-cols-2 gap-6">
@@ -458,7 +458,7 @@ function BundleBuilderV2Inner({
 
 export function BundleBuilderV2(props: BundleBuilderV2Props) {
   return (
-    <BundleSelectorProvider>
+    <BundleSelectorProvider bundleTitle={props.title ?? 'Build Your Diapering Bundle'}>
       <BundleBuilderV2Inner {...props} />
     </BundleSelectorProvider>
   );
