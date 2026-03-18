@@ -1,19 +1,11 @@
 'use client';
 
 import Image from 'next/image';
-import { Button } from '@/components/ui/button';
-import { useState, useRef } from 'react';
+import { useRef } from 'react';
 import Link from 'next/link';
-import {
-  BundleSelectorProvider,
-  useBundleSelector,
-  WIPES_PRODUCTS,
-  SKINCARE_ITEMS,
-} from './bundle-selector';
+import { BundleSelectorProvider } from './bundle-selector';
 import BundleSelector from './bundle-selector';
 import BundleStickyBar from './bundle-sticky-bar';
-import type { DiaperSize } from '@/components/purchase/context';
-import { SIZE_CONFIGS } from '@/components/purchase/context';
 
 // ── Benefit Tile ───────────────────────────────────────────────
 
@@ -32,20 +24,6 @@ function BenefitTile({ icon, title, subtitle }: { icon: string; title: string; s
 }
 
 // ── Bundle Summary ─────────────────────────────────────────────
-
-function ChevronIcon({ open }: { open: boolean }) {
-  return (
-    <svg
-      className={`w-5 h-5 transition-transform ${open ? 'rotate-180' : ''}`}
-      fill="none"
-      viewBox="0 0 24 24"
-      stroke="currentColor"
-      strokeWidth={2}
-    >
-      <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-    </svg>
-  );
-}
 
 // function BundleSummary() {
 //   const {
