@@ -12,7 +12,6 @@ import {
 import BundleSelector from './bundle-selector';
 import BundleStickyBar from './bundle-sticky-bar';
 import type { DiaperSize } from '@/components/purchase/context';
-import { SIZE_CONFIGS } from '@/components/purchase/context';
 import { Button } from '@/components/ui/button';
 
 // ── Benefit Tile ───────────────────────────────────────────────
@@ -132,9 +131,6 @@ function BundleSummary() {
                     <p className="text-sm font-medium text-gray-900">
                       The Diaper — {getSizeLabelLocal(selectedSize)}
                     </p>
-                    <p className="text-xs text-gray-500">
-                      {SIZE_CONFIGS[selectedSize].count} diapers/delivery
-                    </p>
                   </div>
                   <p className="text-sm font-semibold">${diaperPrice.toFixed(2)}</p>
                 </div>
@@ -180,20 +176,8 @@ function BundleSummary() {
           <div className="px-4 py-4 space-y-3">
             <div className="flex items-center justify-between text-sm">
               <span className="flex items-center gap-1.5 text-[#515151]">
-                Comp. Value
-                <svg
-                  className="w-4 h-4 text-gray-400"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth={1.5}
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z"
-                  />
-                </svg>
+                Starting price
+                
               </span>
               <span className="text-gray-600">${originalTotalPrice.toFixed(2)}</span>
             </div>
@@ -210,10 +194,12 @@ function BundleSummary() {
               </div>
             </div>
 
-            <div className="flex items-center justify-between text-sm">
-              <span className="text-[#515151]">Shipping</span>
-              <span className="text-gray-500">Free</span>
-            </div>
+            {totalPrice >= 110 && (
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-[#515151]">Shipping</span>
+                <span className="text-gray-500">Free</span>
+              </div>
+            )}
 
             <div className="border-t border-gray-100 text-[15px] pt-3 flex items-center justify-between">
               <span className="font-medium">Subtotal</span>
@@ -399,6 +385,7 @@ interface BundleBuilderV2Props {
   subtitle?: string;
   rating?: number;
   reviewCount?: number;
+  cartImage?: string;
   images?: { src: string; alt: string }[];
 }
 
@@ -441,7 +428,10 @@ function BundleBuilderV2Inner({
 
 export function BundleBuilderV2(props: BundleBuilderV2Props) {
   return (
-    <BundleSelectorProvider bundleTitle={props.title ?? 'Build Your Diapering Bundle'}>
+    <BundleSelectorProvider
+      bundleTitle={props.title ?? 'Build Your Diapering Bundle'}
+      cartImage={props.cartImage}
+    >
       <BundleBuilderV2Inner {...props} />
     </BundleSelectorProvider>
   );

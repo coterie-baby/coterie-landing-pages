@@ -146,9 +146,11 @@ export function useBundleSelector() {
 export function BundleSelectorProvider({
   children,
   bundleTitle = 'The Diaper',
+  cartImage,
 }: {
   children: ReactNode;
   bundleTitle?: string;
+  cartImage?: string;
 }) {
   const cart = useCart();
   const [selectedSize, setSelectedSize] = useState<DiaperSize | null>(null);
@@ -285,7 +287,8 @@ export function BundleSelectorProvider({
         originalPrice: originalTotalPrice,
         savingsAmount: totalSavings,
         title: bundleTitle,
-        imageUrl: getDiaperImageUrl(),
+        imageUrl: cartImage ?? getDiaperImageUrl(),
+        isBundleBuilder: true,
       });
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'An unexpected error occurred';

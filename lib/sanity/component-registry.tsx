@@ -591,6 +591,7 @@ function transformBundleBuilderV2(data: SanityBundleBuilderV2) {
     subtitle: data.subtitle,
     rating: data.rating,
     reviewCount: data.reviewCount,
+    cartImage: resolveImageUrl(data.cartImage) || undefined,
     images: images.length > 0 ? images : undefined,
     features: data.features?.length
       ? data.features.map((f) => ({

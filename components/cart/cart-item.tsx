@@ -56,7 +56,7 @@ const CartItem = memo(function CartItem({
         <div className="flex items-start justify-between gap-2">
           <div>
             <p className="leading-tight">{item.title}</p>
-            {!item.isAddOn && (
+            {!item.isAddOn && !item.isBundleBuilder && (
               <p className="text-xs text-[#515151] mt-0.5">
                 Size {item.displaySize} &middot; {item.diaperCount} diapers
               </p>

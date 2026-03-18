@@ -477,6 +477,7 @@ export interface SanityBundleBuilderV2 {
   subtitle?: string;
   rating?: number;
   reviewCount?: number;
+  cartImage?: SanityImage;
   images?: {
     image?: SanityImage;
     alt?: string;

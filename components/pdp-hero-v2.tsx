@@ -22,7 +22,7 @@ import { trackSelectPurchaseType } from '@/lib/gtm/ecommerce';
 import ProductFeatures from './purchase/product-features';
 import { ProductAccordion } from './purchase';
 import Link from 'next/link';
-import { useDiscount, FIRST_ORDER_DISCOUNT_PERCENT } from './discount-context';
+import { useDiscount } from './discount-context';
 import { BundleSelectorProvider } from './bundle-builder/bundle-selector';
 import BundleSelector from './bundle-builder/bundle-selector';
 import BundleStickyBar from './bundle-builder/bundle-sticky-bar';
@@ -250,14 +250,14 @@ function OrderTypeSelector({
   config: OrderTypeConfig;
 }) {
   const { state, setOrderType } = useProductOrder();
-  const { discountClaimed } = useDiscount();
+  const { discountClaimed, discountPercent } = useDiscount();
 
   const diaperOnlyPlan = PLAN_CONFIGS.find((p) => p.id === 'diaper-only');
   const subscriptionPrice = diaperOnlyPlan?.subscriptionPrice ?? 95;
   const basePrice = diaperOnlyPlan?.basePrice ?? 105.5;
 
   const discountedSubscriptionPrice = discountClaimed
-    ? Math.round(subscriptionPrice * (1 - FIRST_ORDER_DISCOUNT_PERCENT) * 100) / 100
+    ? Math.round(subscriptionPrice * (1 - discountPercent) * 100) / 100
     : null;
 
   const defaults = defaultOrderTypeConfig.autoRenew!;

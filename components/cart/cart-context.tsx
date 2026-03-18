@@ -56,6 +56,7 @@ export interface CartItem {
   originalPrice: number;
   savingsAmount: number;
   isAddOn?: boolean;
+  isBundleBuilder?: boolean;
 }
 
 interface CartState {
@@ -197,6 +198,7 @@ export interface AddToCartOptions {
   savingsAmount: number;
   title: string;
   imageUrl: string;
+  isBundleBuilder?: boolean;
   bundleItems?: BundleItem[];
   upsellItems?: {
     shopifyVariantId: string;
@@ -322,6 +324,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         currentPrice: options.currentPrice,
         originalPrice: options.originalPrice,
         savingsAmount: options.savingsAmount,
+        isBundleBuilder: options.isBundleBuilder,
       };
 
       // Build optimistic items with temporary IDs
