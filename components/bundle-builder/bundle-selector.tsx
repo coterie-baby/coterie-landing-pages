@@ -646,12 +646,12 @@ export default function BundleSelector() {
           ))}
         </div>
 
-        {selectedSize && (
+        {/* {selectedSize && (
           <p className="text-sm text-gray-500 mt-3">
             {getSizeLabel(selectedSize)} · {SIZE_CONFIGS[selectedSize].weightRange} ·{' '}
             {SIZE_CONFIGS[selectedSize].count} diapers per delivery
           </p>
-        )}
+        )} */}
       </div>
 
       {/* Step 2: Wipes */}

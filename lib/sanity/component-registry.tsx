@@ -592,6 +592,13 @@ function transformBundleBuilderV2(data: SanityBundleBuilderV2) {
     rating: data.rating,
     reviewCount: data.reviewCount,
     images: images.length > 0 ? images : undefined,
+    features: data.features?.length
+      ? data.features.map((f) => ({
+          icon: resolveImageUrl(f.icon) || '',
+          label: f.label,
+        }))
+      : undefined,
+    accordionItems: data.accordionItems?.length ? data.accordionItems : undefined,
   };
 }
 

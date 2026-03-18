@@ -481,6 +481,14 @@ export interface SanityBundleBuilderV2 {
     image?: SanityImage;
     alt?: string;
   }[];
+  features?: {
+    icon?: SanityImage;
+    label: string;
+  }[];
+  accordionItems?: {
+    title: string;
+    content?: PortableTextBlock[];
+  }[];
 }
 
 export interface SanityReviews {
