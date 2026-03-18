@@ -599,7 +599,6 @@ export default function BundleSelector() {
     handleNewbornConfirm,
     handleWipesSelect,
     toggleSkincare,
-    getSizeLabel,
   } = useBundleSelector();
 
   const getNewbornLabel = (): string => {
