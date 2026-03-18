@@ -12,7 +12,6 @@ import {
 import type { SizeOption } from '@/components/purchase/context';
 import PianoKey from '@/components/purchase/piano-key';
 import SizeFitGuideDrawer from '@/components/purchase/size-fit-guide-drawer';
-import { Button } from '@/components/ui/button';
 import { useCart } from '@/components/cart/cart-context';
 import { getDiaperImageUrl } from '@/lib/config/products';
 import { trackAddToCart, trackCheckoutError } from '@/lib/gtm/ecommerce';
