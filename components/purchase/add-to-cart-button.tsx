@@ -21,7 +21,7 @@ export default function AddToCartButton({
 }: AddToCartButtonProps) {
   const { state, isValid, currentPrice, originalPrice, savingsAmount, displaySize, diaperCount, bundleItems, upsellItems, selectedUpsellIndices, cartImageOverride } = useProductOrder();
 
-  const selectedUpsells = (upsellItems ?? [])
+  const selectedUpsellsAsBundleItems = (upsellItems ?? [])
     .filter((_, i) => selectedUpsellIndices.includes(i))
     .filter((item): item is typeof item & { shopifyVariantId: string } => {
       if (!item.shopifyVariantId) {
@@ -31,14 +31,17 @@ export default function AddToCartButton({
       return true;
     })
     .map((item) => ({
+      _key: item.shopifyVariantId,
+      productTitle: item.title,
       shopifyVariantId: item.shopifyVariantId,
       shopifySellingPlanId: item.shopifySellingPlanId,
-      title: item.title,
-      imageUrl: item.imageUrl,
-      price: state.orderType === 'subscription'
-        ? (item.subscriptionPrice ?? item.onetimePrice ?? 0)
-        : (item.onetimePrice ?? 0),
+      quantity: 1,
     }));
+
+  const allBundleItems = [
+    ...(bundleItems ?? []),
+    ...selectedUpsellsAsBundleItems,
+  ];
   const cart = useCart();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -73,8 +76,7 @@ export default function AddToCartButton({
         savingsAmount,
         title,
         imageUrl: cartImageOverride ?? getDiaperImageUrl(),
-        bundleItems,
-        upsellItems: selectedUpsells.length > 0 ? selectedUpsells : undefined,
+        bundleItems: allBundleItems.length > 0 ? allBundleItems : undefined,
       });
     } catch (err) {
       const errorMessage =

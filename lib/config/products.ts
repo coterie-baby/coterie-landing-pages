@@ -143,6 +143,32 @@ export const getWipesSellingPlanId = () => {
 };
 
 // =============================================================================
+// SKINCARE PRODUCT CONFIG
+// =============================================================================
+
+const SKINCARE_FIRST_WASH_VARIANT_ID = process.env.NEXT_PUBLIC_SKINCARE_FIRST_WASH_VARIANT_ID;
+const SKINCARE_SOFT_CREAM_VARIANT_ID = process.env.NEXT_PUBLIC_SKINCARE_SOFT_CREAM_VARIANT_ID;
+const SKINCARE_BUN_BALM_VARIANT_ID = process.env.NEXT_PUBLIC_SKINCARE_BUN_BALM_VARIANT_ID;
+const SKINCARE_SELLING_PLAN_ID = process.env.NEXT_PUBLIC_SKINCARE_SELLING_PLAN_ID;
+
+export const getSkincareFirstWashVariantId = () => {
+  if (!SKINCARE_FIRST_WASH_VARIANT_ID) throw new Error('Missing NEXT_PUBLIC_SKINCARE_FIRST_WASH_VARIANT_ID');
+  return SKINCARE_FIRST_WASH_VARIANT_ID;
+};
+export const getSkincareSoftCreamVariantId = () => {
+  if (!SKINCARE_SOFT_CREAM_VARIANT_ID) throw new Error('Missing NEXT_PUBLIC_SKINCARE_SOFT_CREAM_VARIANT_ID');
+  return SKINCARE_SOFT_CREAM_VARIANT_ID;
+};
+export const getSkincareBunBalmVariantId = () => {
+  if (!SKINCARE_BUN_BALM_VARIANT_ID) throw new Error('Missing NEXT_PUBLIC_SKINCARE_BUN_BALM_VARIANT_ID');
+  return SKINCARE_BUN_BALM_VARIANT_ID;
+};
+export const getSkincareSellingPlanId = () => {
+  if (!SKINCARE_SELLING_PLAN_ID) throw new Error('Missing NEXT_PUBLIC_SKINCARE_SELLING_PLAN_ID');
+  return SKINCARE_SELLING_PLAN_ID;
+};
+
+// =============================================================================
 // VALIDATION
 // =============================================================================
 
