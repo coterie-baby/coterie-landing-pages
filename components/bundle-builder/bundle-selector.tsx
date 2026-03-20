@@ -46,6 +46,8 @@ interface SkincareItem {
   otpPrice: number;
   bgClass: string;
   image?: string;
+  variantId: string;
+  sellingPlanId: string;
 }
 
 // ── Product Data ───────────────────────────────────────────────
@@ -81,6 +83,8 @@ export const SKINCARE_ITEMS: SkincareItem[] = [
     otpPrice: 40.0,
     bgClass: 'bg-sky-50',
     image: 'https://cdn.sanity.io/images/e4q6bkl9/production/3fc74efb5fcc16d6aad0a15782c67bcdb8ee2873-3390x3390.jpg',
+    variantId: process.env.NEXT_PUBLIC_SKINCARE_FIRST_WASH_VARIANT_ID ?? '',
+    sellingPlanId: process.env.NEXT_PUBLIC_SKINCARE_SELLING_PLAN_ID ?? '',
   },
   {
     id: 'soft-cream',
@@ -90,6 +94,8 @@ export const SKINCARE_ITEMS: SkincareItem[] = [
     otpPrice: 40.0,
     bgClass: 'bg-amber-50',
     image: 'https://cdn.sanity.io/images/e4q6bkl9/production/576070920de4d78aa3ab57fafda90e461e910ee1-3390x3390.jpg',
+    variantId: process.env.NEXT_PUBLIC_SKINCARE_SOFT_CREAM_VARIANT_ID ?? '',
+    sellingPlanId: process.env.NEXT_PUBLIC_SKINCARE_SELLING_PLAN_ID ?? '',
   },
   {
     id: 'bun-balm',
@@ -99,6 +105,8 @@ export const SKINCARE_ITEMS: SkincareItem[] = [
     otpPrice: 40.0,
     bgClass: 'bg-emerald-50',
     image: 'https://cdn.sanity.io/images/e4q6bkl9/production/28ead0f676c048788e047c876189be9e80ff2a06-3390x3390.jpg',
+    variantId: process.env.NEXT_PUBLIC_SKINCARE_BUN_BALM_VARIANT_ID ?? '',
+    sellingPlanId: process.env.NEXT_PUBLIC_SKINCARE_SELLING_PLAN_ID ?? '',
   },
 ];
 
@@ -322,6 +330,17 @@ export function BundleSelectorProvider({
         quantity: 1,
         location: 'Bundle Builder',
       });
+      const skincareLines = selectedSkincareIndices
+        .map((idx) => SKINCARE_ITEMS[idx])
+        .filter((item) => item?.variantId)
+        .map((item) => ({
+          _key: item.id,
+          productTitle: item.name,
+          shopifyVariantId: item.variantId,
+          shopifySellingPlanId: orderType === 'subscription' ? item.sellingPlanId : undefined,
+          quantity: 1,
+        }));
+
       await cart.addToCart({
         size: selectedSize,
         displaySize: getSizeLabel(selectedSize),
@@ -335,6 +354,7 @@ export function BundleSelectorProvider({
         title: bundleTitle,
         imageUrl: cartImage ?? getDiaperImageUrl(),
         isBundleBuilder: true,
+        bundleItems: skincareLines.length > 0 ? skincareLines : undefined,
       });
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'An unexpected error occurred';

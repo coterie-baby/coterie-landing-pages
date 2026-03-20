@@ -87,7 +87,8 @@ type CartAction =
   | { type: 'OPTIMISTIC_ADD'; payload: CartItem[] }
   | { type: 'OPTIMISTIC_UPDATE_QUANTITY'; payload: { lineId: string; quantity: number } }
   | { type: 'OPTIMISTIC_REMOVE'; payload: string }
-  | { type: 'ROLLBACK' };
+  | { type: 'ROLLBACK' }
+  | { type: 'RESET_CART' };
 
 const initialState: CartState = {
   cartId: null,
@@ -178,6 +179,11 @@ function cartReducer(state: CartState, action: CartAction): CartState {
         previousItems: null,
         pendingLineIds: [],
         isLoading: false,
+      };
+    case 'RESET_CART':
+      return {
+        ...initialState,
+        isOpen: state.isOpen,
       };
     default:
       return state;
@@ -455,6 +461,49 @@ export function CartProvider({ children }: { children: ReactNode }) {
           if (!result.success || !result.cart) {
             dispatch({ type: 'ROLLBACK' });
             const errorMsg = result.error || 'Failed to add to cart';
+
+            // Stale/expired cart — clear it and create a fresh one
+            if (errorMsg.includes('does not exist')) {
+              localStorage.removeItem('cart');
+              rawCartRef.current = null;
+              dispatch({ type: 'RESET_CART' });
+              const freshResult = await createCart({
+                size: options.size,
+                planType: options.planType,
+                orderType: options.orderType,
+                quantity: options.quantity,
+                bundleItems: options.bundleItems,
+                upsellItems: options.upsellItems,
+              });
+              if (freshResult.success && freshResult.checkoutUrl && freshResult.cartId && freshResult.cart) {
+                const upsellGids = new Set(
+                  (options.upsellItems ?? []).map((u) => toVariantGid(u.shopifyVariantId))
+                );
+                const mainEdges = freshResult.cart.lines.edges.filter(
+                  (e) => !upsellGids.has(e.node.merchandise.id)
+                );
+                const upsellEdges = freshResult.cart.lines.edges.filter(
+                  (e) => upsellGids.has(e.node.merchandise.id)
+                );
+                const cartItem = buildCartItemFromEdges(mainEdges, displayData, options.quantity);
+                const addOnItems = upsellEdges.map((edge) => {
+                  const data = (options.upsellItems ?? []).find(
+                    (u) => toVariantGid(u.shopifyVariantId) === edge.node.merchandise.id
+                  )!;
+                  return buildAddOnCartItem(edge, data, options.orderType);
+                });
+                dispatch({
+                  type: 'SET_CART',
+                  payload: {
+                    cartId: freshResult.cartId,
+                    checkoutUrl: freshResult.checkoutUrl,
+                    items: [cartItem, ...addOnItems],
+                  },
+                });
+              }
+              return;
+            }
+
             dispatch({ type: 'SET_ERROR', payload: errorMsg });
             return;
           }
