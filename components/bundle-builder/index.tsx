@@ -84,7 +84,7 @@ function BundleSummary() {
         <div className="text-center mb-6">
           <p className="text-[#515151] mb-2">Your new diapering bundle awaits.</p>
           <p className="text-3xl text-[#0000c9] leading-tight">
-            Designed for babies.
+            Designed for comfort.
             <br />
             Built by you.
           </p>
@@ -160,7 +160,17 @@ function BundleSummary() {
                 const price = orderType === 'subscription' ? item.subPrice : item.otpPrice;
                 return (
                   <div key={item.id} className="flex items-center gap-3">
-                    <div className={`w-12 h-12 flex-shrink-0 rounded-lg ${item.bgClass}`} />
+                    <div className={`relative w-12 h-12 flex-shrink-0 rounded-lg overflow-hidden ${item.bgClass}`}>
+                      {item.image && (
+                        <Image
+                          src={item.image}
+                          alt={item.name}
+                          fill
+                          className="object-cover"
+                          sizes="48px"
+                        />
+                      )}
+                    </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium text-gray-900">{item.name}</p>
                     </div>

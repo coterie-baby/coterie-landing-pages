@@ -340,6 +340,7 @@ export const pageBySlugQuery = groq`
         subtitle,
         rating,
         reviewCount,
+        cartImage,
         images[] { image, alt }
       },
       _type == "reviews" => {

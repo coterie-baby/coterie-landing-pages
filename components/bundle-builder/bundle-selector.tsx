@@ -14,7 +14,13 @@ import PianoKey from '@/components/purchase/piano-key';
 import SizeFitGuideDrawer from '@/components/purchase/size-fit-guide-drawer';
 import { useCart } from '@/components/cart/cart-context';
 import { getDiaperImageUrl } from '@/lib/config/products';
-import { trackAddToCart, trackCheckoutError } from '@/lib/gtm/ecommerce';
+import {
+  trackAddToCart,
+  trackCheckoutError,
+  trackSelectProductVariant,
+  trackSelectBundleAddOn,
+  trackRemoveBundleAddOn,
+} from '@/lib/gtm/ecommerce';
 
 // ── Types ──────────────────────────────────────────────────────
 
@@ -213,6 +219,11 @@ export function BundleSelectorProvider({
     if (sizeId === 'n-or-n1') {
       setShowNewbornModal(true);
     } else {
+      trackSelectProductVariant({
+        itemName: 'The Diaper',
+        itemVariant: getSizeLabel(sizeId as DiaperSize),
+        location: 'Bundle Builder',
+      });
       setSelectedSize(sizeId as DiaperSize);
       setSizeError(false);
       if (!wipesOpen) {
@@ -226,6 +237,11 @@ export function BundleSelectorProvider({
   };
 
   const handleNewbornConfirm = (option: 'n' | 'n+1') => {
+    trackSelectProductVariant({
+      itemName: 'The Diaper',
+      itemVariant: getSizeLabel(option),
+      location: 'Bundle Builder',
+    });
     setSelectedSize(option);
     setShowNewbornModal(false);
     setSizeError(false);
@@ -239,9 +255,22 @@ export function BundleSelectorProvider({
   };
 
   const handleWipesSelect = (wipes: WipesSelection) => {
+    const wipesProduct = wipes && wipes !== 'none' ? WIPES_PRODUCTS.find((w) => w.id === wipes) : null;
+    const wipesPrice = wipesProduct
+      ? orderType === 'subscription'
+        ? wipesProduct.subscriptionPrice
+        : wipesProduct.basePrice
+      : undefined;
+
     if (selectedWipes === wipes) {
+      if (wipesProduct) {
+        trackRemoveBundleAddOn({ itemName: wipesProduct.name, price: wipesPrice, location: 'Bundle Builder' });
+      }
       setSelectedWipes(null);
       return;
+    }
+    if (wipesProduct) {
+      trackSelectBundleAddOn({ itemName: wipesProduct.name, price: wipesPrice, location: 'Bundle Builder' });
     }
     setSelectedWipes(wipes);
     if (!skincareOpen) {
@@ -254,9 +283,26 @@ export function BundleSelectorProvider({
   };
 
   const toggleSkincare = (index: number) => {
-    setSelectedSkincareIndices((prev) =>
-      prev.includes(index) ? prev.filter((i) => i !== index) : [...prev, index]
-    );
+    const item = SKINCARE_ITEMS[index];
+    const price = item
+      ? orderType === 'subscription'
+        ? item.subPrice
+        : item.otpPrice
+      : undefined;
+
+    setSelectedSkincareIndices((prev) => {
+      if (prev.includes(index)) {
+        if (item) {
+          trackRemoveBundleAddOn({ itemName: item.name, price, location: 'Bundle Builder' });
+        }
+        return prev.filter((i) => i !== index);
+      } else {
+        if (item) {
+          trackSelectBundleAddOn({ itemName: item.name, price, location: 'Bundle Builder' });
+        }
+        return [...prev, index];
+      }
+    });
   };
 
   const handleAddToCart = async () => {
@@ -623,7 +669,7 @@ export default function BundleSelector() {
         <div className="flex items-center justify-between mb-3">
           <p className="text-base text-[15px]">
             <span className="font-semibold">Step 1:</span>{' '}
-            <span className="text-gray-900">Select your size:</span>
+            <span className="text-gray-900">Select your diaper size:</span>
           </p>
           <button
             onClick={() => setShowSizeGuide(true)}

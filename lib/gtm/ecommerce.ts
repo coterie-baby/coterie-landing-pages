@@ -271,6 +271,9 @@ export function trackSelectProductVariant(data: SelectProductVariantEventData): 
 
   // Send to Amplitude
   amplitude.track('select_product_variant', eventData);
+
+  // Send to Vercel Analytics
+  track('select_product_variant', eventData);
 }
 
 export interface SelectPurchaseTypeEventData {
@@ -402,6 +405,9 @@ export function trackSelectBundleAddOn(data: SelectBundleAddOnEventData): void {
 
   // Send to Amplitude
   amplitude.track('select_bundle_add_on', eventData);
+
+  // Send to Vercel Analytics
+  track('select_bundle_add_on', eventData);
 }
 
 /**
@@ -426,6 +432,9 @@ export function trackRemoveBundleAddOn(data: SelectBundleAddOnEventData): void {
 
   // Send to Amplitude
   amplitude.track('remove_bundle_add_on', eventData);
+
+  // Send to Vercel Analytics
+  track('remove_bundle_add_on', eventData);
 }
 
 /**
