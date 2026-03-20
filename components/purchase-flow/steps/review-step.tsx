@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { usePurchaseFlow } from '../context';
 import { createCart } from '@/lib/shopify/cart';
+import { urlFor } from '@/lib/sanity/image';
 import {
   trackAddToCart,
   trackBeginCheckout,
@@ -37,7 +38,9 @@ export default function ReviewStep() {
   const {
     state,
     setStep,
+    setOrderType,
     prevStep,
+    skincareProducts,
     diaperCount,
     diaperPrice,
     wipesPrice,
@@ -58,6 +61,26 @@ export default function ReviewStep() {
     return `Size ${state.selectedSize}`;
   };
 
+  const selectedSkincareItems = state.selectedSkincareIndices
+    .map((idx) => skincareProducts[idx])
+    .filter(Boolean);
+
+  const getSkincareImageUrl = (index: number) => {
+    const item = skincareProducts[index];
+    if (!item) return '';
+    const imageSource = item.variantImage ?? item.product?.thumbnail;
+    if (!imageSource?.asset) return '';
+    return urlFor(imageSource).width(200).height(200).fit('crop').url();
+  };
+
+  const getSkincareItemPrice = (index: number) => {
+    const item = skincareProducts[index];
+    if (!item) return 0;
+    return state.orderType === 'subscription'
+      ? (item.product?.pricing?.autoRenew ?? item.product?.pricing?.oneTimePurchase ?? 0)
+      : (item.product?.pricing?.oneTimePurchase ?? 0);
+  };
+
   const handleCheckout = async () => {
     if (!state.selectedSize) return;
 
@@ -65,6 +88,14 @@ export default function ReviewStep() {
     setError(null);
 
     try {
+      // Build upsell items from selected skincare
+      const upsellItems = selectedSkincareItems
+        .filter((item) => item.shopifyVariantId)
+        .map((item) => ({
+          shopifyVariantId: item.shopifyVariantId!,
+          shopifySellingPlanId: item.product?.shopifySellingPlanId,
+        }));
+
       // Track add_to_cart event
       trackAddToCart({
         planType,
@@ -81,6 +112,7 @@ export default function ReviewStep() {
         planType,
         orderType: state.orderType,
         quantity: 1,
+        upsellItems: upsellItems.length > 0 ? upsellItems : undefined,
       });
 
       if (!result.success || !result.checkoutUrl) {
@@ -126,6 +158,26 @@ export default function ReviewStep() {
       <div className="text-center mb-6">
         <h2 className="text-xl font-semibold mb-1">Review Your Bundle</h2>
         <p className="text-sm text-gray-500">Everything look good?</p>
+      </div>
+
+      {/* Subscription Toggle */}
+      <div className="flex items-center justify-between p-4 bg-gray-50 rounded-xl mb-6">
+        <div>
+          <p className="text-sm font-medium">Auto-Renew & Save 10%</p>
+          <p className="text-xs text-gray-500">Cancel or pause anytime</p>
+        </div>
+        <button
+          onClick={() => setOrderType(state.orderType === 'subscription' ? 'one-time' : 'subscription')}
+          className={`relative w-12 h-7 rounded-full transition-colors ${
+            state.orderType === 'subscription' ? 'bg-[#0000C9]' : 'bg-gray-300'
+          }`}
+        >
+          <div
+            className={`absolute top-1 w-5 h-5 rounded-full bg-white shadow transition-transform ${
+              state.orderType === 'subscription' ? 'translate-x-6' : 'translate-x-1'
+            }`}
+          />
+        </button>
       </div>
 
       {/* Order Summary */}
@@ -189,6 +241,49 @@ export default function ReviewStep() {
           </>
         )}
 
+        {/* Skincare Items */}
+        {selectedSkincareItems.map((item, i) => {
+          const idx = state.selectedSkincareIndices[i];
+          const imageUrl = getSkincareImageUrl(idx);
+          const price = getSkincareItemPrice(idx);
+
+          return (
+            <div key={item.product?._id ?? i}>
+              <div className="border-t border-gray-100" />
+              <div className="p-4 flex items-start gap-4">
+                {imageUrl ? (
+                  <div className="relative w-16 h-16 flex-shrink-0">
+                    <Image
+                      src={imageUrl}
+                      alt={item.product?.title ?? 'Skincare'}
+                      fill
+                      className="object-cover rounded-xl"
+                    />
+                  </div>
+                ) : (
+                  <div className="w-16 h-16 flex-shrink-0 bg-gray-100 rounded-xl" />
+                )}
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <p className="font-medium text-sm">{item.product?.title}</p>
+                    </div>
+                    <button
+                      onClick={() => setStep('skincare')}
+                      className="text-[#0000C9] hover:text-[#0000A0] p-1"
+                    >
+                      <EditIcon />
+                    </button>
+                  </div>
+                  {price > 0 && (
+                    <p className="text-sm font-medium mt-1">${price.toFixed(2)}</p>
+                  )}
+                </div>
+              </div>
+            </div>
+          );
+        })}
+
         {/* Delivery Schedule */}
         <div className="border-t border-gray-100" />
         <div className="p-4 bg-gray-50">
@@ -201,12 +296,6 @@ export default function ReviewStep() {
                 {state.orderType === 'subscription' ? 'Ships monthly' : 'One-time purchase'}
               </span>
             </div>
-            <button
-              onClick={() => setStep('bundle')}
-              className="text-xs text-[#0000C9] font-medium hover:underline"
-            >
-              Change
-            </button>
           </div>
         </div>
       </div>

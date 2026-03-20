@@ -6,7 +6,7 @@ import CartHeader from './cart-header';
 import CartItem from './cart-item';
 import CartSummary from './cart-summary';
 import CartCheckoutButton from './cart-checkout-button';
-import { useDiscount, FIRST_ORDER_DISCOUNT_PERCENT } from '@/components/discount-context';
+import { useDiscount } from '@/components/discount-context';
 
 export default function CartDrawer() {
   const {
@@ -22,13 +22,13 @@ export default function CartDrawer() {
     hasFreeShipping,
   } = useCart();
 
-  const { discountClaimed } = useDiscount();
+  const { discountClaimed, discountPercent } = useDiscount();
 
   // Total promo discount across subscription items only
   const promoDiscount = discountClaimed
     ? state.items.reduce((sum, item) => {
         if (item.orderType === 'subscription') {
-          return sum + Math.round(item.currentPrice * FIRST_ORDER_DISCOUNT_PERCENT * 100) / 100 * item.quantity;
+          return sum + Math.round(item.currentPrice * discountPercent * 100) / 100 * item.quantity;
         }
         return sum;
       }, 0)
@@ -91,7 +91,7 @@ export default function CartDrawer() {
                 {state.items.map((item) => {
                   const discountedPrice =
                     discountClaimed && item.orderType === 'subscription'
-                      ? Math.round(item.currentPrice * (1 - FIRST_ORDER_DISCOUNT_PERCENT) * 100) / 100
+                      ? Math.round(item.currentPrice * (1 - discountPercent) * 100) / 100
                       : undefined;
                   return (
                     <CartItem

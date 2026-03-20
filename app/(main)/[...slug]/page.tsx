@@ -6,6 +6,7 @@ import { getClient, pageBySlugQuery, allPageSlugsQuery } from '@/lib/sanity';
 import { urlFor } from '@/lib/sanity/image';
 import { renderSanityComponent } from '@/lib/sanity/component-registry';
 import type { SanityPage } from '@/lib/sanity/types';
+import DiscountProviderWrapper from '@/components/discount-provider-wrapper';
 
 export const revalidate = 60;
 
@@ -65,6 +66,8 @@ export default async function SanityPage({ params }: PageProps) {
   }
 
   return (
-    <>{page.components?.map((component) => renderSanityComponent(component))}</>
+    <DiscountProviderWrapper discount={page.discount}>
+      {page.components?.map((component) => renderSanityComponent(component))}
+    </DiscountProviderWrapper>
   );
 }

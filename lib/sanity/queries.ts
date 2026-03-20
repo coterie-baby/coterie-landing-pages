@@ -12,6 +12,13 @@ export const pageBySlugQuery = groq`
       ogImage,
       noIndex
     },
+    "discount": discount-> {
+      code,
+      discountPercent,
+      label,
+      eligibleOrderTypes,
+      eligiblePlanTypes
+    },
     components[] {
       _type,
       _key,
@@ -285,6 +292,7 @@ export const pageBySlugQuery = groq`
         images[] { image, alt },
         cartImageOverride { ..., "alt": alt },
         hideSizeSelector,
+        showBundleBuilder,
         preselectedSize,
         bundleItems[] {
           _key,
@@ -326,6 +334,14 @@ export const pageBySlugQuery = groq`
             benefits
           }
         }
+      },
+      _type == "bundleBuilderV2" => {
+        title,
+        subtitle,
+        rating,
+        reviewCount,
+        cartImage,
+        images[] { image, alt }
       },
       _type == "reviews" => {
         "product": product-> { _id, shopifyProductId }
@@ -395,6 +411,26 @@ export const siteSettingsQuery = groq`
       requireUtmParams
     }
   }
+`;
+
+export const purchaseFlowSkincareQuery = groq`
+  *[_type == "page" && slug.current == "products/the-diaper"][0]
+    .components[_type == "pdpHeroV2"][0]
+    .upsellProducts[] {
+      "product": product-> {
+        _id,
+        title,
+        thumbnail,
+        pricing { oneTimePurchase, autoRenew },
+        shopifySellingPlanId
+      },
+      sizeKey,
+      "variantImage": product->sizes[sizeKey == ^.sizeKey][0].featuredImage,
+      "shopifyVariantId": coalesce(
+        product->sizes[sizeKey == ^.sizeKey][0].shopifyVariantId,
+        product->sizes[0].shopifyVariantId
+      )
+    }
 `;
 
 export const funnelRulesQuery = groq`

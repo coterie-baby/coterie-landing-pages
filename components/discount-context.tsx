@@ -11,20 +11,29 @@ import {
 
 const DISCOUNT_CLAIMED_KEY = 'coterie_first_visit_discount';
 
-export const FIRST_ORDER_DISCOUNT_PERCENT = 0.10;
-export const FIRST_ORDER_DISCOUNT_CODE = 'UPGRADETEN';
-
 interface DiscountContextValue {
+  discountCode: string | null;
+  discountPercent: number;
   discountClaimed: boolean;
   claimDiscount: () => void;
 }
 
 const DiscountContext = createContext<DiscountContextValue>({
+  discountCode: null,
+  discountPercent: 0,
   discountClaimed: false,
   claimDiscount: () => {},
 });
 
-export function DiscountProvider({ children }: { children: ReactNode }) {
+export function DiscountProvider({
+  children,
+  code,
+  percent = 0,
+}: {
+  children: ReactNode;
+  code?: string;
+  percent?: number;
+}) {
   const [discountClaimed, setDiscountClaimed] = useState(false);
 
   useEffect(() => {
@@ -45,7 +54,14 @@ export function DiscountProvider({ children }: { children: ReactNode }) {
   }, []);
 
   return (
-    <DiscountContext.Provider value={{ discountClaimed, claimDiscount }}>
+    <DiscountContext.Provider
+      value={{
+        discountCode: discountClaimed && code ? code : null,
+        discountPercent: discountClaimed && code ? percent : 0,
+        discountClaimed: discountClaimed && !!code,
+        claimDiscount,
+      }}
+    >
       {children}
     </DiscountContext.Provider>
   );

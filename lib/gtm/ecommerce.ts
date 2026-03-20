@@ -271,6 +271,9 @@ export function trackSelectProductVariant(data: SelectProductVariantEventData): 
 
   // Send to Amplitude
   amplitude.track('select_product_variant', eventData);
+
+  // Send to Vercel Analytics
+  track('select_product_variant', eventData);
 }
 
 export interface SelectPurchaseTypeEventData {
@@ -371,6 +374,67 @@ export function trackClickCarouselThumbnail(data: ClickCarouselThumbnailEventDat
 
   // Send to Amplitude
   amplitude.track('click_carousel_thumbnail', eventData);
+}
+
+export interface SelectBundleAddOnEventData {
+  itemName: string;
+  itemVariantId?: string;
+  price?: number;
+  location: string;
+}
+
+/**
+ * Track when a user selects a bundle add-on product from the PDP
+ */
+export function trackSelectBundleAddOn(data: SelectBundleAddOnEventData): void {
+  const eventData = {
+    item_name: data.itemName,
+    item_variant_id: data.itemVariantId,
+    price: data.price,
+    location: data.location,
+  };
+
+  // Send to GTM
+  sendGTMEvent({
+    event: 'ui_custom_event',
+    customEventPayload: {
+      name: 'select_bundle_add_on',
+      value: eventData,
+    },
+  });
+
+  // Send to Amplitude
+  amplitude.track('select_bundle_add_on', eventData);
+
+  // Send to Vercel Analytics
+  track('select_bundle_add_on', eventData);
+}
+
+/**
+ * Track when a user de-selects a bundle add-on product from the PDP
+ */
+export function trackRemoveBundleAddOn(data: SelectBundleAddOnEventData): void {
+  const eventData = {
+    item_name: data.itemName,
+    item_variant_id: data.itemVariantId,
+    price: data.price,
+    location: data.location,
+  };
+
+  // Send to GTM
+  sendGTMEvent({
+    event: 'ui_custom_event',
+    customEventPayload: {
+      name: 'remove_bundle_add_on',
+      value: eventData,
+    },
+  });
+
+  // Send to Amplitude
+  amplitude.track('remove_bundle_add_on', eventData);
+
+  // Send to Vercel Analytics
+  track('remove_bundle_add_on', eventData);
 }
 
 /**

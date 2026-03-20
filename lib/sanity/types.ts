@@ -442,6 +442,7 @@ export interface SanityPdpHeroV2 {
   }[];
   cartImageOverride?: SanityImage;
   hideSizeSelector?: boolean;
+  showBundleBuilder?: boolean;
   preselectedSize?: string;
   bundleItems?: BundleItem[];
   features?: {
@@ -467,6 +468,28 @@ export interface SanityPdpHeroV2 {
       benefits?: string[];
     };
   };
+}
+
+export interface SanityBundleBuilderV2 {
+  _type: 'bundleBuilderV2';
+  _key: string;
+  title?: string;
+  subtitle?: string;
+  rating?: number;
+  reviewCount?: number;
+  cartImage?: SanityImage;
+  images?: {
+    image?: SanityImage;
+    alt?: string;
+  }[];
+  features?: {
+    icon?: SanityImage;
+    label: string;
+  }[];
+  accordionItems?: {
+    title: string;
+    content?: PortableTextBlock[];
+  }[];
 }
 
 export interface SanityReviews {
@@ -519,6 +542,7 @@ export type SanityComponent =
   | SanitySteppedStats
   | SanityThreeColumnTable
   | SanityPdpHeroV2
+  | SanityBundleBuilderV2
   | SanityReviews
   | SanityReviewsToggle
   | SanityScrollTimeline
@@ -584,6 +608,14 @@ export interface SiteSettings {
   };
 }
 
+export interface LpDiscount {
+  code: string;
+  discountPercent: number;
+  label?: string;
+  eligibleOrderTypes: ('subscription' | 'one-time')[];
+  eligiblePlanTypes?: ('diaper-only' | 'diaper-wipe-bundle' | 'deluxe')[];
+}
+
 export interface SanityPage {
   _id: string;
   _type: 'page';
@@ -595,5 +627,6 @@ export interface SanityPage {
     ogImage?: SanityImage;
     noIndex?: boolean;
   };
+  discount?: LpDiscount;
   components: SanityComponent[];
 }
