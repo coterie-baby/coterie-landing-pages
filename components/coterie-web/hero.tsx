@@ -70,6 +70,8 @@ export interface HeroProps {
   navigationShift?: boolean;
   /** Scale factor 0–1 for min-height. Default 1 = full viewport height. */
   heroMinHeightPercent?: number;
+  /** Hard cap on height in px. Uses CSS min() so min-height never exceeds this. */
+  maxHeight?: number;
 }
 
 // ---------------------------------------------------------------------------
