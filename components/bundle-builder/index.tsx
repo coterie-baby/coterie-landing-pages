@@ -184,25 +184,29 @@ function BundleSummary() {
           <div className="border-t border-gray-200" />
 
           <div className="px-4 py-4 space-y-3">
-            <div className="flex items-center justify-between text-sm">
-              <span className="flex items-center gap-1.5 text-[#515151]">
-                Starting price
-                
-              </span>
-              <span className="text-gray-600">${originalTotalPrice.toFixed(2)}</span>
-            </div>
+            {totalSavings > 0 && (
+              <>
+                <div className="flex items-center justify-between text-sm">
+                  <span className="flex items-center gap-1.5 text-[#515151]">
+                    Starting price
 
-            <div className="flex items-center justify-between text-sm">
-              <span className="text-[#515151]">Bundle Savings</span>
-              <div className="flex items-center gap-2">
-                <span className="font-semibold text-gray-900">-${totalSavings.toFixed(2)}</span>
-                {savingsPercent > 0 && (
-                  <span className="bg-[#0000C9] text-white text-[11px] font-semibold px-2 py-0.5 rounded-full">
-                    {savingsPercent}% OFF
                   </span>
-                )}
-              </div>
-            </div>
+                  <span className="text-gray-600">${originalTotalPrice.toFixed(2)}</span>
+                </div>
+
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-[#515151]">Bundle Savings</span>
+                  <div className="flex items-center gap-2">
+                    <span className="font-semibold text-gray-900">-${totalSavings.toFixed(2)}</span>
+                    {savingsPercent > 0 && (
+                      <span className="bg-[#0000C9] text-white text-[11px] font-semibold px-2 py-0.5 rounded-full">
+                        {savingsPercent}% OFF
+                      </span>
+                    )}
+                  </div>
+                </div>
+              </>
+            )}
 
             {totalPrice >= 110 && (
               <div className="flex items-center justify-between text-sm">

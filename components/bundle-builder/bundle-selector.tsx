@@ -170,7 +170,7 @@ export function BundleSelectorProvider({
   const [selectedSize, setSelectedSize] = useState<DiaperSize | null>(null);
   const [selectedWipes, setSelectedWipes] = useState<WipesSelection>(null);
   const [selectedSkincareIndices, setSelectedSkincareIndices] = useState<number[]>([]);
-  const [orderType] = useState<OrderType>('subscription');
+  const [orderType] = useState<OrderType>('one-time');
   const [wipesOpen, setWipesOpen] = useState(false);
   const [skincareOpen, setSkincareOpen] = useState(false);
   const [showNewbornModal, setShowNewbornModal] = useState(false);

@@ -230,9 +230,14 @@ export default function QAPage() {
         <h1 className="text-4xl font-bold text-center mb-8">
           Component QA Page
         </h1>
-        <p className="text-center text-gray-600 mb-12">
+        <p className="text-center text-gray-600 mb-4">
           This page displays all components for UX review and QA testing.
         </p>
+        <div className="text-center mb-12">
+          <a href="/qa/coterie-web" className="text-blue-600 underline text-sm">
+            Coterie Web slices →
+          </a>
+        </div>
 
         <div className="space-y-16">
           {/* Award Slideshow */}

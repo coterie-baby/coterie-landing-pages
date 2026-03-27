@@ -112,8 +112,11 @@ export default function BundleStickyBar() {
       <div className="max-w-lg mx-auto px-4 pt-2 pb-3 space-y-2">
         {selectedSize && (
           <div className="flex items-baseline gap-1.5 text-sm">
+            <span className="text-gray-600">Bundle subtotal:</span>
             <span className="font-bold text-[#0000C9]">${totalPrice.toFixed(2)}</span>
-            <span className="text-gray-400 line-through">${originalTotalPrice.toFixed(2)}</span>
+            {originalTotalPrice > totalPrice && (
+              <span className="text-gray-400 line-through">${originalTotalPrice.toFixed(2)}</span>
+            )}
           </div>
         )}
         {error && <p className="text-xs text-red-500">{error}</p>}
