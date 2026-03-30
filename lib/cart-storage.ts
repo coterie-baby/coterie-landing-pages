@@ -88,6 +88,10 @@ export function hydrateCartState(lsCart: LocalStorageCart): {
     const bundleLineItems = item.attributes?.bundleLineItems as
       | BundleLineItem[]
       | undefined;
+    const sellingPlanId = item.attributes?.sellingPlanId as string | undefined;
+    const companionSellingPlanIds = item.attributes?.companionSellingPlanIds as
+      | (string | undefined)[]
+      | undefined;
 
     if (isAddOn) {
       return {
@@ -126,6 +130,8 @@ export function hydrateCartState(lsCart: LocalStorageCart): {
       savingsAmount,
       isBundleBuilder: isBundleBuilder || undefined,
       bundleLineItems: bundleLineItems ?? undefined,
+      sellingPlanId: sellingPlanId ?? undefined,
+      companionSellingPlanIds: companionSellingPlanIds ?? undefined,
     };
   });
 
@@ -190,6 +196,8 @@ function buildLocalStorageItem(
       type: item.orderType === 'subscription' ? 'auto_renew' : 'one_time',
       ...(item.isBundleBuilder ? { isBundleBuilder: true } : {}),
       ...(item.bundleLineItems ? { bundleLineItems: item.bundleLineItems } : {}),
+      ...(item.sellingPlanId ? { sellingPlanId: item.sellingPlanId } : {}),
+      ...(item.companionSellingPlanIds ? { companionSellingPlanIds: item.companionSellingPlanIds } : {}),
     },
   };
 }

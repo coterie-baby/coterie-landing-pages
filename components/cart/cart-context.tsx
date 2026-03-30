@@ -66,6 +66,8 @@ export interface CartItem {
   isAddOn?: boolean;
   isBundleBuilder?: boolean;
   bundleLineItems?: BundleLineItem[];
+  sellingPlanId?: string;
+  companionSellingPlanIds?: (string | undefined)[];
 }
 
 interface CartState {
@@ -97,7 +99,8 @@ type CartAction =
   | { type: 'OPTIMISTIC_UPDATE_QUANTITY'; payload: { lineId: string; quantity: number } }
   | { type: 'OPTIMISTIC_REMOVE'; payload: string }
   | { type: 'ROLLBACK' }
-  | { type: 'RESET_CART' };
+  | { type: 'RESET_CART' }
+  | { type: 'OPTIMISTIC_REPLACE_BUNDLE'; payload: { removeLineId: string; newItems: CartItem[] } };
 
 const initialState: CartState = {
   cartId: null,
@@ -194,6 +197,21 @@ function cartReducer(state: CartState, action: CartAction): CartState {
         ...initialState,
         isOpen: state.isOpen,
       };
+    case 'OPTIMISTIC_REPLACE_BUNDLE':
+      return {
+        ...state,
+        previousItems: state.items,
+        items: [
+          ...state.items.filter((i) => i.lineId !== action.payload.removeLineId),
+          ...action.payload.newItems,
+        ],
+        pendingLineIds: [
+          ...state.pendingLineIds,
+          ...action.payload.newItems.map((i) => i.lineId),
+        ],
+        isOpen: true,
+        isLoading: false,
+      };
     default:
       return state;
   }
@@ -231,6 +249,7 @@ interface CartContextValue {
   addToCart: (options: AddToCartOptions) => Promise<void>;
   updateQuantity: (lineId: string, quantity: number) => Promise<void>;
   removeItem: (lineId: string) => Promise<void>;
+  syncOrderType: (isSubscription: boolean) => Promise<void>;
   openCart: () => void;
   closeCart: () => void;
   itemCount: number;
@@ -264,6 +283,10 @@ function buildCartItemFromEdges(
     companionLineIds: companions.map((e) => e.node.id),
     merchandiseId: primary.node.merchandise.id,
     quantity: primary.node.quantity ?? fallbackQuantity ?? 1,
+    sellingPlanId: primary.node.sellingPlanAllocation?.sellingPlan.id,
+    companionSellingPlanIds: companions.map(
+      (e) => e.node.sellingPlanAllocation?.sellingPlan.id ?? undefined
+    ),
   };
 }
 
@@ -372,6 +395,65 @@ export function CartProvider({ children }: { children: ReactNode }) {
           savingsAmount: 0,
         })
       );
+
+      // If updating an existing bundle, replace it instead of adding a new one
+      const existingBundle = options.isBundleBuilder
+        ? state.items.find((i) => i.isBundleBuilder && !i.isAddOn)
+        : undefined;
+
+      if (existingBundle && state.cartId) {
+        dispatch({
+          type: 'OPTIMISTIC_REPLACE_BUNDLE',
+          payload: { removeLineId: existingBundle.lineId, newItems: [optimisticMain, ...optimisticAddOns] },
+        });
+
+        try {
+          const oldLineIds = [existingBundle.lineId, ...existingBundle.companionLineIds];
+          const removeResult = await removeCartLine(state.cartId, oldLineIds);
+          if (!removeResult.success) throw new Error(removeResult.error ?? 'Failed to remove old bundle');
+
+          const lines = buildCartLines({
+            size: options.size,
+            planType: options.planType,
+            orderType: options.orderType,
+            quantity: options.quantity,
+          });
+          if (options.bundleItems && options.bundleItems.length > 0) {
+            lines.push(...buildBundleCartLines(options.bundleItems, options.orderType));
+          }
+
+          const confirmedNonBundleItems = state.items.filter(
+            (i) => !i.lineId.startsWith('pending-') && i.lineId !== existingBundle.lineId
+          );
+          const knownLineIds = new Set(
+            confirmedNonBundleItems.flatMap((i) => [i.lineId, ...i.companionLineIds])
+          );
+
+          const addResult = await addCartLines(state.cartId, lines);
+          if (!addResult.success || !addResult.cart) throw new Error(addResult.error ?? 'Failed to add updated bundle');
+
+          const newEdges = addResult.cart.lines.edges.filter((e) => !knownLineIds.has(e.node.id));
+          const newBundleItem = newEdges.length > 0
+            ? [buildCartItemFromEdges(newEdges, displayData, options.quantity)]
+            : [];
+
+          dispatch({
+            type: 'SET_CART',
+            payload: {
+              cartId: state.cartId,
+              checkoutUrl: addResult.cart.checkoutUrl,
+              items: [...confirmedNonBundleItems, ...newBundleItem],
+            },
+          });
+        } catch (err) {
+          dispatch({ type: 'ROLLBACK' });
+          dispatch({
+            type: 'SET_ERROR',
+            payload: err instanceof Error ? err.message : 'An unexpected error occurred',
+          });
+        }
+        return;
+      }
 
       // Dispatch optimistic update — drawer opens immediately
       dispatch({
@@ -678,6 +760,28 @@ export function CartProvider({ children }: { children: ReactNode }) {
     [state.cartId, state.items]
   );
 
+  const syncOrderType = useCallback(
+    async (isSubscription: boolean) => {
+      if (!state.cartId) return;
+      const bundleItem = state.items.find((i) => i.isBundleBuilder && !i.isAddOn);
+      if (!bundleItem) return;
+
+      const allLineIds = [bundleItem.lineId, ...bundleItem.companionLineIds];
+      const allSellingPlanIds = [
+        bundleItem.sellingPlanId,
+        ...(bundleItem.companionSellingPlanIds ?? []),
+      ];
+
+      const lines = allLineIds.map((id, i) => ({
+        id,
+        sellingPlanId: isSubscription ? (allSellingPlanIds[i] ?? null) : null,
+      }));
+
+      await updateCartLines(state.cartId, lines);
+    },
+    [state.cartId, state.items]
+  );
+
   const openCart = useCallback(() => dispatch({ type: 'OPEN_CART' }), []);
   const closeCart = useCallback(() => dispatch({ type: 'CLOSE_CART' }), []);
 
@@ -721,6 +825,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     addToCart,
     updateQuantity,
     removeItem,
+    syncOrderType,
     openCart,
     closeCart,
     itemCount,
@@ -743,6 +848,7 @@ const defaultCartValue: CartContextValue = {
   addToCart: noop as CartContextValue['addToCart'],
   updateQuantity: noop as CartContextValue['updateQuantity'],
   removeItem: noop as CartContextValue['removeItem'],
+  syncOrderType: noop as CartContextValue['syncOrderType'],
   openCart: () => {},
   closeCart: () => {},
   itemCount: 0,

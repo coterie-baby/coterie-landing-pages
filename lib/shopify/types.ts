@@ -31,6 +31,9 @@ export interface ShopifyCart {
           amountPerQuantity: { amount: string };
           grandTotal: { amount: string };
         };
+        sellingPlanAllocation?: {
+          sellingPlan: { id: string };
+        } | null;
         merchandise: {
           id: string;
           product: { id: string };

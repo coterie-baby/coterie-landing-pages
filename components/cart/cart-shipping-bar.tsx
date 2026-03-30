@@ -24,8 +24,8 @@ export default function CartShippingBar({
           </svg>
         </div>
       ) : (
-        <p className="text-xs text-[#0000C9]">
-          You are <span className="font-medium">${remaining.toFixed(2)}</span>{' '}
+        <p style={{ fontFamily: 'SuisseMono', fontSize: '10px', fontStyle: 'normal', fontWeight: 400, lineHeight: '140%', letterSpacing: '-0.6px', color: '#0000C9' }}>
+          You are <span style={{ fontWeight: 500 }}>${remaining.toFixed(2)}</span>{' '}
           away from free shipping
         </p>
       )}

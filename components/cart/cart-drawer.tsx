@@ -15,6 +15,7 @@ export default function CartDrawer() {
     closeCart,
     updateQuantity,
     removeItem,
+    syncOrderType,
     itemCount,
     subtotal,
     totalSavings,
@@ -134,7 +135,7 @@ export default function CartDrawer() {
           <>
             <CartSummary
               isAR={isAR}
-              onToggleAR={setIsAR}
+              onToggleAR={(next) => { setIsAR(next); syncOrderType(next); }}
               arSubtotal={subtotal - promoDiscount}
               otpSubtotal={otpSubtotal}
               totalSavings={isAR ? totalSavings : 0}

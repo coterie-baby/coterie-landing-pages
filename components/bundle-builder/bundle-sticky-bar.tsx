@@ -10,9 +10,12 @@ import {
 import { Button } from '@/components/ui/button';
 import { SIZE_CONFIGS } from '@/components/purchase/context';
 import { getDiaperImageUrl } from '@/lib/config/products';
+import { useCart } from '@/components/cart/cart-context';
 
 export default function BundleStickyBar() {
   const [showItems, setShowItems] = useState(false);
+  const { state: cartState } = useCart();
+  const hasExistingBundle = cartState.items.some((i) => i.isBundleBuilder && !i.isAddOn);
 
   const {
     selectedSize,
@@ -159,8 +162,8 @@ export default function BundleStickyBar() {
           >
             {selectedSize
               ? isLoading
-                ? 'Adding...'
-                : 'Add to cart'
+                ? hasExistingBundle ? 'Updating...' : 'Adding...'
+                : hasExistingBundle ? 'Update bundle' : 'Add to cart'
               : 'Build my Bundle'}
           </Button>
           {hasItems && (
