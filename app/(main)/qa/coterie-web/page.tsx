@@ -16,6 +16,7 @@ export default function CoterieWebQAPage() {
         }}
         isFirst
         navigationShift={false}
+        maxHeight={680}
       />
       <ProductPush
         cards={[

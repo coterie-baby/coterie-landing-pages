@@ -242,6 +242,7 @@ export default function Hero({
   isFirst,
   navigationShift,
   heroMinHeightPercent = 100,
+  maxHeight,
 }: HeroProps) {
   const scale = heroMinHeightPercent / 100;
   const overlayAlpha = overlay * 0.1;
@@ -275,13 +276,16 @@ export default function Hero({
   return (
     <figure
       className={cn(
-        'relative flex overflow-clip w-full lg:max-h-[680px]',
+        'relative flex overflow-clip w-full',
         navigationShift ? 'pt-[var(--header-height,60px)]' : ''
       )}
       style={{
-        minHeight: navigationShift
-          ? `calc(100svh * ${scale})`
-          : `calc((100svh - 60px) * ${scale})`,
+        minHeight: (() => {
+          const base = navigationShift
+            ? `calc(100svh * ${scale})`
+            : `calc((100svh - 60px) * ${scale})`;
+          return maxHeight ? `min(${base}, ${maxHeight}px)` : base;
+        })(),
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         ['--overlay-color' as any]: overlayColor,
       }}

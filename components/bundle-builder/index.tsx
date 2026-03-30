@@ -16,7 +16,15 @@ import { Button } from '@/components/ui/button';
 
 // ── Benefit Tile ───────────────────────────────────────────────
 
-function BenefitTile({ icon, title, subtitle }: { icon: string; title: string; subtitle?: string }) {
+function BenefitTile({
+  icon,
+  title,
+  subtitle,
+}: {
+  icon: string;
+  title: string;
+  subtitle?: string;
+}) {
   return (
     <div className="aspect-square bg-[#F5F5F5] flex flex-col items-center justify-center gap-4 px-4 rounded-xl">
       <div className="relative w-10 h-10">
@@ -71,10 +79,14 @@ function BundleSummary() {
       : null;
 
   const itemCount =
-    (selectedSize ? 1 : 0) + (wipesConfig ? 1 : 0) + selectedSkincareIndices.length;
+    (selectedSize ? 1 : 0) +
+    (wipesConfig ? 1 : 0) +
+    selectedSkincareIndices.length;
 
   const savingsPercent =
-    originalTotalPrice > 0 ? Math.round((totalSavings / originalTotalPrice) * 100) : 0;
+    originalTotalPrice > 0
+      ? Math.round((totalSavings / originalTotalPrice) * 100)
+      : 0;
 
   const getSizeLabelLocal = (size: DiaperSize) => getSizeLabel(size);
 
@@ -82,7 +94,6 @@ function BundleSummary() {
     <div className="bg-[#F9F4EC] py-10">
       <div className="max-w-lg mx-auto px-4">
         <div className="text-center mb-6">
-          <p className="text-[#515151] mb-2">Your new diapering bundle awaits.</p>
           <p className="text-3xl text-[#0000c9] leading-tight">
             Designed for comfort.
             <br />
@@ -90,27 +101,19 @@ function BundleSummary() {
           </p>
         </div>
 
-        <div className="relative h-[280px] rounded-lg overflow-hidden mb-6">
-          <Image
-            src="https://cdn.sanity.io/images/e4q6bkl9/production/ec5a384428110d9ddc4b1445fdfdb118d4beb658-6720x4480.png?w=800&q=80&auto=format"
-            alt="Coterie diapers"
-            fill
-            className="object-cover"
-            sizes="(max-width: 512px) 100vw, 512px"
-          />
-        </div>
-
         <div className="border border-gray-200 bg-white rounded-lg overflow-hidden">
           <button
             onClick={() => setShowItems((v) => !v)}
             className="w-full flex items-center justify-between px-4 py-4"
           >
-            <span className="text-[15px] font-medium">
+            <span className="text-[15px] font-medium text-left">
               Your bundle{' '}
-              <span className="font-normal text-sm text-[#515151]">({itemCount} items)</span>
+              <span className="font-normal text-sm text-[#515151]">
+                ({itemCount} items)
+              </span>
             </span>
-            <span className="flex items-center gap-1 text-sm text-gray-600">
-              Show your bundle items
+            <span className="text-left flex items-center gap-1 text-sm text-gray-600">
+              View your bundle items
               <ChevronIcon open={showItems} />
             </span>
           </button>
@@ -132,7 +135,9 @@ function BundleSummary() {
                       The Diaper — {getSizeLabelLocal(selectedSize)}
                     </p>
                   </div>
-                  <p className="text-sm font-semibold">${diaperPrice.toFixed(2)}</p>
+                  <p className="text-sm font-semibold">
+                    ${diaperPrice.toFixed(2)}
+                  </p>
                 </div>
               )}
 
@@ -147,20 +152,29 @@ function BundleSummary() {
                     />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-gray-900">{wipesConfig.name}</p>
-                    <p className="text-xs text-gray-500">{wipesConfig.count} wipes</p>
+                    <p className="text-sm font-medium text-gray-900">
+                      {wipesConfig.name}
+                    </p>
+                    <p className="text-xs text-gray-500">
+                      {wipesConfig.count} wipes
+                    </p>
                   </div>
-                  <p className="text-sm font-semibold">${wipesPrice.toFixed(2)}</p>
+                  <p className="text-sm font-semibold">
+                    ${wipesPrice.toFixed(2)}
+                  </p>
                 </div>
               )}
 
               {selectedSkincareIndices.map((idx) => {
                 const item = SKINCARE_ITEMS[idx];
                 if (!item) return null;
-                const price = orderType === 'subscription' ? item.subPrice : item.otpPrice;
+                const price =
+                  orderType === 'subscription' ? item.subPrice : item.otpPrice;
                 return (
                   <div key={item.id} className="flex items-center gap-3">
-                    <div className={`relative w-12 h-12 flex-shrink-0 rounded-lg overflow-hidden ${item.bgClass}`}>
+                    <div
+                      className={`relative w-12 h-12 flex-shrink-0 rounded-lg overflow-hidden ${item.bgClass}`}
+                    >
                       {item.image && (
                         <Image
                           src={item.image}
@@ -172,7 +186,9 @@ function BundleSummary() {
                       )}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-gray-900">{item.name}</p>
+                      <p className="text-sm font-medium text-gray-900">
+                        {item.name}
+                      </p>
                     </div>
                     <p className="text-sm font-semibold">${price.toFixed(2)}</p>
                   </div>
@@ -189,15 +205,18 @@ function BundleSummary() {
                 <div className="flex items-center justify-between text-sm">
                   <span className="flex items-center gap-1.5 text-[#515151]">
                     Starting price
-
                   </span>
-                  <span className="text-gray-600">${originalTotalPrice.toFixed(2)}</span>
+                  <span className="text-gray-600">
+                    ${originalTotalPrice.toFixed(2)}
+                  </span>
                 </div>
 
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-[#515151]">Bundle Savings</span>
                   <div className="flex items-center gap-2">
-                    <span className="font-semibold text-gray-900">-${totalSavings.toFixed(2)}</span>
+                    <span className="font-semibold text-gray-900">
+                      -${totalSavings.toFixed(2)}
+                    </span>
                     {savingsPercent > 0 && (
                       <span className="bg-[#0000C9] text-white text-[11px] font-semibold px-2 py-0.5 rounded-full">
                         {savingsPercent}% OFF
@@ -249,7 +268,9 @@ function BundleBuilderInner() {
         {/* Banner */}
         <div
           className="relative w-full h-[325px] flex items-end bg-cover bg-center"
-          style={{ backgroundImage: "url('/images/bundle-featured-image.jpg')" }}
+          style={{
+            backgroundImage: "url('/images/bundle-featured-image.jpg')",
+          }}
         >
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 via-[40%] to-transparent" />
           <h1 className="relative z-10 px-5 pb-6 text-white text-2xl">
@@ -259,10 +280,12 @@ function BundleBuilderInner() {
 
         <div className="flex flex-col gap-6 px-4 py-6">
           <div className="space-y-4">
-            <p className="font-semibold">Customize your perfect bundle and save 15%</p>
+            <p className="font-semibold">
+              Customize your perfect bundle and save 15%
+            </p>
             <p className="leading-7 text-sm">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
-              incididunt ut labore et dolore magna aliqua.
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+              eiusmod tempor incididunt ut labore et dolore magna aliqua.
             </p>
           </div>
         </div>
@@ -286,9 +309,15 @@ function BundleBuilderInner() {
             title="Free next size trial"
             subtitle="(included in first Auto-Renew box)"
           />
-          <BenefitTile icon="/fragrance-free.svg" title="Manage deliveries via text" />
+          <BenefitTile
+            icon="/fragrance-free.svg"
+            title="Manage deliveries via text"
+          />
           <BenefitTile icon="/fragrance-free.svg" title="Size up assist" />
-          <BenefitTile icon="/fragrance-free.svg" title="Auto-ships each month" />
+          <BenefitTile
+            icon="/fragrance-free.svg"
+            title="Auto-ships each month"
+          />
         </div>
       </div>
 
@@ -320,19 +349,34 @@ function StarIcon({ fillPercent = 0 }: { fillPercent?: number }) {
       {isPartial && (
         <defs>
           <clipPath id={id}>
-            <rect x="0" y="0" width={`${(fillPercent / 100) * 13}`} height="13" />
+            <rect
+              x="0"
+              y="0"
+              width={`${(fillPercent / 100) * 13}`}
+              height="13"
+            />
           </clipPath>
         </defs>
       )}
       <path d={STAR_PATH} fill="none" stroke="#D1D5DB" strokeWidth="1" />
       {fillPercent > 0 && (
-        <path d={STAR_PATH} fill="#0000C9" clipPath={isPartial ? `url(#${id})` : undefined} />
+        <path
+          d={STAR_PATH}
+          fill="#0000C9"
+          clipPath={isPartial ? `url(#${id})` : undefined}
+        />
       )}
     </svg>
   );
 }
 
-function BundleStarRating({ rating, reviewCount }: { rating: number; reviewCount: number }) {
+function BundleStarRating({
+  rating,
+  reviewCount,
+}: {
+  rating: number;
+  reviewCount: number;
+}) {
   return (
     <div className="flex items-center gap-1.5">
       <div className="flex items-center gap-0.5">
@@ -351,7 +395,11 @@ function BundleStarRating({ rating, reviewCount }: { rating: number; reviewCount
 const SLIDE_GAP = 8;
 const SLIDE_PEEK = 32;
 
-function ImageCarouselV2({ images }: { images: { src: string; alt: string }[] }) {
+function ImageCarouselV2({
+  images,
+}: {
+  images: { src: string; alt: string }[];
+}) {
   const scrollRef = useRef<HTMLDivElement>(null);
   return (
     <div
