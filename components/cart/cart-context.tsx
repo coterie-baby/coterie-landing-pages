@@ -40,6 +40,14 @@ import {
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
+export interface BundleLineItem {
+  name: string;
+  detail?: string;
+  image?: string;
+  currentPrice: number;
+  originalPrice: number;
+}
+
 export interface CartItem {
   lineId: string;
   companionLineIds: string[];
@@ -57,6 +65,7 @@ export interface CartItem {
   savingsAmount: number;
   isAddOn?: boolean;
   isBundleBuilder?: boolean;
+  bundleLineItems?: BundleLineItem[];
 }
 
 interface CartState {
@@ -205,6 +214,7 @@ export interface AddToCartOptions {
   title: string;
   imageUrl: string;
   isBundleBuilder?: boolean;
+  bundleLineItems?: BundleLineItem[];
   bundleItems?: BundleItem[];
   upsellItems?: {
     shopifyVariantId: string;
@@ -331,6 +341,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         originalPrice: options.originalPrice,
         savingsAmount: options.savingsAmount,
         isBundleBuilder: options.isBundleBuilder,
+        bundleLineItems: options.bundleLineItems,
       };
 
       // Build optimistic items with temporary IDs

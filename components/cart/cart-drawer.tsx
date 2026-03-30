@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useCart } from './cart-context';
 import CartHeader from './cart-header';
 import CartItem from './cart-item';
@@ -24,7 +24,6 @@ export default function CartDrawer() {
 
   const { discountClaimed, discountPercent } = useDiscount();
 
-  // Total promo discount across subscription items only
   const promoDiscount = discountClaimed
     ? state.items.reduce((sum, item) => {
         if (item.orderType === 'subscription') {
@@ -33,6 +32,25 @@ export default function CartDrawer() {
         return sum;
       }, 0)
     : 0;
+
+  // AR toggle — default to true if any cart item is a subscription
+  const [isAR, setIsAR] = useState(() =>
+    state.items.some((i) => i.orderType === 'subscription')
+  );
+
+  // Sync when cart items change (e.g. hydrated from localStorage)
+  useEffect(() => {
+    if (state.items.length > 0) {
+      setIsAR(state.items.some((i) => i.orderType === 'subscription'));
+    }
+  }, [state.items.length]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const otpSubtotal = state.items.reduce(
+    (sum, item) => sum + item.originalPrice * item.quantity,
+    0
+  );
+
+  const displaySubtotal = isAR ? subtotal - promoDiscount : otpSubtotal;
 
   // Prevent body scroll when drawer is open
   useEffect(() => {
@@ -64,10 +82,7 @@ export default function CartDrawer() {
   return (
     <div className="fixed inset-0 z-50">
       {/* Backdrop */}
-      <div
-        className="absolute inset-0 bg-white"
-        onClick={closeCart}
-      />
+      <div className="absolute inset-0 bg-white" onClick={closeCart} />
 
       {/* Drawer panel */}
       <div
@@ -82,33 +97,28 @@ export default function CartDrawer() {
         <div className="flex-1 overflow-y-auto">
           {state.items.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full px-4 text-center">
-              <p className="text-sm text-[#515151]">Your cart is empty</p>
+              <p className="text-sm text-[#525252]">Your cart is empty</p>
             </div>
           ) : (
-            <>
-              {/* Cart items */}
-              <div className="px-4">
-                {state.items.map((item) => {
-                  const discountedPrice =
-                    discountClaimed && item.orderType === 'subscription'
-                      ? Math.round(item.currentPrice * (1 - discountPercent) * 100) / 100
-                      : undefined;
-                  return (
-                    <CartItem
-                      key={item.lineId}
-                      item={item}
-                      isPending={pendingLineIds.includes(item.lineId)}
-                      onUpdateQuantity={updateQuantity}
-                      onRemove={removeItem}
-                      discountedPrice={discountedPrice}
-                    />
-                  );
-                })}
-              </div>
-
-              {/* Upsells */}
-              {/* <CartUpsellSection onAddProduct={() => {}} /> */}
-            </>
+            <div className="px-4">
+              {state.items.map((item) => {
+                const discountedPrice =
+                  discountClaimed && item.orderType === 'subscription'
+                    ? Math.round(item.currentPrice * (1 - discountPercent) * 100) / 100
+                    : undefined;
+                return (
+                  <CartItem
+                    key={item.lineId}
+                    item={item}
+                    isPending={pendingLineIds.includes(item.lineId)}
+                    onUpdateQuantity={updateQuantity}
+                    onRemove={removeItem}
+                    discountedPrice={discountedPrice}
+                    isSubscription={isAR}
+                  />
+                );
+              })}
+            </div>
           )}
         </div>
 
@@ -121,20 +131,23 @@ export default function CartDrawer() {
 
         {/* Summary + Checkout (sticky bottom) */}
         {state.items.length > 0 && (
-          <div className="border-t border-gray-100">
+          <>
             <CartSummary
-              subtotal={subtotal}
-              totalSavings={totalSavings}
-              yearlySavingsProjection={yearlySavingsProjection}
+              isAR={isAR}
+              onToggleAR={setIsAR}
+              arSubtotal={subtotal - promoDiscount}
+              otpSubtotal={otpSubtotal}
+              totalSavings={isAR ? totalSavings : 0}
+              yearlySavingsProjection={isAR ? yearlySavingsProjection : 0}
               hasFreeShipping={hasFreeShipping}
-              promoDiscount={promoDiscount}
+              subtotalForShipping={displaySubtotal}
             />
             <CartCheckoutButton
               checkoutUrl={state.checkoutUrl}
               items={state.items}
-              subtotal={subtotal}
+              subtotal={displaySubtotal}
             />
-          </div>
+          </>
         )}
       </div>
     </div>

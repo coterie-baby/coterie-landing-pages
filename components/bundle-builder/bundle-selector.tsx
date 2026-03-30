@@ -13,6 +13,7 @@ import type { SizeOption } from '@/components/purchase/context';
 import PianoKey from '@/components/purchase/piano-key';
 import SizeFitGuideDrawer from '@/components/purchase/size-fit-guide-drawer';
 import { useCart } from '@/components/cart/cart-context';
+import type { BundleLineItem } from '@/components/cart/cart-context';
 import { getDiaperImageUrl } from '@/lib/config/products';
 import {
   trackAddToCart,
@@ -399,6 +400,41 @@ export function BundleSelectorProvider({
           quantity: 1,
         }));
 
+      const selectedWipesProduct =
+        selectedWipes && selectedWipes !== 'none'
+          ? WIPES_PRODUCTS.find((w) => w.id === selectedWipes)
+          : null;
+
+      const bundleLineItems: BundleLineItem[] = [
+        {
+          name: `The Diaper - ${getSizeLabel(selectedSize)}`,
+          detail: `${SIZE_CONFIGS[selectedSize].count} diapers`,
+          image: getDiaperImageUrl(),
+          currentPrice: diaperPrice,
+          originalPrice: originalDiaperPrice,
+        },
+        ...(selectedWipesProduct
+          ? [
+              {
+                name: selectedWipesProduct.name,
+                detail: `${selectedWipesProduct.count} wipes`,
+                image: selectedWipesProduct.image,
+                currentPrice: selectedWipesProduct.subscriptionPrice,
+                originalPrice: selectedWipesProduct.basePrice,
+              },
+            ]
+          : []),
+        ...selectedSkincareIndices
+          .map((idx) => SKINCARE_ITEMS[idx])
+          .filter((item): item is SkincareItem => Boolean(item))
+          .map((item) => ({
+            name: item.name,
+            image: item.image,
+            currentPrice: item.subPrice,
+            originalPrice: item.otpPrice,
+          })),
+      ];
+
       await cart.addToCart({
         size: selectedSize,
         displaySize: getSizeLabel(selectedSize),
@@ -413,6 +449,7 @@ export function BundleSelectorProvider({
         imageUrl: cartImage ?? getDiaperImageUrl(),
         isBundleBuilder: true,
         bundleItems: skincareLines.length > 0 ? skincareLines : undefined,
+        bundleLineItems,
       });
     } catch (err) {
       const msg =
