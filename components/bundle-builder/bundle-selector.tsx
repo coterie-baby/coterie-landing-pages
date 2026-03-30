@@ -448,6 +448,7 @@ export function BundleSelectorProvider({
         title: bundleTitle,
         imageUrl: cartImage ?? getDiaperImageUrl(),
         isBundleBuilder: true,
+        replaceBundleIfExists: true,
         bundleItems: skincareLines.length > 0 ? skincareLines : undefined,
         bundleLineItems,
       });

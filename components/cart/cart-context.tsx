@@ -232,6 +232,7 @@ export interface AddToCartOptions {
   title: string;
   imageUrl: string;
   isBundleBuilder?: boolean;
+  replaceBundleIfExists?: boolean;
   bundleLineItems?: BundleLineItem[];
   bundleItems?: BundleItem[];
   upsellItems?: {
@@ -397,7 +398,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       );
 
       // If updating an existing bundle, replace it instead of adding a new one
-      const existingBundle = options.isBundleBuilder
+      const existingBundle = options.replaceBundleIfExists
         ? state.items.find((i) => i.isBundleBuilder && !i.isAddOn)
         : undefined;
 
