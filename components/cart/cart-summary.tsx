@@ -1,6 +1,7 @@
 'use client';
 
 import CartShippingBar from './cart-shipping-bar';
+import { trackSelectPurchaseType } from '@/lib/gtm/ecommerce';
 
 interface CartSummaryProps {
   isAR: boolean;
@@ -46,7 +47,11 @@ export default function CartSummary({
     <div className="rounded-tl-2xl rounded-tr-2xl border border-[#E7E7E7] overflow-hidden">
       {/* AR toggle row */}
       <button
-        onClick={() => onToggleAR(!isAR)}
+        onClick={() => {
+          const next = !isAR;
+          onToggleAR(next);
+          trackSelectPurchaseType({ location: 'Cart', isSubscription: next });
+        }}
         className="w-full flex flex-col px-4 py-4 text-left gap-3"
       >
         {/* Row 1: checkbox + title */}
