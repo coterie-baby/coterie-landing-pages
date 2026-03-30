@@ -699,14 +699,12 @@ function SkincareCard({
 }
 
 function SectionHeader({
-  step,
   title,
   label,
   isOpen,
   isDone,
   onClick,
 }: {
-  step: number;
   title: string;
   label: string;
   isOpen: boolean;
@@ -819,7 +817,7 @@ export default function BundleSelector() {
       {/* Step 2: Wipes */}
       <div ref={wipesRef}>
         <SectionHeader
-          step={2}
+
           title="Select your wipe:"
           label="Optional"
           isOpen={wipesOpen}
@@ -849,7 +847,7 @@ export default function BundleSelector() {
       {/* Step 3: Skincare */}
       <div ref={skincareRef} className="mt-2">
         <SectionHeader
-          step={3}
+
           title="Add skincare:"
           label="Optional"
           isOpen={skincareOpen}
