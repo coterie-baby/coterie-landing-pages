@@ -22,7 +22,7 @@ import {
   buildBundleCartLines,
   buildUpsellCartLines,
 } from '@/lib/shopify/product-mapping';
-import { toVariantGid } from '@/lib/config/products';
+import { toVariantGid, getDiaperVariantIds } from '@/lib/config/products';
 import type {
   DiaperSize,
   PlanType,
@@ -444,6 +444,84 @@ export function CartProvider({ children }: { children: ReactNode }) {
               cartId: state.cartId,
               checkoutUrl: addResult.cart.checkoutUrl,
               items: [...confirmedNonBundleItems, ...newBundleItem],
+            },
+          });
+        } catch (err) {
+          dispatch({ type: 'ROLLBACK' });
+          dispatch({
+            type: 'SET_ERROR',
+            payload: err instanceof Error ? err.message : 'An unexpected error occurred',
+          });
+        }
+        return;
+      }
+
+      // If re-adding the same variant that's already in cart (e.g. updating add-ons on newborn
+      // bundle page), replace the existing item instead of duplicating it
+      const primaryMerchandiseId = getDiaperVariantIds()[options.size];
+      const existingMatchingItem = primaryMerchandiseId && state.cartId
+        ? state.items.find(
+            (i) => !i.lineId.startsWith('pending-') && !i.isAddOn && i.merchandiseId === primaryMerchandiseId
+          )
+        : undefined;
+
+      if (existingMatchingItem && state.cartId) {
+        dispatch({
+          type: 'OPTIMISTIC_REPLACE_BUNDLE',
+          payload: { removeLineId: existingMatchingItem.lineId, newItems: [optimisticMain, ...optimisticAddOns] },
+        });
+
+        try {
+          const oldLineIds = [existingMatchingItem.lineId, ...existingMatchingItem.companionLineIds];
+          const removeResult = await removeCartLine(state.cartId, oldLineIds);
+          if (!removeResult.success) throw new Error(removeResult.error ?? 'Failed to remove old item');
+
+          const lines = buildCartLines({
+            size: options.size,
+            planType: options.planType,
+            orderType: options.orderType,
+            quantity: options.quantity,
+          });
+          if (options.bundleItems && options.bundleItems.length > 0) {
+            lines.push(...buildBundleCartLines(options.bundleItems, options.orderType));
+          }
+          if (options.upsellItems && options.upsellItems.length > 0) {
+            lines.push(...buildUpsellCartLines(options.upsellItems, options.orderType));
+          }
+
+          const confirmedNonMatchingItems = state.items.filter(
+            (i) => !i.lineId.startsWith('pending-') && i.lineId !== existingMatchingItem.lineId
+          );
+          const knownLineIds = new Set(
+            confirmedNonMatchingItems.flatMap((i) => [i.lineId, ...i.companionLineIds])
+          );
+
+          const addResult = await addCartLines(state.cartId, lines);
+          if (!addResult.success || !addResult.cart) throw new Error(addResult.error ?? 'Failed to add updated item');
+
+          const upsellGids = new Set(
+            (options.upsellItems ?? []).map((u) => toVariantGid(u.shopifyVariantId))
+          );
+          const newEdges = addResult.cart.lines.edges.filter((e) => !knownLineIds.has(e.node.id));
+          const newMainEdges = newEdges.filter((e) => !upsellGids.has(e.node.merchandise.id));
+          const newUpsellEdges = newEdges.filter((e) => upsellGids.has(e.node.merchandise.id));
+
+          const newMainItem = newMainEdges.length > 0
+            ? [buildCartItemFromEdges(newMainEdges, displayData, options.quantity)]
+            : [];
+          const newAddOnItems = newUpsellEdges.map((edge) => {
+            const data = (options.upsellItems ?? []).find(
+              (u) => toVariantGid(u.shopifyVariantId) === edge.node.merchandise.id
+            )!;
+            return buildAddOnCartItem(edge, data, options.orderType);
+          });
+
+          dispatch({
+            type: 'SET_CART',
+            payload: {
+              cartId: state.cartId,
+              checkoutUrl: addResult.cart.checkoutUrl,
+              items: [...confirmedNonMatchingItems, ...newMainItem, ...newAddOnItems],
             },
           });
         } catch (err) {
