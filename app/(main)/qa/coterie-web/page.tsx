@@ -1,32 +1,22 @@
 import { ProductPush } from '@/components/product-push';
-// import ShippingBar from '@/components/coterie-web/shipping-bar';
-// import CotterieWebHeader from '@/components/coterie-web/header';
 import Hero from '@/components/coterie-web/hero';
 
-export default function HomePage() {
+export default function CoterieWebQAPage() {
   return (
     <div>
-      {/* Overlaid header group */}
-      {/* <div className="fixed top-0 left-0 right-0 z-50">
-        <ShippingBar />
-        <CotterieWebHeader />
-      </div> */}
-
-      {/* Hero fills full viewport from top */}
       <Hero
         imageUrl="https://www.figma.com/api/mcp/asset/6d1baad5-6eac-4a53-9d58-06603afa49e2"
         overlay={2}
         overlayText={{
           title: 'Upgrade your\ndiapering routine',
-          links: [
-            { _key: '1', label: 'Shop The Diaper', href: '/products/diaper' },
-          ],
+          links: [{ _key: '1', label: 'Shop The Diaper', href: '/products/diaper' }],
           position: { mobile: 'bottom-center', desktop: 'center' },
           textColor: '#ffffff',
           titleSize: { mobile: 'h2', desktop: 'h1' },
         }}
         isFirst
         navigationShift={false}
+        maxHeight={680}
       />
       <ProductPush
         cards={[
@@ -34,16 +24,14 @@ export default function HomePage() {
             title: 'The Diaper',
             description:
               'Minimize leaks, blowouts, and the likelihood of diaper rash.',
-            image:
-              'https://cdn.sanity.io/images/e4q6bkl9/production/d1037002ac6897457cbb76825c252aa247f5907b-2560x2560.jpg',
+            image: 'https://www.figma.com/api/mcp/asset/ba979127-61d5-4b37-b681-85fcd569ab69',
             ctaText: 'Shop The Diaper',
             ctaHref: '/products/diaper',
           },
           {
             title: 'The Pant',
             description: 'Easy changes and free movement for active babies.',
-            image:
-              'https://cdn.sanity.io/images/e4q6bkl9/production/53ff61cb3f87d4c3f086fbfea4d5bf543565f9c2-2560x2560.png?w=1200&h=1200&q=100&fit=crop&auto=format',
+            image: 'https://www.figma.com/api/mcp/asset/d4714015-e006-43b9-9525-ad4ee2548167',
             ctaText: 'Shop The Pant',
             ctaHref: '/products/pant',
           },

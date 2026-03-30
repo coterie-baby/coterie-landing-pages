@@ -1,4 +1,4 @@
-import type { CartItem } from '@/components/cart/cart-context';
+import type { CartItem, BundleLineItem } from '@/components/cart/cart-context';
 import type { DiaperSize } from '@/components/purchase/context';
 import { SIZE_CONFIGS } from '@/components/purchase/context';
 
@@ -84,6 +84,14 @@ export function hydrateCartState(lsCart: LocalStorageCart): {
       item.attributes?.type === 'auto_renew' ? 'subscription' : 'one-time';
     const savingsAmount = (item.compareAtPrice ?? item.price) - item.price;
     const isAddOn = item.attributes?.isAddOn === true;
+    const isBundleBuilder = item.attributes?.isBundleBuilder === true;
+    const bundleLineItems = item.attributes?.bundleLineItems as
+      | BundleLineItem[]
+      | undefined;
+    const sellingPlanId = item.attributes?.sellingPlanId as string | undefined;
+    const companionSellingPlanIds = item.attributes?.companionSellingPlanIds as
+      | (string | undefined)[]
+      | undefined;
 
     if (isAddOn) {
       return {
@@ -120,6 +128,10 @@ export function hydrateCartState(lsCart: LocalStorageCart): {
       currentPrice: item.price,
       originalPrice: item.compareAtPrice ?? item.price,
       savingsAmount,
+      isBundleBuilder: isBundleBuilder || undefined,
+      bundleLineItems: bundleLineItems ?? undefined,
+      sellingPlanId: sellingPlanId ?? undefined,
+      companionSellingPlanIds: companionSellingPlanIds ?? undefined,
     };
   });
 
@@ -182,6 +194,10 @@ function buildLocalStorageItem(
     compareAtPrice: item.originalPrice,
     attributes: {
       type: item.orderType === 'subscription' ? 'auto_renew' : 'one_time',
+      ...(item.isBundleBuilder ? { isBundleBuilder: true } : {}),
+      ...(item.bundleLineItems ? { bundleLineItems: item.bundleLineItems } : {}),
+      ...(item.sellingPlanId ? { sellingPlanId: item.sellingPlanId } : {}),
+      ...(item.companionSellingPlanIds ? { companionSellingPlanIds: item.companionSellingPlanIds } : {}),
     },
   };
 }

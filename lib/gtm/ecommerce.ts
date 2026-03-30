@@ -288,7 +288,7 @@ export interface SelectPurchaseTypeEventData {
 export function trackSelectPurchaseType(data: SelectPurchaseTypeEventData): void {
   const eventData = {
     location: data.location,
-    version: data.isSubscription ? 'Auto Renew' : 'One Time',
+    purchase_type: data.isSubscription ? 'Auto Renew' : 'One Time',
   };
 
   // Send to GTM

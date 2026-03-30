@@ -52,7 +52,7 @@ export default function CartCheckoutButton({
   };
 
   return (
-    <div className="px-4 pb-4">
+    <div className="p-4">
       <button
         onClick={handleCheckout}
         disabled={!checkoutUrl || isNavigating || items.length === 0}
