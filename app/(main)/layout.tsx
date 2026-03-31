@@ -5,6 +5,7 @@ import { CartProvider } from '@/components/cart/cart-context';
 import CartDrawer from '@/components/cart/cart-drawer';
 import ShopifyProviderWrapper from '@/components/cart/shopify-provider';
 import { DiscountProvider } from '@/components/discount-context';
+import { LogRocketProvider } from '@/components/providers/logrocket-provider';
 
 export default function MainLayout({
   children,
@@ -12,6 +13,7 @@ export default function MainLayout({
   children: React.ReactNode;
 }>) {
   return (
+    <LogRocketProvider>
     <ShopifyProviderWrapper>
       <DiscountProvider>
         <CartProvider>
@@ -23,5 +25,6 @@ export default function MainLayout({
         </CartProvider>
       </DiscountProvider>
     </ShopifyProviderWrapper>
+    </LogRocketProvider>
   );
 }
