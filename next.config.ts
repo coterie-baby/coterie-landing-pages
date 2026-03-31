@@ -48,6 +48,15 @@ const nextConfig: NextConfig = {
         },
       ],
     },
+    {
+      source: '/_next/static/:path*',
+      headers: [
+        {
+          key: 'Access-Control-Allow-Origin',
+          value: '*',
+        },
+      ],
+    },
   ],
 };
 
