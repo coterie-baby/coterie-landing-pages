@@ -64,19 +64,14 @@ export async function createCart(
       attributes: cartAttributes,
     };
 
-    console.log('Creating cart with input:', JSON.stringify(input, null, 2));
-
     const response = await shopifyFetch<CartCreateResponse>(
       CART_CREATE_MUTATION,
       { input }
     );
 
-    console.log('Shopify response:', JSON.stringify(response, null, 2));
-
     // Handle GraphQL errors
     if (response.errors?.length) {
       const errorMessage = response.errors.map((e) => e.message).join(', ');
-      console.error('Shopify GraphQL errors:', response.errors);
       return { success: false, error: errorMessage };
     }
 
@@ -85,12 +80,10 @@ export async function createCart(
 
     if (userErrors?.length) {
       const errorMessage = userErrors.map((e) => e.message).join(', ');
-      console.error('Shopify cart creation errors:', userErrors);
       return { success: false, error: errorMessage };
     }
 
     if (!cart?.checkoutUrl) {
-      console.error('No checkout URL. Cart response:', cart);
       return { success: false, error: 'No checkout URL returned from Shopify' };
     }
 
@@ -101,7 +94,6 @@ export async function createCart(
       cart,
     };
   } catch (error) {
-    console.error('Failed to create Shopify cart:', error);
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Failed to create cart',
