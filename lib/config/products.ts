@@ -27,8 +27,10 @@ export function toVariantGid(numericId: string | number): string {
 /**
  * Build a Shopify SellingPlan GID from a numeric ID
  */
-export function toSellingPlanGid(numericId: string | number): string {
-  return `gid://shopify/SellingPlan/${numericId}`;
+export function toSellingPlanGid(id: string | number): string {
+  const str = String(id);
+  if (str.startsWith('gid://shopify/SellingPlan/')) return str;
+  return `gid://shopify/SellingPlan/${str}`;
 }
 
 // =============================================================================
